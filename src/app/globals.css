@@ -28,15 +28,24 @@
   --text-4xl: clamp(1.6rem, 1.1rem + 3vw, 3.5rem);
   --text-5xl: clamp(1.75rem, 1rem + 4vw, 5rem);
 
-  /* Fluid spacing scale. */
-  --space-2xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.35rem);
-  --space-xs: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
-  --space-sm: clamp(0.75rem, 0.6rem + 0.75vw, 1rem);
-  --space-md: clamp(1rem, 0.75rem + 1.25vw, 1.5rem);
-  --space-lg: clamp(1.5rem, 1rem + 2.5vw, 2.5rem);
-  --space-xl: clamp(2rem, 1.25rem + 3.75vw, 4rem);
-  --space-2xl: clamp(3rem, 1.75rem + 6.25vw, 6rem);
-  --space-3xl: clamp(4rem, 2rem + 10vw, 9rem);
+  /* Spacing scale — every clamp starts and ends on an 8px multiple, so the
+     rhythm reads as an 8px grid at both extremes and interpolates between. */
+  --space-2xs: 8px;
+  --space-xs: clamp(8px, 4px + 1vw, 16px);
+  --space-sm: clamp(16px, 12px + 1vw, 24px);
+  --space-md: clamp(16px, 8px + 2vw, 32px);
+  --space-lg: clamp(24px, 12px + 3vw, 40px);
+  --space-xl: clamp(32px, 12px + 5vw, 64px);
+  --space-2xl: clamp(48px, 16px + 8vw, 96px);
+  --space-3xl: clamp(64px, 24px + 10vw, 128px);
+
+  /* Controls are fixed, not fluid: consistent hit areas beat proportional ones,
+     and equal heights are what make a row of chips read as one system. */
+  --btn-height-sm: 40px;
+  --btn-height-md: 48px;
+  --btn-height-lg: 56px;
+  --pill-height: 52px;
+  --card-image-height: 240px;
 
   --radius-card: clamp(16px, 2vw + 10px, 34px);
   --radius-pill: 9999px;
@@ -202,6 +211,185 @@
     color: transparent;
   }
 
+  /* --- Controls: one size system, no per-component exceptions --- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 9999px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-sm {
+    height: var(--btn-height-sm);
+    padding-inline: 16px;
+    font-size: var(--text-sm);
+  }
+
+  .btn-md {
+    height: var(--btn-height-md);
+    padding-inline: 24px;
+    font-size: var(--text-base);
+  }
+
+  .btn-lg {
+    height: var(--btn-height-lg);
+    padding-inline: 32px;
+    font-size: var(--text-md);
+  }
+
+  .btn-primary {
+    background-image: linear-gradient(135deg, var(--accent-light), var(--accent) 55%, var(--accent-dark));
+    color: #fff;
+    box-shadow: 0 10px 34px -12px rgba(149, 97, 233, 0.4);
+  }
+
+  .btn-ghost {
+    border: 1px solid var(--white-15);
+    color: var(--white-80);
+  }
+
+  .btn-ghost:hover {
+    border-color: rgba(149, 97, 233, 0.45);
+    color: #fff;
+  }
+
+  .btn:disabled {
+    opacity: 0.4;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  /* Filter chips: identical width and height so a column never looks ragged. */
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-pill {
+    width: 100%;
+    height: var(--pill-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: calc(var(--pill-height) / 2);
+    font-size: var(--text-base);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--white-70);
+  }
+
+  .filter-pill:hover:not(.is-active) {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+
+  .filter-pill.is-active {
+    background: rgba(149, 97, 233, 0.15);
+    border-color: rgba(149, 97, 233, 0.6);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+    margin-block: 24px 8px;
+    padding-left: 4px;
+  }
+
+  .filter-label:first-child {
+    margin-top: 0;
+  }
+
+  /* Product card: fixed image box + auto footer keeps every card in a row the
+     same height regardless of how long the name or tagline runs. */
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .product-card-media {
+    width: 100%;
+    height: var(--card-image-height);
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 26px;
+  }
+
+  .product-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 16px;
+  }
+
+  .product-card-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  /* Clamp to two lines so names of different length still align. */
+  .product-card-name {
+    font-size: var(--text-md);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: calc(var(--text-md) * 1.3 * 2);
+  }
+
+  .product-card-tagline {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--white-70);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: calc(var(--text-sm) * 1.5 * 2);
+    margin-top: 8px;
+  }
+
+  .promo-banner {
+    background: rgba(149, 97, 233, 0.1);
+    border: 1px solid rgba(149, 97, 233, 0.3);
+    border-radius: 16px;
+    padding: 16px 24px;
+    font-size: var(--text-sm);
+    color: var(--white-80);
+    text-align: center;
+    line-height: 1.6;
+  }
+
   /* --- Universal grids: columns form from available space, never from a
      device breakpoint. `min()` keeps the track from overflowing narrow screens. --- */
   .grid-auto-sm {
@@ -247,8 +435,9 @@
 
   .grid-products {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr));
-    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+    gap: 16px;
+    align-items: stretch;
   }
 
   /* Product rail: a snap-scrolling carousel while space is tight, promoted to an

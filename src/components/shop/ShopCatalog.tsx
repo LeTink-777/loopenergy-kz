@@ -36,11 +36,7 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`inline-flex min-h-[44px] items-center rounded-pill border px-4 text-fluid-sm font-semibold transition-colors ${
-        active
-          ? 'border-accent/60 bg-accent/15 text-white'
-          : 'border-w-15 text-w-70 hover:border-accent/35 hover:text-white'
-      }`}
+      className={`filter-pill ${active ? 'is-active' : ''}`}
     >
       {children}
     </button>
@@ -59,47 +55,35 @@ function FilterPanel({
   const t = useTranslations('shop');
 
   return (
-    <div className="flex flex-col gap-fluid-md">
-      <div>
-        <p className="text-fluid-xs font-semibold uppercase tracking-[0.14em] text-w-50">
-          {t('category_label')}
-        </p>
-        <div className="mt-fluid-xs flex flex-wrap gap-2">
-          {CATEGORY_IDS.map((id) => (
-            <Chip key={id} active={state.category === id} onClick={() => set({ category: id })}>
-              {t(`category_${id}`)}
-            </Chip>
-          ))}
-        </div>
+    <div>
+      <p className="filter-label">{t('category_label')}</p>
+      <div className="filter-group">
+        {CATEGORY_IDS.map((id) => (
+          <Chip key={id} active={state.category === id} onClick={() => set({ category: id })}>
+            {t(`category_${id}`)}
+          </Chip>
+        ))}
       </div>
 
-      <div>
-        <p className="text-fluid-xs font-semibold uppercase tracking-[0.14em] text-w-50">
-          {t('strength_label')}
-        </p>
-        <div className="mt-fluid-xs flex flex-wrap gap-2">
-          {STRENGTH_IDS.map((id) => (
-            <Chip key={id} active={state.strength === id} onClick={() => set({ strength: id })}>
-              {t(`strength_${id}`)}
-            </Chip>
-          ))}
-        </div>
+      <p className="filter-label">{t('strength_label')}</p>
+      <div className="filter-group">
+        {STRENGTH_IDS.map((id) => (
+          <Chip key={id} active={state.strength === id} onClick={() => set({ strength: id })}>
+            {t(`strength_${id}`)}
+          </Chip>
+        ))}
       </div>
 
-      <div>
-        <p className="text-fluid-xs font-semibold uppercase tracking-[0.14em] text-w-50">
-          {t('sort_label')}
-        </p>
-        <div className="mt-fluid-xs flex flex-wrap gap-2">
-          {SORT_IDS.map((id) => (
-            <Chip key={id} active={state.sort === id} onClick={() => set({ sort: id })}>
-              {t(`sort_${id.replace('-', '_')}` as 'sort_popular')}
-            </Chip>
-          ))}
-        </div>
+      <p className="filter-label">{t('sort_label')}</p>
+      <div className="filter-group">
+        {SORT_IDS.map((id) => (
+          <Chip key={id} active={state.sort === id} onClick={() => set({ sort: id })}>
+            {t(`sort_${id.replace('-', '_')}` as 'sort_popular')}
+          </Chip>
+        ))}
       </div>
 
-      <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-3 text-fluid-sm text-w-80">
+      <label className="mt-6 flex h-[52px] cursor-pointer items-center gap-3 px-1 text-fluid-sm text-w-80">
         <input
           type="checkbox"
           checked={state.inStockOnly}
@@ -109,11 +93,7 @@ function FilterPanel({
         {t('in_stock_only')}
       </label>
 
-      <button
-        type="button"
-        onClick={reset}
-        className="inline-flex min-h-[44px] items-center justify-center self-start rounded-pill border border-w-15 px-5 text-fluid-xs font-bold uppercase tracking-wide text-w-70 transition-colors hover:border-accent/45 hover:text-white"
-      >
+      <button type="button" onClick={reset} className="btn btn-sm btn-ghost mt-2 w-full uppercase tracking-wide">
         {t('filters_reset')}
       </button>
     </div>
@@ -165,7 +145,7 @@ export function ShopCatalog() {
           <button
             type="button"
             onClick={() => setSheetOpen(true)}
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-pill border border-w-15 px-4 text-fluid-xs font-bold uppercase tracking-wide text-w-80 lg:hidden"
+            className="btn btn-sm btn-ghost uppercase tracking-wide lg:hidden"
           >
             <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
             {t('filters_open')}
@@ -185,7 +165,7 @@ export function ShopCatalog() {
             <button
               type="button"
               onClick={() => setState(DEFAULTS)}
-              className="mt-fluid-xs inline-flex min-h-[44px] items-center rounded-pill bg-accent-grad px-6 text-fluid-xs font-bold uppercase tracking-wide text-white"
+              className="btn btn-md btn-primary mt-2 uppercase tracking-wide"
             >
               {t('filters_reset')}
             </button>
@@ -237,7 +217,7 @@ export function ShopCatalog() {
               <button
                 type="button"
                 onClick={() => setSheetOpen(false)}
-                className="mt-fluid-md inline-flex min-h-[48px] w-full items-center justify-center rounded-pill bg-accent-grad text-fluid-xs font-bold uppercase tracking-wide text-white"
+                className="btn btn-md btn-primary mt-4 w-full uppercase tracking-wide"
               >
                 {t('filters_apply')} · {visible.length}
               </button>

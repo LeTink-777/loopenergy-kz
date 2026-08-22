@@ -3,7 +3,7 @@
 import { m } from 'framer-motion';
 import { ArrowLeft, ChevronDown, ShieldAlert, ShoppingBag, Truck } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import Image from 'next/image';
+import { ProductImage } from '@/components/ui/ProductImage';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -109,7 +109,7 @@ export function ProductDetail({ product }: { product: Product }) {
       <div className="mt-fluid-md grid-2col !items-start">
         <div className="min-w-0">
           <div className="purple-ring relative aspect-square overflow-hidden">
-            <Image
+            <ProductImage
               src={product.images[activeImage] ?? product.image}
               alt={name}
               fill
@@ -131,7 +131,7 @@ export function ProductDetail({ product }: { product: Product }) {
                     index === activeImage ? 'border-accent/60' : 'border-w-10 hover:border-accent/35'
                   }`}
                 >
-                  <Image src={src} alt="" fill sizes="80px" className="object-contain p-2" />
+                  <ProductImage src={src} alt="" fill sizes="80px" className="object-contain p-2" />
                 </button>
               ))}
             </div>
