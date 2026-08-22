@@ -548,10 +548,30 @@
     }
   }
 
+  /* Five cards, so the column count is stated rather than derived: auto-fill
+     lands on four at container width and orphans the fifth on its own row. */
   .grid-audience {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(290px, 100%), 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-md);
+  }
+
+  @media (min-width: 560px) {
+    .grid-audience {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 900px) {
+    .grid-audience {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1180px) {
+    .grid-audience {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
   }
 
   .grid-stats {
