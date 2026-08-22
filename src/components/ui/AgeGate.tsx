@@ -61,13 +61,13 @@ export function AgeGate() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="age-gate-title"
-          className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overscroll-contain px-fluid-sm py-fluid-md"
           exit={{ opacity: 0, transition: { duration: 0.4, ease: EASE } }}
         >
           <div className="absolute inset-0 bg-[#15111a]/95 backdrop-blur-md" />
 
           <m.div
-            className="purple-ring purple-ring-blur relative w-full max-w-lg px-6 py-10 text-center sm:px-10"
+            className="purple-ring purple-ring-blur relative my-auto w-full max-w-lg px-fluid-md py-fluid-lg text-center"
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={springPop}
           >
@@ -76,28 +76,28 @@ export function AgeGate() {
               aria-hidden="true"
             />
 
-            <p className="text-fluid-lg font-black uppercase tracking-[0.24em] text-white">
+            <p className="text-fluid-md font-black uppercase tracking-[0.2em] text-white">
               LOOP<span className="text-accent-light">&nbsp;Energy</span>
             </p>
 
-            <p className="mt-6 text-fluid-xs font-bold uppercase tracking-[0.2em] text-accent-light">
+            <p className="mt-fluid-md text-fluid-xs font-bold uppercase tracking-[0.2em] text-accent-light">
               {t('title')}
             </p>
 
-            <h2 id="age-gate-title" className="mt-3 text-fluid-2xl font-extrabold uppercase leading-tight">
+            <h2 id="age-gate-title" className="mt-fluid-2xs text-fluid-2xl font-extrabold uppercase leading-tight">
               {t('question')}
             </h2>
 
-            <p className="mx-auto mt-4 max-w-md text-fluid-sm text-w-70">{t('subtitle')}</p>
+            <p className="mx-auto mt-fluid-xs max-w-md text-fluid-sm text-w-70">{t('subtitle')}</p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <div className="mt-fluid-md flex flex-wrap justify-center gap-fluid-xs">
               <m.button
                 type="button"
                 onClick={confirm}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 transition={springPop}
-                className="rounded-pill bg-accent-grad px-8 py-3.5 text-fluid-sm font-bold uppercase tracking-wide text-white shadow-glow"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center whitespace-nowrap rounded-pill bg-accent-grad px-fluid-md text-fluid-sm font-bold uppercase tracking-wide text-white shadow-glow"
               >
                 {t('yes')}
               </m.button>
@@ -108,13 +108,13 @@ export function AgeGate() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 transition={springPop}
-                className="rounded-pill border border-w-15 px-8 py-3.5 text-fluid-sm font-bold uppercase tracking-wide text-w-70 transition-colors hover:border-accent/40 hover:text-white"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center whitespace-nowrap rounded-pill border border-w-15 px-fluid-md text-fluid-sm font-bold uppercase tracking-wide text-w-70 transition-colors hover:border-accent/40 hover:text-white"
               >
                 {t('no')}
               </m.button>
             </div>
 
-            <p className="mt-6 text-fluid-xs text-w-50">{t('note')}</p>
+            <p className="mt-fluid-sm text-fluid-xs text-w-50">{t('note')}</p>
           </m.div>
         </m.div>
       ) : null}
