@@ -82,8 +82,9 @@ export function ProductDetail({ product }: { product: Product }) {
       quantity,
       strength: selectedStrength?.id,
       strengthLabel: selectedStrength ? pick(selectedStrength.label, locale) : undefined,
-      flavor: selectedFlavor?.id,
-      flavorLabel: selectedFlavor ? pick(selectedFlavor.name, locale) : undefined,
+      flavor: product.flavors.length > 1 ? selectedFlavor?.id : undefined,
+      flavorLabel:
+        product.flavors.length > 1 && selectedFlavor ? pick(selectedFlavor.name, locale) : undefined,
     });
     toast.success(t('toast_added', { name }));
   };
@@ -220,7 +221,7 @@ export function ProductDetail({ product }: { product: Product }) {
               transition={springPop}
               className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-pill bg-accent-grad px-6 text-fluid-sm font-bold uppercase tracking-wide text-white shadow-glow disabled:opacity-40 disabled:shadow-none"
             >
-              <ShoppingBag className="h-[18px] w-[18px]" aria-hidden="true" />
+              <ShoppingBag className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
               {product.inStock ? t('add_to_cart') : t('out_of_stock')}
             </m.button>
 

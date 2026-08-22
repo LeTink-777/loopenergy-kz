@@ -94,11 +94,7 @@ export function ProductGridCard({ product, priority = false }: { product: Produc
                 label={t('strength_label')}
                 value={strength}
                 onChange={setStrength}
-                options={product.strength.map((s) => ({
-                  id: s.id,
-                  label: pick(s.label, locale),
-                  sub: `${s.mg} мг`,
-                }))}
+                options={product.strength.map((s) => ({ id: s.id, label: pick(s.label, locale) }))}
               />
             </div>
           ) : null}
@@ -124,7 +120,7 @@ export function ProductGridCard({ product, priority = false }: { product: Produc
               transition={springPop}
               className="inline-flex min-h-[44px] min-w-[132px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-pill bg-accent-grad px-5 text-fluid-xs font-bold uppercase tracking-wide text-white shadow-glow-sm disabled:opacity-40 disabled:shadow-none"
             >
-              <ShoppingBag className="h-4 w-4" aria-hidden="true" />
+              <ShoppingBag className="h-4 w-4 shrink-0" aria-hidden="true" />
               {product.inStock ? t('add_to_cart') : t('out_of_stock')}
             </m.button>
           </div>
