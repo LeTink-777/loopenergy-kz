@@ -480,10 +480,11 @@ export function CanAnimation() {
         mix(TIN.seat[2], 0, opened),
         mix(TIN.seat[1], 0, opened),
         mix(TIN.seat[3], 1, opened),
-        // Only part of the way back to where it was photographed: the pose is
-        // what sells the lift, but the full sideways drift walks it out of the
-        // frame when what the eye wants is the lid coming straight up.
-        mix(TIN.seat[4], TIN.rest[0] * 0.45, opened),
+        // The disc rises straight up over the tin. Its shape still un-warps
+        // from the seated affine back to the pose it was photographed in —
+        // that is what reads as a flat lid lifting — but it keeps the rim's
+        // horizontal position instead of drifting off to one side.
+        TIN.seat[4],
         mix(TIN.seat[5], TIN.rest[1], opened),
       );
       ctx.drawImage(s.lidImage, 0, 0, TIN.lid[0], TIN.lid[1]);
