@@ -94,17 +94,6 @@ export function EnergyBurst() {
     lowFpsStreak: 0,
   });
 
-  // ── Can artwork ────────────────────────────────────────────────────────
-  useEffect(() => {
-    const img = new Image();
-    // No crossOrigin: loopenergy.ru sends no CORS header, so requesting it
-    // would fail the load outright. We only drawImage, never read pixels back.
-    img.src = CAN_SRC;
-    img.onload = () => {
-      stateRef.current.canImage = img;
-    };
-  }, []);
-
   // ── Canvas sizing ──────────────────────────────────────────────────────
   useEffect(() => {
     const resize = () => {
@@ -512,8 +501,20 @@ export function EnergyBurst() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         visibleRef.current = entry.isIntersecting;
+
+        // Fetch the tin only once the section is close — loading it on mount
+        // would compete with the hero image for the LCP.
+        if (entry.isIntersecting && !stateRef.current.canImage) {
+          const img = new Image();
+          // No crossOrigin: loopenergy.ru sends no CORS header, so the request
+          // would fail outright. We only drawImage, never read pixels back.
+          img.src = CAN_SRC;
+          img.onload = () => {
+            stateRef.current.canImage = img;
+          };
+        }
       },
-      { rootMargin: '100px' },
+      { rootMargin: '600px' },
     );
     observer.observe(el);
 
