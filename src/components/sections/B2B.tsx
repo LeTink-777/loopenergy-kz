@@ -33,7 +33,6 @@ export function B2B() {
 
     const payload = {
       name: String(data.get('name') ?? ''),
-      company: String(data.get('company') ?? ''),
       phone: String(data.get('phone') ?? ''),
       city: String(data.get('city') ?? ''),
       comment: String(data.get('comment') ?? ''),
@@ -189,18 +188,6 @@ export function B2B() {
                         />
                       </label>
 
-                      <label className="flex flex-col gap-2">
-                        <span className="text-fluid-xs font-semibold uppercase tracking-[0.12em] text-w-50">
-                          {t('form.company')}
-                        </span>
-                        <input
-                          name="company"
-                          type="text"
-                          autoComplete="organization"
-                          placeholder={t('form.companyPlaceholder')}
-                          className={fieldClass}
-                        />
-                      </label>
                     </div>
 
                     <div className="grid gap-fluid-sm sm:grid-cols-2">
