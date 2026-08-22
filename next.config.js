@@ -10,6 +10,9 @@ const nextConfig = {
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'loopenergy.ru' }],
     formats: ['image/avif', 'image/webp'],
+    // Ladder covers 280px foldables through 4K desktops.
+    deviceSizes: [320, 375, 414, 500, 640, 750, 828, 1080, 1200, 1920, 2048, 2560],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 2678400,
   },
 };

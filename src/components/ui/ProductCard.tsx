@@ -57,7 +57,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
               alt={name}
               fill
               priority={priority}
-              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, (max-width: 1280px) 30vw, 22vw"
+              sizes="(max-width: 400px) 82vw, (max-width: 640px) 300px, (max-width: 1024px) 45vw, (max-width: 1280px) 30vw, 300px"
               className="object-contain p-4 drop-shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
             />
           </m.div>

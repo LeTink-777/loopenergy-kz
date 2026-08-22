@@ -70,7 +70,7 @@ export function ProductInfo() {
                   src={IMG.hero}
                   alt={t('title')}
                   fill
-                  sizes="(max-width: 1024px) 90vw, 520px"
+                  sizes="(max-width: 640px) 92vw, (max-width: 1024px) 60vw, 480px"
                   className="object-contain drop-shadow-[0_36px_64px_rgba(0,0,0,0.5)]"
                 />
               </m.div>

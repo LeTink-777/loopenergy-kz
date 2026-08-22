@@ -65,7 +65,7 @@ export function Footer() {
         aria-hidden="true"
       />
 
-      <div className="container-content relative py-14 md:py-20">
+      <div className="container-content relative pb-safe-cta pt-fluid-2xl">
         <RevealGroup className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <Reveal variants={fadeUp} className="lg:col-span-1">
             <p className="text-fluid-md font-black uppercase tracking-[0.14em]">

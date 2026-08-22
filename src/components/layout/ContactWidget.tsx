@@ -21,7 +21,7 @@ export function ContactWidget() {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 md:bottom-6 md:right-6">
+    <div className="contact-widget fixed z-50 flex flex-col items-end gap-fluid-xs">
       <AnimatePresence>
         {open ? (
           <m.div
@@ -32,7 +32,7 @@ export function ContactWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 14, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 340, damping: 30 }}
-            className="purple-ring purple-ring-blur w-[min(92vw,340px)] origin-bottom-right overflow-hidden !bg-[#241e2b]/95 p-5 shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
+            className="purple-ring purple-ring-blur w-[min(320px,calc(100vw-32px))] origin-bottom-right overflow-hidden !bg-[#241e2b]/95 p-fluid-md shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
           >
             <div className="flex items-start justify-between gap-3">
               <h3 className="text-fluid-base font-bold uppercase tracking-tight">{t('title')}</h3>

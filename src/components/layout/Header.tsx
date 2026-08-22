@@ -18,7 +18,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
       animate="rest"
       whileHover="active"
       whileFocus="active"
-      className="relative block px-3 py-2 text-fluid-sm font-medium text-w-70"
+      className="relative flex items-center px-3 py-2 text-fluid-sm font-medium text-w-70"
       variants={{ rest: { color: 'rgba(255,255,255,0.7)' }, active: { color: '#ffffff' } }}
       transition={{ duration: 0.25, ease: EASE }}
     >
@@ -63,20 +63,20 @@ export function Header() {
   return (
     <>
       <m.div
-        className="fixed inset-x-0 top-0 z-[70] h-0.5 origin-left bg-accent-grad"
+        className="fixed inset-x-0 top-0 z-[70] h-[3px] origin-left bg-accent-grad"
         style={{ scaleX: progress }}
         aria-hidden="true"
       />
 
       <m.header
-        className="fixed inset-x-4 top-3 z-[60] mx-auto max-w-content"
+        className="site-header fixed inset-x-0 z-[60] mx-auto w-full max-w-content"
         initial={{ opacity: 0, y: -18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
       >
         <m.nav
           aria-label={t('common.menu')}
-          className="flex items-center justify-between gap-4 rounded-[22px] border px-4 py-3 md:px-6"
+          className="flex items-center justify-between gap-fluid-xs rounded-[22px] border px-fluid-sm py-fluid-xs"
           animate={{
             backgroundColor: scrolled ? 'rgba(32, 27, 36, 0.85)' : 'rgba(32, 27, 36, 0.28)',
             borderColor: scrolled ? 'rgba(149, 97, 233, 0.2)' : 'rgba(255, 255, 255, 0.06)',
@@ -87,13 +87,13 @@ export function Header() {
         >
           <a
             href="#hero"
-            className="shrink-0 text-fluid-base font-black uppercase tracking-[0.14em] "
+            className="shrink-0 whitespace-nowrap text-fluid-md font-black uppercase tracking-[0.12em]"
             onClick={() => setMenuOpen(false)}
           >
             LOOP<span className="text-accent-light"> Energy</span>
           </a>
 
-          <ul className="hidden items-center gap-1 lg:flex">
+          <ul className="hidden items-center gap-1 nav:flex">
             {NAV_LINKS.map((link) => (
               <li key={link.key}>
                 <NavLink href={link.href} label={t(`nav.${link.key}`)} />
@@ -110,7 +110,7 @@ export function Header() {
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.94 }}
               transition={springPop}
-              className="relative grid h-10 w-10 place-items-center rounded-pill border border-w-10 bg-white/[0.04] text-w-80 transition-colors hover:border-accent/40 hover:text-white"
+              className="relative grid h-11 w-11 place-items-center rounded-pill border border-w-10 bg-white/[0.04] text-w-80 transition-colors hover:border-accent/40 hover:text-white"
             >
               <ShoppingCart className="h-[18px] w-[18px]" aria-hidden="true" />
             </m.a>
@@ -122,7 +122,7 @@ export function Header() {
               onClick={() => setMenuOpen((value) => !value)}
               whileTap={{ scale: 0.92 }}
               transition={springPop}
-              className="grid h-10 w-10 place-items-center rounded-pill border border-w-10 bg-white/[0.04] text-white lg:hidden"
+              className="grid h-11 w-11 place-items-center rounded-pill border border-w-10 bg-white/[0.04] text-white nav:hidden"
             >
               <AnimatePresence mode="wait" initial={false}>
                 <m.span
@@ -145,7 +145,7 @@ export function Header() {
         {menuOpen ? (
           <m.div
             key="mobile-menu"
-            className="fixed inset-0 z-[55] flex flex-col justify-center bg-[#1a151f]/95 px-6 backdrop-blur-2xl lg:hidden"
+            className="fixed inset-0 z-[55] flex flex-col justify-center overflow-y-auto bg-[#1a151f]/95 py-fluid-2xl backdrop-blur-2xl safe-px nav:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -172,7 +172,7 @@ export function Header() {
                   <a
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
-                    className="block border-b border-w-10 py-4 text-fluid-xl font-extrabold uppercase tracking-tight text-white"
+                    className="block border-b border-w-10 py-fluid-sm text-fluid-2xl font-extrabold uppercase tracking-tight text-white"
                   >
                     {t(`nav.${link.key}`)}
                   </a>
@@ -181,7 +181,7 @@ export function Header() {
             </m.ul>
 
             <m.div
-              className="mt-10 flex items-center justify-between gap-4"
+              className="mt-fluid-xl flex flex-wrap items-center justify-between gap-fluid-sm"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0, transition: { delay: 0.4, duration: 0.4, ease: EASE } }}
               exit={{ opacity: 0 }}

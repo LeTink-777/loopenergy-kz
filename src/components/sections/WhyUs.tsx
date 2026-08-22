@@ -25,7 +25,7 @@ export function WhyUs() {
                 transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
                 aria-hidden="true"
               >
-                <Image src={IMG.whyBg} alt="" fill sizes="540px" className="object-contain" />
+                <Image src={IMG.whyBg} alt="" fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 60vw, 520px" className="object-contain" />
               </m.div>
 
               <m.div
@@ -37,7 +37,7 @@ export function WhyUs() {
                   src={IMG.why}
                   alt={t('title')}
                   fill
-                  sizes="(max-width: 1024px) 88vw, 540px"
+                  sizes="(max-width: 640px) 92vw, (max-width: 1024px) 60vw, 520px"
                   className="object-contain drop-shadow-[0_32px_60px_rgba(0,0,0,0.5)]"
                 />
               </m.div>

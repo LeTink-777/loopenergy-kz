@@ -149,7 +149,7 @@ export function Hero() {
                 alt="LOOP Energy"
                 fill
                 priority
-                sizes="(max-width: 1024px) 90vw, 520px"
+                sizes="(max-width: 640px) 92vw, (max-width: 1024px) 60vw, 480px"
                 className="object-contain drop-shadow-[0_40px_70px_rgba(0,0,0,0.55)]"
               />
             </m.div>
@@ -184,7 +184,7 @@ export function Hero() {
                     src={feature.image}
                     alt=""
                     fill
-                    sizes="80px"
+                    sizes="(max-width: 640px) 64px, 96px"
                     className="object-contain p-2"
                   />
                 </div>

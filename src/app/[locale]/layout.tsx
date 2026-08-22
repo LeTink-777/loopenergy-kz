@@ -9,6 +9,7 @@ import { AgeGate } from '@/components/ui/AgeGate';
 import { ContactWidget } from '@/components/layout/ContactWidget';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
+import { StickyCta } from '@/components/layout/StickyCta';
 import { MotionProvider } from '@/components/ui/MotionProvider';
 import { routing } from '@/i18n/routing';
 import { SITE } from '@/lib/constants';
@@ -109,6 +110,7 @@ export default async function LocaleLayout({
             <main id="top">{children}</main>
             <Footer />
             <ContactWidget />
+            <StickyCta />
           </MotionProvider>
         </NextIntlClientProvider>
       </body>
