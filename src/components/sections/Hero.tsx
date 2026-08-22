@@ -60,11 +60,15 @@ export function Hero() {
         transition={{ scale: { duration: 8, repeat: Infinity, ease: 'easeInOut' } }}
         aria-hidden="true"
       >
+        {/* Decorative: fetched eagerly so it is there for the first paint, but at
+            low priority so the hero product shot — the actual LCP element —
+            gets the connection first. */}
         <Image
           src={IMG.waves}
           alt=""
           fill
-          priority
+          loading="eager"
+          fetchPriority="low"
           quality={40}
           sizes="100vw"
           className="object-cover object-top"
