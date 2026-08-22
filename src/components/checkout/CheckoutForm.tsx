@@ -104,13 +104,25 @@ export function CheckoutForm() {
         body: JSON.stringify({ ...values, locale, items }),
       });
 
-      const result = (await response.json()) as { success?: boolean; orderId?: string };
+      const result = (await response.json()) as {
+        success?: boolean;
+        orderId?: string;
+        paymentRedirectUrl?: string;
+      };
+
       if (!response.ok || !result.orderId) {
         toast.error(t('error_generic'));
         return;
       }
 
       clearCart();
+
+      // A live gateway hands back its own payment page; stubs do not.
+      if (result.paymentRedirectUrl) {
+        window.location.href = result.paymentRedirectUrl;
+        return;
+      }
+
       router.push(`/order/${result.orderId}`);
     } catch {
       toast.error(t('error_generic'));

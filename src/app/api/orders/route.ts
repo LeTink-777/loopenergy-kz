@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+import { freedomPayCreate } from '@/lib/services/freedomPay';
+import { kaspiPayCreate } from '@/lib/services/kaspiPay';
+import { SITE } from '@/lib/constants';
+
 export const runtime = 'nodejs';
 
 type OrderLine = {
@@ -89,9 +93,29 @@ export async function POST(request: Request) {
   const total = items.reduce((sum, line) => sum + line.price * line.quantity, 0);
   const orderId = `LE-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
 
+  // Gateways answer with a stub until their credentials exist, so the checkout
+  // flow is identical before and after the merchant accounts are approved.
+  const returnUrl = `${SITE.url}/${locale}/order/${orderId}?status=success`;
+  const failUrl = `${SITE.url}/${locale}/order/${orderId}?status=fail`;
+  const paymentParams = {
+    orderId,
+    amount: total,
+    currency: 'KZT' as const,
+    description: `Заказ LOOP Energy ${orderId}`,
+    customerPhone: `+${phone}`,
+    customerEmail: email || undefined,
+    returnUrl,
+    failUrl,
+  };
+
+  const payment =
+    paymentMethod === 'card'
+      ? await freedomPayCreate(paymentParams)
+      : await kaspiPayCreate(paymentParams);
+
   // TODO: persist the order (Supabase / Postgres) instead of only logging it.
-  // TODO: send the customer an email confirmation when `email` is present.
-  // TODO: integrate Freedom Pay or Kaspi Pay and redirect to the payment page.
+  // TODO: notify the manager in Telegram when TELEGRAM_BOT_TOKEN is set.
+  // TODO: send an email confirmation when RESEND_API_KEY is set.
   console.info('[order]', {
     orderId,
     receivedAt: new Date().toISOString(),
@@ -106,7 +130,17 @@ export async function POST(request: Request) {
     locale,
     total,
     items,
+    payment: { method: paymentMethod, id: payment.paymentId, stubbed: payment.stubbed ?? false },
   });
 
-  return NextResponse.json({ success: true, orderId, total }, { status: 201 });
+  return NextResponse.json(
+    {
+      success: true,
+      orderId,
+      total,
+      // Only a live gateway returns somewhere worth redirecting to.
+      paymentRedirectUrl: payment.stubbed ? undefined : payment.redirectUrl,
+    },
+    { status: 201 },
+  );
 }
