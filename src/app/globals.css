@@ -738,8 +738,3 @@
   }
 }
 
-/* Deploy probe: a custom property survives minification, so it can be read
-   back off the live stylesheet to prove which commit production is serving. */
-:root {
-  --deploy-check: 'deploy-035921';
-}
