@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import { RevealGroup } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { EASE } from '@/components/ui/motion';
-import { AUDIENCE } from '@/lib/constants';
+import type { Content } from '@/lib/content';
 
 const ICONS: Record<string, LucideIcon> = {
   Dumbbell,
@@ -19,16 +19,17 @@ const ICONS: Record<string, LucideIcon> = {
 
 export function Audience() {
   const t = useTranslations('audience');
+  const items = t.raw('items') as Content['audience']['items'];
 
   return (
     <section id="audience" className="section-pad relative scroll-mt-28">
       <div className="container-content">
         <RevealGroup>
-          <SectionHeading badge={t('badge')} title={t('title')} subtitle={t('subtitle')} />
+          <SectionHeading badge={t('badge')} title={t('h2')} accent={t('h2_accent')} />
         </RevealGroup>
 
         <RevealGroup stagger={0.1} className="grid-audience mt-fluid-xl">
-          {AUDIENCE.map((item) => {
+          {items.map((item) => {
             const Icon = ICONS[item.icon];
 
             return (
@@ -59,12 +60,8 @@ export function Audience() {
                     <Icon className="h-[22px] w-[22px]" aria-hidden="true" />
                   </m.span>
 
-                  <h3 className="mt-5 text-fluid-md font-bold uppercase tracking-tight">
-                    {t(`items.${item.key}.title`)}
-                  </h3>
-                  <p className="mt-2 text-fluid-sm leading-relaxed text-w-70">
-                    {t(`items.${item.key}.desc`)}
-                  </p>
+                  <h3 className="mt-5 text-fluid-md font-bold uppercase tracking-tight">{item.title}</h3>
+                  <p className="mt-2 text-fluid-sm leading-relaxed text-w-70">{item.description}</p>
                 </m.div>
               </m.div>
             );

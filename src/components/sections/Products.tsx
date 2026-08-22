@@ -9,10 +9,12 @@ import { ProductCard } from '@/components/ui/ProductCard';
 import { RevealGroup } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { fadeUp, springPop } from '@/components/ui/motion';
-import { PRODUCTS } from '@/lib/constants';
+import type { Content } from '@/lib/content';
 
 export function Products() {
   const t = useTranslations('products');
+  const items = t.raw('items') as Content['products']['items'];
+  const units = { caffeine: t('caffeine_unit'), portions: t('portions_unit') };
   const rail = useRef<HTMLDivElement>(null);
 
   // Turn on scroll snapping the first time the visitor reaches for the rail.
@@ -41,7 +43,7 @@ export function Products() {
 
       <div className="container-content">
         <RevealGroup>
-          <SectionHeading badge={t('badge')} title={t('title')} subtitle={t('subtitle')} />
+          <SectionHeading badge={t('badge')} title={t('h2')} accent={t('h2_accent')} subtitle={t('subline')} />
         </RevealGroup>
 
         <RevealGroup
@@ -49,8 +51,14 @@ export function Products() {
           innerRef={rail}
           className="products-rail mt-fluid-xl"
         >
-          {PRODUCTS.map((product, index) => (
-            <ProductCard key={product.id} product={product} priority={index < 2} />
+          {items.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              index={index}
+              units={units}
+              priority={index < 2}
+            />
           ))}
         </RevealGroup>
 
@@ -63,7 +71,7 @@ export function Products() {
             transition={springPop}
             className="group inline-flex items-center gap-2 rounded-pill border border-w-15 bg-white/[0.03] px-7 py-4 text-fluid-sm font-bold uppercase tracking-wide text-w-80 transition-colors hover:border-accent/45 hover:text-white"
           >
-            {t('showAll')}
+            {t('show_all')}
             <ArrowUpRight
               className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
               aria-hidden="true"

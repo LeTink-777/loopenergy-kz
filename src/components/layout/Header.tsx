@@ -33,7 +33,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
 }
 
 export function Header() {
-  const t = useTranslations();
+  const t = useTranslations('header');
   const { scrollYProgress, scrollY } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 26, restDelta: 0.001 });
   const [scrolled, setScrolled] = useState(false);
@@ -75,7 +75,7 @@ export function Header() {
         transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
       >
         <m.nav
-          aria-label={t('common.menu')}
+          aria-label={t('nav.home')}
           className="flex items-center justify-between gap-fluid-xs rounded-[22px] border px-fluid-sm py-fluid-xs"
           animate={{
             backgroundColor: scrolled ? 'rgba(32, 27, 36, 0.85)' : 'rgba(32, 27, 36, 0.28)',
@@ -106,7 +106,7 @@ export function Header() {
 
             <m.a
               href="#products"
-              aria-label={t('common.cart')}
+              aria-label={t('cart')}
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.94 }}
               transition={springPop}
@@ -117,7 +117,7 @@ export function Header() {
 
             <m.button
               type="button"
-              aria-label={menuOpen ? t('common.close') : t('common.openMenu')}
+              aria-label={menuOpen ? t('menu_close') : t('menu_open')}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((value) => !value)}
               whileTap={{ scale: 0.92 }}
@@ -190,7 +190,7 @@ export function Header() {
               <a
                 href="#b2b"
                 onClick={() => setMenuOpen(false)}
-                className="rounded-pill bg-accent-grad px-6 py-3 text-fluid-xs font-bold uppercase tracking-wide text-white shadow-glow"
+                className="inline-flex min-h-[48px] items-center rounded-pill bg-accent-grad px-6 text-fluid-xs font-bold uppercase tracking-wide text-white shadow-glow"
               >
                 {t('nav.partnership')}
               </a>

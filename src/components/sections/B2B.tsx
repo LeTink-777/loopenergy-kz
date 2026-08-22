@@ -8,14 +8,10 @@ import { useState, type FormEvent } from 'react';
 import { RevealGroup } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { EASE, fadeUp, springPop } from '@/components/ui/motion';
-import { CITIES } from '@/lib/constants';
+import type { Content } from '@/lib/content';
 
-const PROPS = [
-  { key: 'exclusive', Icon: Handshake },
-  { key: 'price', Icon: Tag },
-  { key: 'logistics', Icon: Truck },
-  { key: 'support', Icon: Send },
-] as const;
+/** Icons pair with `content.b2b.features` by position. */
+const FEATURE_ICONS = [Handshake, Tag, Truck, Send] as const;
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
@@ -24,6 +20,8 @@ const fieldClass =
 
 export function B2B() {
   const t = useTranslations('b2b');
+  const features = t.raw('features') as Content['b2b']['features'];
+  const cities = t.raw('form.field_city_options') as Content['b2b']['form']['field_city_options'];
   const locale = useLocale();
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +41,7 @@ export function B2B() {
     };
 
     if (!payload.name.trim() || !payload.phone.trim() || !payload.city.trim()) {
-      setError(t('form.errorRequired'));
+      setError(t('form.error_required'));
       setStatus('error');
       return;
     }
@@ -60,7 +58,7 @@ export function B2B() {
 
       if (!response.ok) {
         const result = (await response.json().catch(() => null)) as { error?: string } | null;
-        setError(result?.error === 'invalid_phone' ? t('form.errorPhone') : t('form.errorGeneric'));
+        setError(result?.error === 'invalid_phone' ? t('form.error_phone') : t('form.error_generic'));
         setStatus('error');
         return;
       }
@@ -68,7 +66,7 @@ export function B2B() {
       form.reset();
       setStatus('success');
     } catch {
-      setError(t('form.errorGeneric'));
+      setError(t('form.error_generic'));
       setStatus('error');
     }
   };
@@ -88,14 +86,18 @@ export function B2B() {
           <RevealGroup>
             <SectionHeading
               badge={t('badge')}
-              title={t('title')}
-              subtitle={t('subtitle')}
+              title={t('h2')}
+              accent={t('h2_accent')}
+              subtitle={t('description')}
               align="left"
             />
 
             <ul className="grid-auto-sm mt-fluid-lg">
-              {PROPS.map(({ key, Icon }) => (
-                <m.li key={key} variants={fadeUp}>
+              {features.map((feature, index) => {
+                const Icon = FEATURE_ICONS[index % FEATURE_ICONS.length];
+
+                return (
+                <m.li key={feature.title} variants={fadeUp}>
                   <m.div
                     whileHover={{ y: -4, boxShadow: '0 20px 50px -22px rgba(149,97,233,0.32)' }}
                     transition={{ duration: 0.35, ease: EASE }}
@@ -105,14 +107,15 @@ export function B2B() {
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <h3 className="mt-4 text-fluid-base font-bold uppercase tracking-tight">
-                      {t(`props.${key}.title`)}
+                      {feature.title}
                     </h3>
                     <p className="mt-1.5 text-fluid-sm leading-relaxed text-w-70">
-                      {t(`props.${key}.desc`)}
+                      {feature.description}
                     </p>
                   </m.div>
                 </m.li>
-              ))}
+                );
+              })}
             </ul>
           </RevealGroup>
 
@@ -138,9 +141,9 @@ export function B2B() {
                     </m.span>
 
                     <h3 className="mt-6 text-fluid-lg font-extrabold uppercase tracking-tight">
-                      {t('form.successTitle')}
+                      {t('form.submit_success_title')}
                     </h3>
-                    <p className="mt-2 max-w-sm text-fluid-sm text-w-70">{t('form.successText')}</p>
+                    <p className="mt-2 max-w-sm text-fluid-sm text-w-70">{t('form.submit_success_description')}</p>
 
                     <m.button
                       type="button"
@@ -150,7 +153,7 @@ export function B2B() {
                       transition={springPop}
                       className="mt-7 rounded-pill border border-w-15 px-6 py-3 text-fluid-xs font-bold uppercase tracking-wide text-w-80 transition-colors hover:border-accent/45 hover:text-white"
                     >
-                      {t('form.again')}
+                      {t('form.submit_again')}
                     </m.button>
                   </m.div>
                 ) : (
@@ -174,14 +177,14 @@ export function B2B() {
                     <div className="grid gap-fluid-sm sm:grid-cols-2">
                       <label className="flex flex-col gap-2">
                         <span className="text-fluid-xs font-semibold uppercase tracking-[0.12em] text-w-50">
-                          {t('form.name')} *
+                          {t('form.field_name')} *
                         </span>
                         <input
                           name="name"
                           type="text"
                           required
                           autoComplete="name"
-                          placeholder={t('form.namePlaceholder')}
+                          placeholder={t('form.field_name_placeholder')}
                           className={fieldClass}
                         />
                       </label>
@@ -203,7 +206,7 @@ export function B2B() {
                     <div className="grid gap-fluid-sm sm:grid-cols-2">
                       <label className="flex flex-col gap-2">
                         <span className="text-fluid-xs font-semibold uppercase tracking-[0.12em] text-w-50">
-                          {t('form.phone')} *
+                          {t('form.field_phone')} *
                         </span>
                         <input
                           name="phone"
@@ -211,20 +214,20 @@ export function B2B() {
                           required
                           inputMode="tel"
                           autoComplete="tel"
-                          placeholder={t('form.phonePlaceholder')}
+                          placeholder={t('form.field_phone_placeholder')}
                           className={fieldClass}
                         />
                       </label>
 
                       <label className="flex flex-col gap-2">
                         <span className="text-fluid-xs font-semibold uppercase tracking-[0.12em] text-w-50">
-                          {t('form.city')} *
+                          {t('form.field_city')} *
                         </span>
                         <select name="city" required defaultValue="" className={fieldClass}>
                           <option value="" disabled>
-                            {t('form.cityPlaceholder')}
+                            {t('form.field_city_placeholder')}
                           </option>
-                          {CITIES.map((city) => (
+                          {cities.map((city) => (
                             <option key={city} value={city}>
                               {city}
                             </option>
@@ -235,12 +238,12 @@ export function B2B() {
 
                     <label className="flex flex-col gap-2">
                       <span className="text-fluid-xs font-semibold uppercase tracking-[0.12em] text-w-50">
-                        {t('form.comment')}
+                        {t('form.field_comment')}
                       </span>
                       <textarea
                         name="comment"
                         rows={4}
-                        placeholder={t('form.commentPlaceholder')}
+                        placeholder={t('form.field_comment_placeholder')}
                         className={`${fieldClass} resize-none`}
                       />
                     </label>
@@ -299,7 +302,7 @@ export function B2B() {
                       </AnimatePresence>
                     </m.button>
 
-                    <p className="text-fluid-xs leading-relaxed text-w-50">{t('form.consent')}</p>
+                    <p className="text-fluid-xs leading-relaxed text-w-50">{t('form.privacy_note')}</p>
                   </m.form>
                 )}
               </AnimatePresence>

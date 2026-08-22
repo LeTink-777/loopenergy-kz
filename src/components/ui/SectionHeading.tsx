@@ -7,11 +7,14 @@ import { fadeUp } from './motion';
 export function SectionHeading({
   badge,
   title,
+  accent,
   subtitle,
   align = 'center',
 }: {
   badge?: string;
   title: string;
+  /** Second half of the heading, rendered in the brand gradient. */
+  accent?: string;
   subtitle?: string;
   align?: 'center' | 'left';
 }) {
@@ -31,6 +34,12 @@ export function SectionHeading({
 
       <m.h2 variants={fadeUp} className="h2 max-w-3xl text-balance">
         {title}
+        {accent ? (
+          <>
+            {' '}
+            <span className="text-gradient">{accent}</span>
+          </>
+        ) : null}
       </m.h2>
 
       {subtitle ? (

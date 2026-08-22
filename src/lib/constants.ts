@@ -18,58 +18,22 @@ export const IMG = {
   feature3: `${ORIGIN}/images/home/feature-3.png`,
 } as const;
 
-export type Product = {
-  id: string;
-  key: 'kit' | 'jar' | 'kiwi' | 'creamy';
-  image: string;
-  price: number;
-  oldPrice?: number;
-  badge?: 'hit' | 'new' | 'profit';
-  caffeine: number;
-  portions: number;
-};
-
 /** Cyrillic filenames on the origin need percent-encoding before next/image sees them. */
 const productImage = (file: string) => `${ORIGIN}/images/${encodeURIComponent(file)}`;
 
-export const PRODUCTS: Product[] = [
-  {
-    id: 'big-kit',
-    key: 'kit',
-    image: `${ORIGIN}/images/big/drip.png`,
-    price: 24900,
-    oldPrice: 29900,
-    badge: 'profit',
-    caffeine: 50,
-    portions: 100,
-  },
-  {
-    id: 'big-jar',
-    key: 'jar',
-    image: productImage('Большаябанка.png'),
-    price: 9900,
-    caffeine: 50,
-    portions: 40,
-  },
-  {
-    id: 'kiwi-fresh',
-    key: 'kiwi',
-    image: productImage('КИВИ-ФРЭШ.png'),
-    price: 3490,
-    badge: 'hit',
-    caffeine: 50,
-    portions: 20,
-  },
-  {
-    id: 'creamy-blush',
-    key: 'creamy',
-    image: productImage('КРИМИ-БЛАШ.png'),
-    price: 3490,
-    badge: 'new',
-    caffeine: 50,
-    portions: 20,
-  },
-];
+/**
+ * Artwork only — every word and the price live in `src/lib/content.ts`,
+ * keyed by the same `id`.
+ */
+export const PRODUCT_IMAGES: Record<string, string> = {
+  'big-kit': `${ORIGIN}/images/big/drip.png`,
+  'big-jar': productImage('Большаябанка.png'),
+  'kiwi-fresh': productImage('КИВИ-ФРЭШ.png'),
+  'creamy-blush': productImage('КРИМИ-БЛАШ.png'),
+};
+
+/** Kept for structured data, which needs an id → image map at build time. */
+export const PRODUCTS = Object.entries(PRODUCT_IMAGES).map(([id, image]) => ({ id, image }));
 
 export const NAV_LINKS = [
   { key: 'home', href: '#hero' },
@@ -86,61 +50,19 @@ export const SOCIALS = [
   { key: 'tiktok', label: 'TikTok', href: 'https://tiktok.com/@loopenergy.official' },
 ] as const;
 
+/**
+ * Placeholders until the real Kazakhstan numbers are issued — swap the phone
+ * and the two Telegram handles before launch.
+ */
 export const CONTACTS = {
-  consumerTelegram: { label: '@loop_energy_manager', href: 'https://t.me/loop_energy_manager' },
-  wholesaleTelegram: { label: '@loopenergysale', href: 'https://t.me/loopenergysale' },
-  phone: { label: '+7 (700) 000-00-00', href: 'tel:+77000000000' },
-  email: { label: 'b2b@loopenergy.kz', href: 'mailto:b2b@loopenergy.kz' },
+  consumerTelegram: { label: '@loop_energy_kz', href: 'https://t.me/loop_energy_kz' },
+  wholesaleTelegram: { label: '@loopenergy_kz_wholesale', href: 'https://t.me/loopenergy_kz_wholesale' },
+  phone: { label: '+7 (777) 000-00-00', href: 'tel:+77770000000' },
+  email: { label: 'info@loopenergy.kz', href: 'mailto:info@loopenergy.kz' },
 } as const;
 
-export const CITIES = [
-  'Астана',
-  'Алматы',
-  'Шымкент',
-  'Караганда',
-  'Актобе',
-  'Тараз',
-  'Павлодар',
-  'Усть-Каменогорск',
-  'Семей',
-  'Атырау',
-  'Костанай',
-  'Кызылорда',
-  'Уральск',
-  'Петропавловск',
-  'Актау',
-  'Туркестан',
-] as const;
-
-export const STATS = [
-  { key: 'caffeine', value: 50, suffix: '+' },
-  { key: 'noNicotine', value: 0, suffix: '' },
-  { key: 'effect', value: 30, suffix: '' },
-  { key: 'legal', value: 100, suffix: '%' },
-] as const;
-
-export const WHY_ITEMS = [
-  'noNicotine',
-  'noSugar',
-  'energy',
-  'taste',
-  'legal',
-  'portable',
-] as const;
-
-export const HOW_STEPS = ['take', 'place', 'wait', 'dispose'] as const;
-
-export const AUDIENCE = [
-  { key: 'athletes', icon: 'Dumbbell' },
-  { key: 'gamers', icon: 'Gamepad2' },
-  { key: 'students', icon: 'GraduationCap' },
-  { key: 'nightShifts', icon: 'Moon' },
-  { key: 'office', icon: 'Briefcase' },
-] as const;
-
-export const FAQ_KEYS = ['what', 'nicotine', 'safe', 'howMany', 'legal', 'delivery'] as const;
-
-export const ANSWER_KEYS = ['effect', 'taste', 'storage', 'age'] as const;
+/** Icon name → the item `key` used in `content.why_us.items`. */
+export const WHY_ICON_ORDER = ['noNicotine', 'noSugar', 'energy', 'taste', 'legal', 'portable'] as const;
 
 export const formatTenge = (value: number) =>
   `${new Intl.NumberFormat('ru-RU').format(value).replace(/ /g, ' ')} ₸`;

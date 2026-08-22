@@ -8,10 +8,11 @@ import { useId, useState } from 'react';
 import { RevealGroup } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { EASE, fadeUp } from '@/components/ui/motion';
-import { FAQ_KEYS } from '@/lib/constants';
+import type { Content } from '@/lib/content';
 
 export function FAQ() {
   const t = useTranslations('faq');
+  const items = t.raw('items') as Content['faq']['items'];
   const baseId = useId();
   // Accordion is single-open: opening one question closes the previous.
   const [openKey, setOpenKey] = useState<string | null>(null);
@@ -20,17 +21,18 @@ export function FAQ() {
     <section id="faq" className="section-pad relative scroll-mt-28">
       <div className="container-content">
         <RevealGroup>
-          <SectionHeading badge={t('badge')} title={t('title')} subtitle={t('subtitle')} />
+          <SectionHeading badge={t('badge')} title={t('h2')} subtitle={t('subline')} />
         </RevealGroup>
 
         <RevealGroup stagger={0.08} className="mx-auto mt-12 flex max-w-[860px] flex-col gap-3">
-          {FAQ_KEYS.map((key) => {
+          {items.map((item, index) => {
+            const key = String(index);
             const isOpen = openKey === key;
             const panelId = `${baseId}-${key}-panel`;
             const buttonId = `${baseId}-${key}-button`;
 
             return (
-              <m.div key={key} variants={fadeUp} className="purple-ring overflow-hidden">
+              <m.div key={item.question} variants={fadeUp} className="purple-ring overflow-hidden">
                 <h3>
                   <button
                     type="button"
@@ -41,7 +43,7 @@ export function FAQ() {
                     className="flex w-full items-center justify-between gap-5 px-5 py-5 text-left sm:px-7"
                   >
                     <span className="text-fluid-base font-semibold text-white ">
-                      {t(`items.${key}.q`)}
+                      {item.question}
                     </span>
 
                     <m.span
@@ -71,7 +73,7 @@ export function FAQ() {
                       className="overflow-hidden"
                     >
                       <p className="px-5 pb-6 pr-14 text-fluid-sm leading-relaxed text-w-70 sm:px-7 sm:pr-20">
-                        {t(`items.${key}.a`)}
+                        {item.answer}
                       </p>
                     </m.div>
                   ) : null}

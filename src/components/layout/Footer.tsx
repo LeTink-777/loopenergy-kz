@@ -53,6 +53,7 @@ function SocialGlyph({ name }: { name: string }) {
 
 export function Footer() {
   const t = useTranslations();
+  // Rendered on the server at request time, so the notice never goes stale.
   const year = new Date().getFullYear();
 
   return (
@@ -74,13 +75,13 @@ export function Footer() {
             <p className="mt-4 max-w-xs text-fluid-sm leading-relaxed text-w-70">{t('footer.tagline')}</p>
             <span className="mt-fluid-sm inline-flex items-start gap-2 rounded-pill border border-accent/30 bg-accent/10 px-3.5 py-2 text-fluid-xs font-bold uppercase leading-snug tracking-[0.12em] text-accent-light">
               <span className="mt-[0.45em] h-1.5 w-1.5 shrink-0 rounded-full bg-accent-light" />
-              {t('footer.distributor')}
+              {t('footer.distributor_badge')}
             </span>
           </Reveal>
 
           <Reveal variants={fadeUp}>
             <h3 className="text-fluid-xs font-bold uppercase tracking-[0.2em] text-w-50">
-              {t('footer.navTitle')}
+              {t('footer.nav_title')}
             </h3>
             <ul className="mt-fluid-xs">
               {NAV_LINKS.map((link) => (
@@ -89,7 +90,7 @@ export function Footer() {
                     href={link.href}
                     className="inline-flex min-h-[44px] items-center text-fluid-sm text-w-70 transition-colors hover:text-accent-light"
                   >
-                    {t(`nav.${link.key}`)}
+                    {t(`header.nav.${link.key}`)}
                   </a>
                 </li>
               ))}
@@ -98,7 +99,7 @@ export function Footer() {
 
           <Reveal variants={fadeUp}>
             <h3 className="text-fluid-xs font-bold uppercase tracking-[0.2em] text-w-50">
-              {t('footer.contactsTitle')}
+              {t('footer.contacts_title')}
             </h3>
             <ul className="mt-fluid-xs text-fluid-sm">
               <li>
@@ -135,7 +136,7 @@ export function Footer() {
 
           <Reveal variants={fadeUp}>
             <h3 className="text-fluid-xs font-bold uppercase tracking-[0.2em] text-w-50">
-              {t('footer.socialsTitle')}
+              {t('footer.socials_title')}
             </h3>
             <div className="mt-fluid-xs flex flex-wrap gap-fluid-2xs">
               {SOCIALS.map((social) => (
@@ -165,13 +166,13 @@ export function Footer() {
         <Reveal className="mt-fluid-xl border-t border-w-10 pt-fluid-md">
           <div className="flex flex-col gap-fluid-sm text-fluid-xs text-w-50 md:flex-row md:items-center md:justify-between">
             <p>
-              © {year} {SITE.name}. {t('footer.rights')}.
+              © {year} {t('footer.copyright')}
             </p>
             <p className="flex items-center gap-2">
               <span className="grid h-6 min-w-[34px] place-items-center rounded-pill border border-accent/35 px-1.5 font-bold text-accent-light">
                 18+
               </span>
-              <span className="max-w-xl">{t('footer.warning')}</span>
+              <span className="max-w-xl">{t('footer.age_warning')}</span>
             </p>
           </div>
         </Reveal>

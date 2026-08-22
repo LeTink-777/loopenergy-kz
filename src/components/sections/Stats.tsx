@@ -6,10 +6,16 @@ import { useTranslations } from 'next-intl';
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
 import { RevealGroup } from '@/components/ui/Reveal';
 import { fadeUp } from '@/components/ui/motion';
-import { STATS } from '@/lib/constants';
+import type { Content } from '@/lib/content';
 
 export function Stats() {
   const t = useTranslations('stats');
+  const stats = ([1, 2, 3, 4] as const).map((n) => ({
+    n,
+    value: Number(t(`stat_${n}_value`)),
+    suffix: t(`stat_${n}_suffix`),
+    label: t(`stat_${n}_label`),
+  }));
 
   return (
     <section aria-label="LOOP Energy" className="relative py-10 md:py-14">
@@ -18,9 +24,9 @@ export function Stats() {
           stagger={0.15}
           className="purple-ring grid-stats"
         >
-          {STATS.map((stat) => (
+          {stats.map((stat) => (
             <m.div
-              key={stat.key}
+              key={stat.n}
               variants={fadeUp}
               className="flex flex-col items-center gap-1.5 text-center"
             >
@@ -28,7 +34,7 @@ export function Stats() {
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />
               </span>
               <span className="text-fluid-xs font-medium uppercase tracking-[0.1em] text-w-50 ">
-                {t(stat.key)}
+                {stat.label}
               </span>
             </m.div>
           ))}

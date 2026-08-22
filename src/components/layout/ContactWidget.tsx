@@ -9,7 +9,7 @@ import { EASE, springPop } from '@/components/ui/motion';
 import { CONTACTS } from '@/lib/constants';
 
 export function ContactWidget() {
-  const t = useTranslations('contact');
+  const t = useTranslations('contact_widget');
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -59,9 +59,9 @@ export function ContactWidget() {
                 }}
               >
                 <p className="text-fluid-xs font-bold uppercase tracking-[0.16em] text-accent-light">
-                  {t('consumersTitle')}
+                  {t('consumers_title')}
                 </p>
-                <p className="mt-1 text-fluid-xs text-w-50">{t('consumersDesc')}</p>
+                <p className="mt-1 text-fluid-xs text-w-50">{t('consumers_sub')}</p>
                 <a
                   href={CONTACTS.consumerTelegram.href}
                   target="_blank"
@@ -80,9 +80,9 @@ export function ContactWidget() {
                 }}
               >
                 <p className="text-fluid-xs font-bold uppercase tracking-[0.16em] text-accent-light">
-                  {t('wholesaleTitle')}
+                  {t('wholesale_title')}
                 </p>
-                <p className="mt-1 text-fluid-xs text-w-50">{t('wholesaleDesc')}</p>
+                <p className="mt-1 text-fluid-xs text-w-50">{t('wholesale_sub')}</p>
 
                 <div className="mt-2.5 space-y-2">
                   <a

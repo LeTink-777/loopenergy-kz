@@ -17,7 +17,7 @@ const STORAGE_KEY = 'le_age_confirmed';
  * below then removes it from the DOM.
  */
 export function AgeGate() {
-  const t = useTranslations('ageGate');
+  const t = useTranslations('age_gate');
   const [phase, setPhase] = useState<'pending' | 'open' | 'closed'>('pending');
 
   useEffect(() => {
@@ -81,14 +81,14 @@ export function AgeGate() {
             </p>
 
             <p className="mt-fluid-md text-fluid-xs font-bold uppercase tracking-[0.2em] text-accent-light">
-              {t('title')}
+              {t('subtitle')}
             </p>
 
             <h2 id="age-gate-title" className="mt-fluid-2xs text-fluid-2xl font-extrabold uppercase leading-tight">
-              {t('question')}
+              {t('title')}
             </h2>
 
-            <p className="mx-auto mt-fluid-xs max-w-md text-fluid-sm text-w-70">{t('subtitle')}</p>
+            <p className="mx-auto mt-fluid-xs max-w-md text-fluid-sm text-w-70">{t('description')}</p>
 
             <div className="mt-fluid-md flex flex-wrap justify-center gap-fluid-xs">
               <m.button

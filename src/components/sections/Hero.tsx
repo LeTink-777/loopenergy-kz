@@ -10,9 +10,9 @@ import { EASE, springPop } from '@/components/ui/motion';
 import { IMG } from '@/lib/constants';
 
 const FEATURES = [
-  { key: 'form', image: IMG.feature1 },
-  { key: 'taste', image: IMG.feature2 },
-  { key: 'health', image: IMG.feature3 },
+  { n: 1, image: IMG.feature1 },
+  { n: 2, image: IMG.feature2 },
+  { n: 3, image: IMG.feature3 },
 ] as const;
 
 /**
@@ -96,13 +96,10 @@ export function Hero() {
 
             <h1 className="h1 mt-6 [perspective:800px]">
               <span className="block">
-                <Words text={t('titleLine1')} delay={0.14} />
+                <Words text={t('h1')} delay={0.14} />
               </span>
               <span className="block">
-                <Words text={t('titleAccent')} delay={0.26} className="text-gradient italic" />
-              </span>
-              <span className="block">
-                <Words text={t('titleLine2')} delay={0.38} />
+                <Words text={t('h1_accent')} delay={0.28} className="text-gradient italic" />
               </span>
             </h1>
 
@@ -112,7 +109,8 @@ export function Hero() {
               transition={{ duration: 0.5, ease: EASE, delay: 0.5 }}
               className="mx-auto mt-fluid-sm max-w-[52ch] text-fluid-md text-w-70 lg:mx-0"
             >
-              {t('subtitle')}
+              {t('subline')}{' '}
+              <span className="text-w-80">{t('subline_accent')}</span>
             </m.p>
 
             <m.div
@@ -128,7 +126,7 @@ export function Hero() {
                 transition={springPop}
                 className="group inline-flex items-center justify-center gap-2 rounded-pill bg-accent-grad px-7 py-4 text-fluid-sm font-bold uppercase tracking-wide text-white shadow-glow"
               >
-                {t('ctaPrimary')}
+                {t('cta_primary')}
                 <ArrowRight
                   className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
                   aria-hidden="true"
@@ -142,7 +140,7 @@ export function Hero() {
                 transition={springPop}
                 className="inline-flex items-center justify-center rounded-pill border border-w-15 bg-white/[0.03] px-7 py-4 text-fluid-sm font-bold uppercase tracking-wide text-w-80 backdrop-blur-sm transition-colors hover:border-accent/45 hover:text-white"
               >
-                {t('ctaGhost')}
+                {t('cta_secondary')}
               </m.a>
             </m.div>
           </div>
@@ -178,7 +176,7 @@ export function Hero() {
         >
           {FEATURES.map((feature) => (
             <m.li
-              key={feature.key}
+              key={feature.n}
               variants={{
                 hidden: { opacity: 0, y: 34 },
                 visible: {
@@ -205,9 +203,9 @@ export function Hero() {
                   />
                 </div>
                 <div>
-                  <h2 className="h3 uppercase tracking-tight">{t(`features.${feature.key}.title`)}</h2>
+                  <h2 className="h3 uppercase tracking-tight">{t(`feature_${feature.n}_title`)}</h2>
                   <p className="mt-1.5 text-fluid-sm leading-relaxed text-w-70">
-                    {t(`features.${feature.key}.desc`)}
+                    {t(`feature_${feature.n}_sub`)}
                   </p>
                 </div>
               </m.div>

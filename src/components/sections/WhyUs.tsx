@@ -8,10 +8,12 @@ import { Reveal, RevealGroup } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { WhyIcon } from '@/components/ui/WhyIcon';
 import { EASE, fadeUp, fromSide } from '@/components/ui/motion';
-import { IMG, WHY_ITEMS } from '@/lib/constants';
+import { IMG } from '@/lib/constants';
+import type { Content } from '@/lib/content';
 
 export function WhyUs() {
-  const t = useTranslations('why');
+  const t = useTranslations('why_us');
+  const items = t.raw('items') as Content['why_us']['items'];
 
   return (
     <section id="why" className="section-pad relative scroll-mt-28">
@@ -35,7 +37,7 @@ export function WhyUs() {
               >
                 <Image
                   src={IMG.why}
-                  alt={t('title')}
+                  alt={t('h2')}
                   fill
                   sizes="(max-width: 640px) 92vw, (max-width: 1024px) 60vw, 520px"
                   className="object-contain drop-shadow-[0_32px_60px_rgba(0,0,0,0.5)]"
@@ -45,11 +47,17 @@ export function WhyUs() {
           </Reveal>
 
           <RevealGroup>
-            <SectionHeading badge={t('badge')} title={t('title')} subtitle={t('subtitle')} align="left" />
+            <SectionHeading
+              badge={t('badge')}
+              title={t('h2')}
+              accent={t('h2_accent')}
+              subtitle={t('subline')}
+              align="left"
+            />
 
             <ul className="mt-8 flex flex-col gap-2">
-              {WHY_ITEMS.map((item) => (
-                <m.li key={item} variants={fadeUp}>
+              {items.map((item) => (
+                <m.li key={item.key} variants={fadeUp}>
                   <m.div
                     className="group flex items-start gap-4 rounded-3xl border border-transparent px-4 py-4 sm:px-5"
                     initial="rest"
@@ -69,13 +77,13 @@ export function WhyUs() {
                       variants={{ rest: { rotate: 0, scale: 1 }, active: { rotate: -6, scale: 1.06 } }}
                       transition={{ type: 'spring', stiffness: 380, damping: 18 }}
                     >
-                      <WhyIcon name={item} className="h-[26px] w-[26px]" />
+                      <WhyIcon name={item.key} className="h-[26px] w-[26px]" />
                     </m.span>
 
                     <div>
-                      <h3 className="h3 uppercase tracking-tight">{t(`items.${item}.title`)}</h3>
+                      <h3 className="h3 uppercase tracking-tight">{item.title}</h3>
                       <p className="mt-1 text-fluid-sm leading-relaxed text-w-70">
-                        {t(`items.${item}.desc`)}
+                        {item.description}
                       </p>
                     </div>
                   </m.div>

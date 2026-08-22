@@ -7,10 +7,11 @@ import { RevealGroup } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 import { EASE } from '@/components/ui/motion';
-import { HOW_STEPS } from '@/lib/constants';
+import type { Content } from '@/lib/content';
 
 export function HowToUse() {
-  const t = useTranslations('how');
+  const t = useTranslations('how_to_use');
+  const steps = t.raw('steps') as Content['how_to_use']['steps'];
   const { isTouch, reducedMotion, hoverLift } = useUniversalMotion();
   // Keep the entrance inside the container so cards never sweep past the edge.
   const drift = reducedMotion ? 0 : isTouch ? 10 : 24;
@@ -19,13 +20,13 @@ export function HowToUse() {
     <section id="how" className="section-pad relative scroll-mt-28">
       <div className="container-content">
         <RevealGroup>
-          <SectionHeading badge={t('badge')} title={t('title')} subtitle={t('subtitle')} />
+          <SectionHeading badge={t('badge')} title={t('h2')} accent={t('h2_accent')} />
         </RevealGroup>
 
         <RevealGroup stagger={0.14} className="grid-steps mt-fluid-xl">
-          {HOW_STEPS.map((step, index) => (
+          {steps.map((step, index) => (
             <m.div
-              key={step}
+              key={step.num}
               className="relative"
               variants={{
                 // Odd cards drift in from the left, even ones from the right.
@@ -37,7 +38,7 @@ export function HowToUse() {
                 className="pointer-events-none absolute -top-7 right-3 select-none text-[clamp(72px,12vw,116px)] font-black leading-[0.8] tracking-tighter text-white/[0.07]"
                 aria-hidden="true"
               >
-                {index + 1}
+                {step.num}
               </span>
 
               <m.div
@@ -48,12 +49,10 @@ export function HowToUse() {
                 className="purple-ring relative h-full p-6"
               >
                 <span className="inline-grid h-10 w-10 place-items-center rounded-pill bg-accent-grad text-fluid-sm font-extrabold text-white shadow-glow-sm">
-                  {index + 1}
+                  {step.num}
                 </span>
-                <h3 className="mt-5 text-fluid-md font-bold uppercase tracking-tight">
-                  {t(`steps.${step}.title`)}
-                </h3>
-                <p className="mt-2 text-fluid-sm leading-relaxed text-w-70">{t(`steps.${step}.desc`)}</p>
+                <h3 className="mt-5 text-fluid-md font-bold uppercase tracking-tight">{step.title}</h3>
+                <p className="mt-2 text-fluid-sm leading-relaxed text-w-70">{step.description}</p>
               </m.div>
             </m.div>
           ))}

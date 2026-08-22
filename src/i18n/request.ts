@@ -1,7 +1,12 @@
 import { getRequestConfig } from 'next-intl/server';
 
+import { content } from '@/lib/content';
 import { routing, type Locale } from './routing';
 
+/**
+ * Messages come straight from `src/lib/content.ts` — there is no message JSON
+ * to keep in sync, so a copy edit lands everywhere at once.
+ */
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
   const locale: Locale = routing.locales.includes(requested as Locale)
@@ -10,6 +15,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
-    messages: (await import(`../messages/${locale}.json`)).default,
+    messages: content[locale] as unknown as Record<string, unknown>,
   };
 });

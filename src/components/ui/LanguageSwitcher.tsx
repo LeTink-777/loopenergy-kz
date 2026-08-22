@@ -13,7 +13,7 @@ import { locales, type Locale } from '@/i18n/routing';
  * lighter `domAnimation` feature set.
  */
 export function LanguageSwitcher({ className = '' }: { className?: string }) {
-  const t = useTranslations('languages');
+  const t = useTranslations('header');
   const active = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
@@ -33,7 +33,7 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
     <div
       className={`relative flex items-center rounded-pill border border-w-10 bg-white/[0.04] p-1 ${className}`}
       role="group"
-      aria-label={t('switch')}
+      aria-label={t('lang_switch')}
       data-pending={isPending || undefined}
     >
       <m.span
@@ -56,7 +56,7 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
               isActive ? 'text-white' : 'text-w-50 hover:text-w-80'
             }`}
           >
-            {t(locale)}
+            {locale === 'ru' ? t('lang_ru') : t('lang_kz')}
           </button>
         );
       })}

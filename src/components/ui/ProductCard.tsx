@@ -2,23 +2,40 @@
 
 import { AnimatePresence, m } from 'framer-motion';
 import { Check, ShoppingBag } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
+import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 import { fadeUp, springPop } from './motion';
 import { PurpleBorderCard } from './PurpleBorderCard';
-import { formatTenge, type Product } from '@/lib/constants';
+import { PRODUCT_IMAGES, formatTenge } from '@/lib/constants';
+import type { Content } from '@/lib/content';
 
-const badgeTone: Record<string, string> = {
-  hit: 'bg-accent-grad text-white',
-  new: 'bg-emerald-400/15 text-emerald-200 border border-emerald-300/30',
-  profit: 'bg-amber-400/15 text-amber-200 border border-amber-300/30',
-};
+type Product = Content['products']['items'][number];
 
-export function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
-  const t = useTranslations('products');
+/** Badge colour is derived from position, not from a copy string, so a renamed
+ *  label never silently loses its tone. */
+const badgeTone = (index: number) =>
+  [
+    'bg-amber-400/15 text-amber-200 border border-amber-300/30',
+    'bg-white/10 text-w-80 border border-w-15',
+    'bg-accent-grad text-white',
+    'bg-emerald-400/15 text-emerald-200 border border-emerald-300/30',
+  ][index % 4];
+
+export function ProductCard({
+  product,
+  index,
+  units,
+  priority = false,
+}: {
+  product: Product;
+  index: number;
+  units: { caffeine: string; portions: string };
+  priority?: boolean;
+}) {
   const [added, setAdded] = useState(false);
+  const { hoverScale, tapPress, isTouch } = useUniversalMotion();
 
   useEffect(() => {
     if (!added) return;
@@ -26,35 +43,43 @@ export function ProductCard({ product, priority = false }: { product: Product; p
     return () => window.clearTimeout(id);
   }, [added]);
 
-  const name = t(`items.${product.key}.name`);
+  const image = PRODUCT_IMAGES[product.id];
+  const oldPrice = Number(product.old_price);
 
   return (
     <m.div variants={fadeUp} className="h-full">
-      <PurpleBorderCard className="group flex h-full flex-col overflow-hidden p-5 sm:p-6">
-        <div className="relative mb-5 flex aspect-square items-center justify-center overflow-hidden rounded-[26px] bg-gradient-to-b from-white/[0.06] to-transparent">
-          <m.div
+      <PurpleBorderCard className="group flex h-full flex-col overflow-hidden p-fluid-sm">
+        <div className="relative mb-fluid-sm flex aspect-square items-center justify-center overflow-hidden rounded-[26px] bg-gradient-to-b from-white/[0.06] to-transparent">
+          <div
             className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
             style={{
               background: 'radial-gradient(circle at 50% 60%, rgba(149,97,233,0.28), transparent 68%)',
             }}
           />
 
-          {product.badge ? (
-            <span
-              className={`absolute left-4 top-4 z-10 rounded-pill px-3 py-1 text-fluid-xs font-bold uppercase tracking-wider ${badgeTone[product.badge]}`}
-            >
-              {t(`badges.${product.badge}`)}
-            </span>
-          ) : null}
+          <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-1.5">
+            {product.badge ? (
+              <span
+                className={`rounded-pill px-3 py-1 text-fluid-xs font-bold uppercase tracking-wider ${badgeTone(index)}`}
+              >
+                {product.badge}
+              </span>
+            ) : null}
+            {product.badge_2 ? (
+              <span className="rounded-pill border border-w-15 bg-black/30 px-3 py-1 text-fluid-xs font-bold uppercase tracking-wider text-w-80">
+                {product.badge_2}
+              </span>
+            ) : null}
+          </div>
 
           <m.div
             className="relative h-full w-full"
-            whileHover={{ scale: 1.05 }}
+            whileHover={isTouch ? undefined : { scale: 1.05 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
             <Image
-              src={product.image}
-              alt={name}
+              src={image}
+              alt={product.name}
               fill
               priority={priority}
               sizes="(max-width: 400px) 82vw, (max-width: 640px) 300px, (max-width: 1024px) 45vw, (max-width: 1280px) 30vw, 300px"
@@ -64,39 +89,41 @@ export function ProductCard({ product, priority = false }: { product: Product; p
         </div>
 
         <div className="flex flex-1 flex-col">
-          <h3 className="text-fluid-md font-bold uppercase tracking-tight">{name}</h3>
+          <h3 className="text-fluid-md font-bold uppercase tracking-tight">{product.name}</h3>
+          <p className="mt-1 text-fluid-sm font-medium text-accent-light">{product.tagline}</p>
 
-          <p className="mt-2 flex-1 text-fluid-sm leading-relaxed text-w-70">
-            {t(`items.${product.key}.desc`)}
-          </p>
+          <p className="mt-2 flex-1 text-fluid-sm leading-relaxed text-w-70">{product.description}</p>
 
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-fluid-xs flex flex-wrap gap-2">
             <span className="rounded-pill border border-accent/25 bg-accent/10 px-3 py-1 text-fluid-xs font-semibold text-accent-light">
-              {product.caffeine} {t('caffeine')}
+              {product.caffeine} {units.caffeine}
             </span>
             <span className="rounded-pill border border-w-10 px-3 py-1 text-fluid-xs font-semibold text-w-70">
-              {product.portions} {t('perPack')}
+              {product.portions} {units.portions}
             </span>
           </div>
 
           {/* Wraps to a stacked layout when the card is too narrow for one row. */}
-          <div className="mt-5 flex flex-wrap items-end justify-between gap-3">
+          <div className="mt-fluid-sm flex flex-wrap items-end justify-between gap-3">
             <div className="shrink-0">
-              {product.oldPrice ? (
+              {oldPrice > 0 ? (
                 <p className="whitespace-nowrap text-fluid-sm text-w-50 line-through">
-                  {formatTenge(product.oldPrice)}
+                  {formatTenge(oldPrice)}
                 </p>
               ) : null}
               <p className="whitespace-nowrap text-fluid-xl font-extrabold tracking-tight">
-                {formatTenge(product.price)}
+                {formatTenge(Number(product.price))}
               </p>
+              {product.price_sub ? (
+                <p className="whitespace-nowrap text-fluid-xs text-accent-light">{product.price_sub}</p>
+              ) : null}
             </div>
 
             <m.button
               type="button"
               onClick={() => setAdded(true)}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.94 }}
+              whileHover={hoverScale}
+              whileTap={tapPress}
               transition={springPop}
               aria-live="polite"
               className={`inline-flex min-w-[132px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-pill px-5 py-3 text-fluid-xs font-bold uppercase tracking-wide transition-colors ${
@@ -125,7 +152,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
                     transition={springPop}
                   >
                     <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-                    {t('addToCart')}
+                    {product.cta}
                   </m.span>
                 )}
               </AnimatePresence>
