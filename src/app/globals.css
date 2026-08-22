@@ -381,6 +381,48 @@
     margin-top: 8px;
   }
 
+  /* Compact one-line pill that hugs its text. */
+  .footer-kz-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    white-space: nowrap;
+    max-width: 100%;
+    border-radius: 9999px;
+    border: 1px solid rgba(149, 97, 233, 0.35);
+    background: rgba(149, 97, 233, 0.08);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    color: var(--accent-light);
+  }
+
+  /* The Russian label measures 336px on one line. Narrower than that, the
+     choice is wrap or clip — and clipped text is worse than two lines. */
+  @media (max-width: 359px) {
+    .footer-kz-badge {
+      white-space: normal;
+      align-items: flex-start;
+      text-align: left;
+    }
+  }
+
+  .footer-kz-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 359px) {
+    .footer-kz-dot {
+      margin-top: 0.35em;
+    }
+  }
+
   .promo-banner {
     background: rgba(149, 97, 233, 0.1);
     border: 1px solid rgba(149, 97, 233, 0.3);
@@ -404,6 +446,23 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(155px, 100%), 1fr));
     gap: var(--space-lg);
+  }
+
+  /* The brand cell carries the one-line distributor pill (~264px), which does
+     not fit the 155px track the other columns use — give it the full row until
+     there is space for a dedicated wide column. */
+  .grid-footer > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 1024px) {
+    .grid-footer {
+      grid-template-columns: minmax(360px, 1.4fr) repeat(3, minmax(140px, 1fr));
+    }
+
+    .grid-footer > :first-child {
+      grid-column: auto;
+    }
   }
 
   .grid-auto-md {
@@ -513,6 +572,11 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(215px, 100%), 1fr));
     gap: var(--space-md);
+    /* Cards slide in from the sides; clip horizontally so the entrance never
+       paints past the container on narrow screens. `clip` leaves the vertical
+       axis visible, so the oversized ghost numerals still show. */
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   /* Gradient border painted on a masked pseudo-element, so only the ring shows. */
@@ -641,6 +705,19 @@
 @media (max-width: 300px) {
   :root {
     --container-padding: 12px;
+  }
+}
+
+/* Below ~360px the wordmark plus the cart and menu buttons no longer fit the
+   header bar, so the wordmark gives up its letter-spacing first. */
+@media (max-width: 359px) {
+  .site-header {
+    padding-inline: 8px;
+  }
+
+  .site-wordmark {
+    font-size: 14px;
+    letter-spacing: 0.04em;
   }
 }
 

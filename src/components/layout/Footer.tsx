@@ -5,6 +5,7 @@ import { Mail, Phone, Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
+import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 
 import { Reveal, RevealGroup } from '@/components/ui/Reveal';
 import { fadeUp, springPop } from '@/components/ui/motion';
@@ -71,6 +72,7 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 
 export function Footer() {
   const t = useTranslations();
+  const { reducedMotion } = useUniversalMotion();
   // Rendered on the server at request time, so the notice never goes stale.
   const year = new Date().getFullYear();
 
@@ -91,8 +93,15 @@ export function Footer() {
               LOOP<span className="text-accent-light">&nbsp;Energy</span>
             </p>
             <p className="mt-4 max-w-xs text-fluid-sm leading-relaxed text-w-70">{t('footer.tagline')}</p>
-            <span className="mt-fluid-sm inline-flex items-start gap-2 rounded-pill border border-accent/30 bg-accent/10 px-3.5 py-2 text-fluid-xs font-bold uppercase leading-snug tracking-[0.12em] text-accent-light">
-              <span className="mt-[0.45em] h-1.5 w-1.5 shrink-0 rounded-full bg-accent-light" />
+            <span className="footer-kz-badge mt-fluid-sm">
+              {/* Framer Motion rather than a CSS keyframe, so the pulse follows the
+                  same reduced-motion rule as every other animation on the site. */}
+              <m.span
+                className="footer-kz-dot"
+                aria-hidden="true"
+                animate={reducedMotion ? undefined : { opacity: [1, 0.5, 1], scale: [1, 0.8, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              />
               {t('footer.distributor_badge')}
             </span>
           </Reveal>
@@ -118,7 +127,7 @@ export function Footer() {
               <li>
                 <a
                   href={CONTACTS.phone.href}
-                  className="inline-flex min-h-[44px] items-center gap-2 text-w-70 transition-colors hover:text-accent-light"
+                  className="flex min-h-[44px] items-center gap-2 break-all text-w-70 transition-colors hover:text-accent-light"
                 >
                   <Phone className="h-4 w-4" aria-hidden="true" />
                   {CONTACTS.phone.label}
@@ -127,7 +136,7 @@ export function Footer() {
               <li>
                 <a
                   href={CONTACTS.email.href}
-                  className="inline-flex min-h-[44px] items-center gap-2 text-w-70 transition-colors hover:text-accent-light"
+                  className="flex min-h-[44px] items-center gap-2 break-all text-w-70 transition-colors hover:text-accent-light"
                 >
                   <Mail className="h-4 w-4" aria-hidden="true" />
                   {CONTACTS.email.label}
@@ -138,7 +147,7 @@ export function Footer() {
                   href={CONTACTS.wholesaleTelegram.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-[44px] items-center gap-2 text-w-70 transition-colors hover:text-accent-light"
+                  className="flex min-h-[44px] items-center gap-2 break-all text-w-70 transition-colors hover:text-accent-light"
                 >
                   <Send className="h-4 w-4" aria-hidden="true" />
                   {CONTACTS.wholesaleTelegram.label}

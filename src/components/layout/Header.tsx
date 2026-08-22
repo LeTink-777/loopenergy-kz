@@ -92,7 +92,7 @@ export function Header() {
         >
           <Link
             href="/"
-            className="inline-flex min-h-[44px] shrink-0 items-center whitespace-nowrap text-fluid-md font-black uppercase tracking-[0.12em]"
+            className="site-wordmark inline-flex min-h-[44px] shrink-0 items-center whitespace-nowrap text-fluid-md font-black uppercase tracking-[0.12em]"
             onClick={() => setMenuOpen(false)}
           >
             LOOP<span className="text-accent-light">&nbsp;Energy</span>
