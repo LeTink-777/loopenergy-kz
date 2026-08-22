@@ -186,8 +186,11 @@
     line-height: 1.06;
     letter-spacing: -0.02em;
     text-transform: uppercase;
+    /* No auto-hyphens on display type: at 320px it split headings as
+       "ОФОРМЛЕ-НИЕ ЗАКАЗА". break-word still catches a word too long to fit,
+       it just wraps it instead of inserting a hyphen. */
     overflow-wrap: break-word;
-    hyphens: auto;
+    hyphens: manual;
   }
 
   .h2 {
@@ -197,7 +200,7 @@
     letter-spacing: -0.02em;
     text-transform: uppercase;
     overflow-wrap: break-word;
-    hyphens: auto;
+    hyphens: manual;
   }
 
   .h3 {
