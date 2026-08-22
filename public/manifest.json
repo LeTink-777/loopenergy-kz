@@ -1,0 +1,41 @@
+{
+  "name": "LOOP Energy Kazakhstan",
+  "short_name": "LOOP Energy",
+  "description": "Официальный дистрибьютор кофеиновых паучей LOOP Energy в Казахстане",
+  "id": "/ru",
+  "start_url": "/ru",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#201b24",
+  "theme_color": "#9561e9",
+  "orientation": "portrait-primary",
+  "lang": "ru-KZ",
+  "dir": "ltr",
+  "categories": ["shopping", "food", "lifestyle"],
+  "icons": [
+    { "src": "/icons/android-icon-36x36.png", "sizes": "36x36", "type": "image/png" },
+    { "src": "/icons/android-icon-48x48.png", "sizes": "48x48", "type": "image/png" },
+    { "src": "/icons/android-icon-72x72.png", "sizes": "72x72", "type": "image/png" },
+    { "src": "/icons/android-icon-96x96.png", "sizes": "96x96", "type": "image/png" },
+    { "src": "/icons/android-icon-144x144.png", "sizes": "144x144", "type": "image/png" },
+    { "src": "/icons/android-icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/android-icon-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/android-icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/maskable-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Каталог",
+      "short_name": "Каталог",
+      "url": "/ru#products",
+      "icons": [{ "src": "/icons/android-icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Оптовые заказы",
+      "short_name": "Оптом",
+      "url": "/ru#b2b",
+      "icons": [{ "src": "/icons/android-icon-96x96.png", "sizes": "96x96" }]
+    }
+  ]
+}

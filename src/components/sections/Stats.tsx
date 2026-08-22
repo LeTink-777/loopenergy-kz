@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl';
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
 import { RevealGroup } from '@/components/ui/Reveal';
 import { fadeUp } from '@/components/ui/motion';
-import type { Content } from '@/lib/content';
 
 export function Stats() {
   const t = useTranslations('stats');
