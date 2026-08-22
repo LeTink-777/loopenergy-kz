@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
@@ -8,28 +8,36 @@ import { EASE, springPop } from './motion';
 
 const STORAGE_KEY = 'le_age_confirmed';
 
-/** One-time 18+ confirmation, remembered in localStorage. */
+/**
+ * One-time 18+ confirmation, remembered in localStorage.
+ *
+ * The gate is server-rendered so a first-time visitor sees it in the very first
+ * paint. Returning visitors never see it either: an inline script in the layout
+ * adds `.age-ok` to `<html>` before paint, CSS hides the gate, and the effect
+ * below then removes it from the DOM.
+ */
 export function AgeGate() {
   const t = useTranslations('ageGate');
-  const [open, setOpen] = useState(false);
+  const [phase, setPhase] = useState<'pending' | 'open' | 'closed'>('pending');
 
   useEffect(() => {
+    let confirmed = false;
     try {
-      if (window.localStorage.getItem(STORAGE_KEY) !== '1') setOpen(true);
+      confirmed = window.localStorage.getItem(STORAGE_KEY) === '1';
     } catch {
       // Private mode or blocked storage — show the gate rather than skipping it.
-      setOpen(true);
     }
+    setPhase(confirmed ? 'closed' : 'open');
   }, []);
 
   useEffect(() => {
-    if (!open) return;
+    if (phase !== 'open') return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = previous;
     };
-  }, [open]);
+  }, [phase]);
 
   const confirm = () => {
     try {
@@ -37,7 +45,7 @@ export function AgeGate() {
     } catch {
       // Ignore — the gate simply reappears next visit.
     }
-    setOpen(false);
+    setPhase('closed');
   };
 
   const decline = () => {
@@ -45,32 +53,27 @@ export function AgeGate() {
   };
 
   return (
-    <AnimatePresence>
-      {open ? (
-        <motion.div
+    <AnimatePresence initial={false}>
+      {phase !== 'closed' ? (
+        <m.div
           key="age-gate"
+          data-age-gate=""
           role="dialog"
           aria-modal="true"
           aria-labelledby="age-gate-title"
           className="fixed inset-0 z-[100] flex items-center justify-center px-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.4, ease: EASE } }}
-          transition={{ duration: 0.35, ease: EASE }}
         >
-          <div className="absolute inset-0 bg-[#15111a]/85 backdrop-blur-2xl" />
+          <div className="absolute inset-0 bg-[#15111a]/95 backdrop-blur-md" />
 
-          <motion.div
+          <m.div
             className="purple-ring purple-ring-blur relative w-full max-w-lg px-6 py-10 text-center sm:px-10"
-            initial={{ opacity: 0, y: 28, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
-            transition={{ ...springPop, delay: 0.05 }}
+            transition={springPop}
           >
-            <motion.div
+            <div
               className="pointer-events-none absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-accent/25 blur-3xl"
-              animate={{ opacity: [0.5, 0.85, 0.5] }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+              aria-hidden="true"
             />
 
             <p className="text-xl font-black uppercase tracking-[0.24em] text-white">
@@ -88,7 +91,7 @@ export function AgeGate() {
             <p className="mx-auto mt-4 max-w-md text-sm text-w-70">{t('subtitle')}</p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <motion.button
+              <m.button
                 type="button"
                 onClick={confirm}
                 whileHover={{ scale: 1.03 }}
@@ -97,9 +100,9 @@ export function AgeGate() {
                 className="rounded-pill bg-accent-grad px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-white shadow-glow"
               >
                 {t('yes')}
-              </motion.button>
+              </m.button>
 
-              <motion.button
+              <m.button
                 type="button"
                 onClick={decline}
                 whileHover={{ scale: 1.03 }}
@@ -108,12 +111,12 @@ export function AgeGate() {
                 className="rounded-pill border border-w-15 px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-w-70 transition-colors hover:border-accent/40 hover:text-white"
               >
                 {t('no')}
-              </motion.button>
+              </m.button>
             </div>
 
             <p className="mt-6 text-xs text-w-50">{t('note')}</p>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       ) : null}
     </AnimatePresence>
   );

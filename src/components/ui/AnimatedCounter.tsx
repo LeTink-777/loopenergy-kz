@@ -34,9 +34,14 @@ export function AnimatedCounter({
   }, [inView, value, duration]);
 
   return (
-    <span ref={ref} className={className} aria-label={`${value}${suffix}`}>
+    <span ref={ref} className={className}>
       <span aria-hidden="true">
         {display}
+        {suffix}
+      </span>
+      {/* Screen readers get the final value rather than the ticking one. */}
+      <span className="sr-only">
+        {value}
         {suffix}
       </span>
     </span>

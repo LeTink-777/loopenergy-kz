@@ -7,4 +7,7 @@ export const routing = defineRouting({
   locales,
   defaultLocale: 'ru',
   localePrefix: 'always',
+  // next-intl would advertise hreflang="kz" (a country code, not a language) in its
+  // Link headers. Correct ru/kk alternates come from `generateMetadata` instead.
+  alternateLinks: false,
 });

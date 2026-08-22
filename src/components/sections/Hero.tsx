@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
@@ -19,16 +19,16 @@ function Words({ text, delay = 0, className }: { text: string; delay?: number; c
   return (
     <>
       {text.split(' ').map((word, index) => (
-        <motion.span
+        <m.span
           key={`${word}-${index}`}
           className={`inline-block ${className ?? ''}`}
           initial={{ opacity: 0, y: '0.5em', rotateX: -35 }}
           animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ duration: 0.7, ease: EASE, delay: delay + index * 0.06 }}
+          transition={{ duration: 0.55, ease: EASE, delay: delay + index * 0.045 }}
         >
           {word}
           <span>&nbsp;</span>
-        </motion.span>
+        </m.span>
       ))}
     </>
   );
@@ -40,8 +40,8 @@ export function Hero() {
   return (
     <section id="hero" className="relative isolate overflow-hidden pb-16 pt-32 md:pb-24 md:pt-40">
       {/* Decorative brand wave, slowly breathing behind the content. */}
-      <motion.div
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[820px] opacity-70"
+      <m.div
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] opacity-70 md:h-[820px]"
         initial={{ scale: 1, opacity: 0 }}
         animate={{ scale: [1, 1.02, 1], opacity: 0.7 }}
         transition={{
@@ -55,10 +55,11 @@ export function Hero() {
           alt=""
           fill
           priority
+          quality={40}
           sizes="100vw"
           className="object-cover object-top"
         />
-      </motion.div>
+      </m.div>
 
       <div
         className="pointer-events-none absolute left-1/2 top-[-160px] -z-10 h-[520px] w-[820px] max-w-[130vw] -translate-x-1/2 rounded-full opacity-70 blur-3xl"
@@ -69,44 +70,44 @@ export function Hero() {
       <div className="container-content">
         <div className="grid items-center gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:gap-10">
           <div className="text-center lg:text-left">
-            <motion.span
+            <m.span
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: EASE, delay: 0.15 }}
+              transition={{ duration: 0.5, ease: EASE, delay: 0.06 }}
               className="inline-flex items-center gap-2 rounded-pill border border-accent/35 bg-accent/12 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-accent-light backdrop-blur-sm sm:text-xs"
             >
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
               {t('badge')}
-            </motion.span>
+            </m.span>
 
             <h1 className="h1 mt-6 [perspective:800px]">
               <span className="block">
-                <Words text={t('titleLine1')} delay={0.28} />
+                <Words text={t('titleLine1')} delay={0.14} />
               </span>
               <span className="block">
-                <Words text={t('titleAccent')} delay={0.44} className="text-gradient italic" />
+                <Words text={t('titleAccent')} delay={0.26} className="text-gradient italic" />
               </span>
               <span className="block">
-                <Words text={t('titleLine2')} delay={0.6} />
+                <Words text={t('titleLine2')} delay={0.38} />
               </span>
             </h1>
 
-            <motion.p
+            <m.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: EASE, delay: 0.8 }}
+              transition={{ duration: 0.5, ease: EASE, delay: 0.5 }}
               className="mx-auto mt-6 max-w-xl text-base text-w-70 sm:text-lg lg:mx-0"
             >
               {t('subtitle')}
-            </motion.p>
+            </m.p>
 
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: EASE, delay: 0.92 }}
+              transition={{ duration: 0.5, ease: EASE, delay: 0.6 }}
               className="mt-9 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start"
             >
-              <motion.a
+              <m.a
                 href="#products"
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
@@ -118,9 +119,9 @@ export function Hero() {
                   className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
                   aria-hidden="true"
                 />
-              </motion.a>
+              </m.a>
 
-              <motion.a
+              <m.a
                 href="#product"
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
@@ -128,17 +129,17 @@ export function Hero() {
                 className="inline-flex items-center justify-center rounded-pill border border-w-15 bg-white/[0.03] px-7 py-4 text-sm font-bold uppercase tracking-wide text-w-80 backdrop-blur-sm transition-colors hover:border-accent/45 hover:text-white"
               >
                 {t('ctaGhost')}
-              </motion.a>
-            </motion.div>
+              </m.a>
+            </m.div>
           </div>
 
-          <motion.div
+          <m.div
             className="relative mx-auto w-full max-w-[520px]"
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.9, ease: EASE, delay: 0.35 }}
+            transition={{ duration: 0.8, ease: EASE, delay: 0.2 }}
           >
-            <motion.div
+            <m.div
               className="relative aspect-square w-full"
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
@@ -151,18 +152,18 @@ export function Hero() {
                 sizes="(max-width: 1024px) 90vw, 520px"
                 className="object-contain drop-shadow-[0_40px_70px_rgba(0,0,0,0.55)]"
               />
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         </div>
 
-        <motion.ul
+        <m.ul
           className="mt-14 grid gap-4 sm:grid-cols-3 md:mt-20"
           initial="hidden"
           animate="visible"
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 1 } } }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 0.7 } } }}
         >
           {FEATURES.map((feature) => (
-            <motion.li
+            <m.li
               key={feature.key}
               variants={{
                 hidden: { opacity: 0, y: 34 },
@@ -173,7 +174,7 @@ export function Hero() {
                 },
               }}
             >
-              <motion.div
+              <m.div
                 whileHover={{ y: -6, boxShadow: '0 24px 60px -20px rgba(149, 97, 233, 0.2)' }}
                 transition={{ duration: 0.35, ease: EASE }}
                 className="purple-ring flex h-full items-center gap-4 p-4 sm:flex-col sm:items-start sm:p-6"
@@ -188,15 +189,15 @@ export function Hero() {
                   />
                 </div>
                 <div>
-                  <h3 className="h3 uppercase tracking-tight">{t(`features.${feature.key}.title`)}</h3>
+                  <h2 className="h3 uppercase tracking-tight">{t(`features.${feature.key}.title`)}</h2>
                   <p className="mt-1.5 text-sm leading-relaxed text-w-70">
                     {t(`features.${feature.key}.desc`)}
                   </p>
                 </div>
-              </motion.div>
-            </motion.li>
+              </m.div>
+            </m.li>
           ))}
-        </motion.ul>
+        </m.ul>
       </div>
     </section>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from 'framer-motion';
+import { AnimatePresence, m, useMotionValueEvent, useScroll, useSpring } from 'framer-motion';
 import { Menu, ShoppingCart, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ import { NAV_LINKS } from '@/lib/constants';
 /** Nav item whose underline wipes in from the left on hover/focus. */
 function NavLink({ href, label }: { href: string; label: string }) {
   return (
-    <motion.a
+    <m.a
       href={href}
       initial="rest"
       animate="rest"
@@ -23,12 +23,12 @@ function NavLink({ href, label }: { href: string; label: string }) {
       transition={{ duration: 0.25, ease: EASE }}
     >
       {label}
-      <motion.span
+      <m.span
         className="absolute inset-x-3 bottom-1 block h-px origin-left bg-accent-light"
         variants={{ rest: { scaleX: 0 }, active: { scaleX: 1 } }}
         transition={{ duration: 0.32, ease: EASE }}
       />
-    </motion.a>
+    </m.a>
   );
 }
 
@@ -62,19 +62,19 @@ export function Header() {
 
   return (
     <>
-      <motion.div
+      <m.div
         className="fixed inset-x-0 top-0 z-[70] h-0.5 origin-left bg-accent-grad"
         style={{ scaleX: progress }}
         aria-hidden="true"
       />
 
-      <motion.header
+      <m.header
         className="fixed inset-x-4 top-3 z-[60] mx-auto max-w-content"
         initial={{ opacity: 0, y: -18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
       >
-        <motion.nav
+        <m.nav
           aria-label={t('common.menu')}
           className="flex items-center justify-between gap-4 rounded-[22px] border px-4 py-3 md:px-6"
           animate={{
@@ -102,9 +102,9 @@ export function Header() {
           </ul>
 
           <div className="flex items-center gap-2 md:gap-3">
-            <LanguageSwitcher className="hidden sm:flex" />
+            <LanguageSwitcher className="hidden xs:flex" />
 
-            <motion.a
+            <m.a
               href="#products"
               aria-label={t('common.cart')}
               whileHover={{ scale: 1.06 }}
@@ -113,9 +113,9 @@ export function Header() {
               className="relative grid h-10 w-10 place-items-center rounded-pill border border-w-10 bg-white/[0.04] text-w-80 transition-colors hover:border-accent/40 hover:text-white"
             >
               <ShoppingCart className="h-[18px] w-[18px]" aria-hidden="true" />
-            </motion.a>
+            </m.a>
 
-            <motion.button
+            <m.button
               type="button"
               aria-label={menuOpen ? t('common.close') : t('common.openMenu')}
               aria-expanded={menuOpen}
@@ -125,7 +125,7 @@ export function Header() {
               className="grid h-10 w-10 place-items-center rounded-pill border border-w-10 bg-white/[0.04] text-white lg:hidden"
             >
               <AnimatePresence mode="wait" initial={false}>
-                <motion.span
+                <m.span
                   key={menuOpen ? 'close' : 'open'}
                   initial={{ opacity: 0, rotate: -90, scale: 0.7 }}
                   animate={{ opacity: 1, rotate: 0, scale: 1 }}
@@ -134,16 +134,16 @@ export function Header() {
                   className="grid place-items-center"
                 >
                   {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                </motion.span>
+                </m.span>
               </AnimatePresence>
-            </motion.button>
+            </m.button>
           </div>
-        </motion.nav>
-      </motion.header>
+        </m.nav>
+      </m.header>
 
       <AnimatePresence>
         {menuOpen ? (
-          <motion.div
+          <m.div
             key="mobile-menu"
             className="fixed inset-0 z-[55] flex flex-col justify-center bg-[#1a151f]/95 px-6 backdrop-blur-2xl lg:hidden"
             initial={{ opacity: 0 }}
@@ -151,7 +151,7 @@ export function Header() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.28, ease: EASE }}
           >
-            <motion.ul
+            <m.ul
               className="flex flex-col gap-2"
               initial="hidden"
               animate="visible"
@@ -162,7 +162,7 @@ export function Header() {
               }}
             >
               {NAV_LINKS.map((link) => (
-                <motion.li
+                <m.li
                   key={link.key}
                   variants={{
                     hidden: { opacity: 0, x: -24 },
@@ -176,11 +176,11 @@ export function Header() {
                   >
                     {t(`nav.${link.key}`)}
                   </a>
-                </motion.li>
+                </m.li>
               ))}
-            </motion.ul>
+            </m.ul>
 
-            <motion.div
+            <m.div
               className="mt-10 flex items-center justify-between gap-4"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0, transition: { delay: 0.4, duration: 0.4, ease: EASE } }}
@@ -194,8 +194,8 @@ export function Header() {
               >
                 {t('nav.partnership')}
               </a>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
     </>

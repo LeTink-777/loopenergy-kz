@@ -1,19 +1,19 @@
 'use client';
 
-import { motion, type Variants } from 'framer-motion';
+import { m, type Variants } from 'framer-motion';
 import type { ReactNode } from 'react';
 
 import { fadeUp, staggerContainer } from './motion';
 
 /** Only the elements we actually reveal — keeps motion components stable across renders. */
 const TAGS = {
-  div: motion.div,
-  section: motion.section,
-  ul: motion.ul,
-  li: motion.li,
-  dl: motion.dl,
-  p: motion.p,
-  span: motion.span,
+  div: m.div,
+  section: m.section,
+  ul: m.ul,
+  li: m.li,
+  dl: m.dl,
+  p: m.p,
+  span: m.span,
 } as const;
 
 export type RevealTag = keyof typeof TAGS;

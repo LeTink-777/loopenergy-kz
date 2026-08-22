@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Check, ShoppingBag } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
@@ -29,10 +29,10 @@ export function ProductCard({ product, priority = false }: { product: Product; p
   const name = t(`items.${product.key}.name`);
 
   return (
-    <motion.div variants={fadeUp} className="h-full">
+    <m.div variants={fadeUp} className="h-full">
       <PurpleBorderCard className="group flex h-full flex-col overflow-hidden p-5 sm:p-6">
         <div className="relative mb-5 flex aspect-square items-center justify-center overflow-hidden rounded-[26px] bg-gradient-to-b from-white/[0.06] to-transparent">
-          <motion.div
+          <m.div
             className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
             style={{
               background: 'radial-gradient(circle at 50% 60%, rgba(149,97,233,0.28), transparent 68%)',
@@ -47,7 +47,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
             </span>
           ) : null}
 
-          <motion.div
+          <m.div
             className="relative h-full w-full"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -60,7 +60,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
               sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, (max-width: 1280px) 30vw, 22vw"
               className="object-contain p-4 drop-shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
             />
-          </motion.div>
+          </m.div>
         </div>
 
         <div className="flex flex-1 flex-col">
@@ -79,28 +79,33 @@ export function ProductCard({ product, priority = false }: { product: Product; p
             </span>
           </div>
 
-          <div className="mt-5 flex items-end justify-between gap-3">
-            <div>
+          {/* Wraps to a stacked layout when the card is too narrow for one row. */}
+          <div className="mt-5 flex flex-wrap items-end justify-between gap-3">
+            <div className="shrink-0">
               {product.oldPrice ? (
-                <p className="text-sm text-w-50 line-through">{formatTenge(product.oldPrice)}</p>
+                <p className="whitespace-nowrap text-sm text-w-50 line-through">
+                  {formatTenge(product.oldPrice)}
+                </p>
               ) : null}
-              <p className="text-2xl font-extrabold tracking-tight">{formatTenge(product.price)}</p>
+              <p className="whitespace-nowrap text-2xl font-extrabold tracking-tight">
+                {formatTenge(product.price)}
+              </p>
             </div>
 
-            <motion.button
+            <m.button
               type="button"
               onClick={() => setAdded(true)}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.94 }}
               transition={springPop}
               aria-live="polite"
-              className={`inline-flex min-w-[132px] items-center justify-center gap-2 rounded-pill px-5 py-3 text-xs font-bold uppercase tracking-wide transition-colors ${
+              className={`inline-flex min-w-[132px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-pill px-5 py-3 text-xs font-bold uppercase tracking-wide transition-colors ${
                 added ? 'bg-emerald-400/90 text-[#10231a]' : 'bg-accent-grad text-white shadow-glow-sm'
               }`}
             >
               <AnimatePresence mode="wait" initial={false}>
                 {added ? (
-                  <motion.span
+                  <m.span
                     key="added"
                     className="inline-flex items-center gap-2"
                     initial={{ opacity: 0, scale: 0.7 }}
@@ -109,9 +114,9 @@ export function ProductCard({ product, priority = false }: { product: Product; p
                     transition={springPop}
                   >
                     <Check className="h-4 w-4" aria-hidden="true" />
-                  </motion.span>
+                  </m.span>
                 ) : (
-                  <motion.span
+                  <m.span
                     key="idle"
                     className="inline-flex items-center gap-2"
                     initial={{ opacity: 0, scale: 0.7 }}
@@ -121,13 +126,13 @@ export function ProductCard({ product, priority = false }: { product: Product; p
                   >
                     <ShoppingBag className="h-4 w-4" aria-hidden="true" />
                     {t('addToCart')}
-                  </motion.span>
+                  </m.span>
                 )}
               </AnimatePresence>
-            </motion.button>
+            </m.button>
           </div>
         </div>
       </PurpleBorderCard>
-    </motion.div>
+    </m.div>
   );
 }

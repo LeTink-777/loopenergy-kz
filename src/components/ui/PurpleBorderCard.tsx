@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, type HTMLMotionProps } from 'framer-motion';
+import { m, type HTMLMotionProps } from 'framer-motion';
 import type { ReactNode } from 'react';
 
 import { EASE } from './motion';
@@ -27,7 +27,7 @@ export function PurpleBorderCard({
   ...rest
 }: PurpleBorderCardProps) {
   return (
-    <motion.div
+    <m.div
       className={`purple-ring ${className}`}
       initial={false}
       whileHover={
@@ -39,6 +39,6 @@ export function PurpleBorderCard({
       {...rest}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }

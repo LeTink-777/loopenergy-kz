@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
 import { RevealGroup } from '@/components/ui/Reveal';
@@ -20,7 +20,7 @@ export function HowToUse() {
 
         <RevealGroup stagger={0.14} className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {HOW_STEPS.map((step, index) => (
-            <motion.div
+            <m.div
               key={step}
               className="relative"
               variants={{
@@ -36,7 +36,7 @@ export function HowToUse() {
                 {index + 1}
               </span>
 
-              <motion.div
+              <m.div
                 whileHover={{ y: -6, boxShadow: '0 24px 60px -20px rgba(149, 97, 233, 0.2)' }}
                 transition={{ duration: 0.35, ease: EASE }}
                 className="purple-ring relative h-full p-6"
@@ -48,8 +48,8 @@ export function HowToUse() {
                   {t(`steps.${step}.title`)}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-w-70">{t(`steps.${step}.desc`)}</p>
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
           ))}
         </RevealGroup>
       </div>

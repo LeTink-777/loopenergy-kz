@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Check, Handshake, Loader2, Send, Tag, Truck } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
@@ -95,8 +95,8 @@ export function B2B() {
 
             <ul className="mt-9 grid gap-4 sm:grid-cols-2">
               {PROPS.map(({ key, Icon }) => (
-                <motion.li key={key} variants={fadeUp}>
-                  <motion.div
+                <m.li key={key} variants={fadeUp}>
+                  <m.div
                     whileHover={{ y: -4, boxShadow: '0 20px 50px -22px rgba(149,97,233,0.32)' }}
                     transition={{ duration: 0.35, ease: EASE }}
                     className="purple-ring h-full p-5"
@@ -110,17 +110,17 @@ export function B2B() {
                     <p className="mt-1.5 text-sm leading-relaxed text-w-70">
                       {t(`props.${key}.desc`)}
                     </p>
-                  </motion.div>
-                </motion.li>
+                  </m.div>
+                </m.li>
               ))}
             </ul>
           </RevealGroup>
 
           <RevealGroup>
-            <motion.div variants={fadeUp} className="purple-ring relative overflow-hidden p-6 sm:p-8">
+            <m.div variants={fadeUp} className="purple-ring relative overflow-hidden p-6 sm:p-8">
               <AnimatePresence mode="wait" initial={false}>
                 {status === 'success' ? (
-                  <motion.div
+                  <m.div
                     key="success"
                     initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -128,21 +128,21 @@ export function B2B() {
                     transition={{ duration: 0.4, ease: EASE }}
                     className="flex min-h-[420px] flex-col items-center justify-center text-center"
                   >
-                    <motion.span
+                    <m.span
                       className="grid h-16 w-16 place-items-center rounded-full bg-emerald-400/15 text-emerald-300"
                       initial={{ scale: 0.5, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: 'spring', stiffness: 340, damping: 16, delay: 0.1 }}
                     >
                       <Check className="h-8 w-8" aria-hidden="true" />
-                    </motion.span>
+                    </m.span>
 
                     <h3 className="mt-6 text-xl font-extrabold uppercase tracking-tight">
                       {t('form.successTitle')}
                     </h3>
                     <p className="mt-2 max-w-sm text-sm text-w-70">{t('form.successText')}</p>
 
-                    <motion.button
+                    <m.button
                       type="button"
                       onClick={() => setStatus('idle')}
                       whileHover={{ scale: 1.03 }}
@@ -151,10 +151,10 @@ export function B2B() {
                       className="mt-7 rounded-pill border border-w-15 px-6 py-3 text-xs font-bold uppercase tracking-wide text-w-80 transition-colors hover:border-accent/45 hover:text-white"
                     >
                       {t('form.again')}
-                    </motion.button>
-                  </motion.div>
+                    </m.button>
+                  </m.div>
                 ) : (
-                  <motion.form
+                  <m.form
                     key="form"
                     onSubmit={onSubmit}
                     noValidate
@@ -247,7 +247,7 @@ export function B2B() {
 
                     <AnimatePresence>
                       {error ? (
-                        <motion.p
+                        <m.p
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
@@ -256,11 +256,11 @@ export function B2B() {
                           className="text-sm text-rose-300"
                         >
                           {error}
-                        </motion.p>
+                        </m.p>
                       ) : null}
                     </AnimatePresence>
 
-                    <motion.button
+                    <m.button
                       type="submit"
                       disabled={status === 'loading'}
                       whileHover={status === 'loading' ? undefined : { scale: 1.02, y: -2 }}
@@ -270,40 +270,40 @@ export function B2B() {
                     >
                       <AnimatePresence mode="wait" initial={false}>
                         {status === 'loading' ? (
-                          <motion.span
+                          <m.span
                             key="loading"
                             className="inline-flex items-center gap-2.5"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                           >
-                            <motion.span
+                            <m.span
                               animate={{ rotate: 360 }}
                               transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}
                               className="grid place-items-center"
                             >
                               <Loader2 className="h-4 w-4" aria-hidden="true" />
-                            </motion.span>
+                            </m.span>
                             {t('form.submitting')}
-                          </motion.span>
+                          </m.span>
                         ) : (
-                          <motion.span
+                          <m.span
                             key="idle"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                           >
                             {t('form.submit')}
-                          </motion.span>
+                          </m.span>
                         )}
                       </AnimatePresence>
-                    </motion.button>
+                    </m.button>
 
                     <p className="text-xs leading-relaxed text-w-50">{t('form.consent')}</p>
-                  </motion.form>
+                  </m.form>
                 )}
               </AnimatePresence>
-            </motion.div>
+            </m.div>
           </RevealGroup>
         </div>
       </div>

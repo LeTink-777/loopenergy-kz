@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Mail, Phone, Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -139,7 +139,7 @@ export function Footer() {
             </h3>
             <div className="mt-4 flex flex-wrap gap-2.5">
               {SOCIALS.map((social) => (
-                <motion.a
+                <m.a
                   key={social.key}
                   href={social.href}
                   target="_blank"
@@ -151,7 +151,7 @@ export function Footer() {
                   className="grid h-11 w-11 place-items-center rounded-pill border border-w-10 bg-white/[0.04] text-w-70 transition-colors hover:border-accent/45 hover:text-accent-light"
                 >
                   <SocialGlyph name={social.key} />
-                </motion.a>
+                </m.a>
               ))}
             </div>
 

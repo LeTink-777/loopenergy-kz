@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useId, useState } from 'react';
@@ -30,7 +30,7 @@ export function FAQ() {
             const buttonId = `${baseId}-${key}-button`;
 
             return (
-              <motion.div key={key} variants={fadeUp} className="purple-ring overflow-hidden">
+              <m.div key={key} variants={fadeUp} className="purple-ring overflow-hidden">
                 <h3>
                   <button
                     type="button"
@@ -44,19 +44,19 @@ export function FAQ() {
                       {t(`items.${key}.q`)}
                     </span>
 
-                    <motion.span
+                    <m.span
                       className="grid h-9 w-9 shrink-0 place-items-center rounded-pill border border-accent/25 bg-accent/10 text-accent-light"
                       animate={{ rotate: isOpen ? 180 : 0 }}
                       transition={{ type: 'spring', stiffness: 340, damping: 22 }}
                     >
                       <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                    </motion.span>
+                    </m.span>
                   </button>
                 </h3>
 
                 <AnimatePresence initial={false}>
                   {isOpen ? (
-                    <motion.div
+                    <m.div
                       key="content"
                       id={panelId}
                       role="region"
@@ -73,10 +73,10 @@ export function FAQ() {
                       <p className="px-5 pb-6 pr-14 text-sm leading-relaxed text-w-70 sm:px-7 sm:pr-20">
                         {t(`items.${key}.a`)}
                       </p>
-                    </motion.div>
+                    </m.div>
                   ) : null}
                 </AnimatePresence>
-              </motion.div>
+              </m.div>
             );
           })}
         </RevealGroup>

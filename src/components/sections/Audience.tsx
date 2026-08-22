@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Briefcase, Dumbbell, Gamepad2, GraduationCap, Moon, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -32,7 +32,7 @@ export function Audience() {
             const Icon = ICONS[item.icon];
 
             return (
-              <motion.div
+              <m.div
                 key={item.key}
                 variants={{
                   hidden: { opacity: 0, y: 30 },
@@ -40,7 +40,7 @@ export function Audience() {
                 }}
                 className="w-full sm:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]"
               >
-                <motion.div
+                <m.div
                   initial="rest"
                   animate="rest"
                   whileHover="active"
@@ -51,13 +51,13 @@ export function Audience() {
                   transition={{ duration: 0.35, ease: EASE }}
                   className="purple-ring h-full p-6"
                 >
-                  <motion.span
+                  <m.span
                     className="grid h-12 w-12 place-items-center rounded-2xl border border-accent/25 bg-accent/10 text-accent-light"
                     variants={{ rest: { rotate: 0 }, active: { rotate: -8 } }}
                     transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                   >
                     <Icon className="h-[22px] w-[22px]" aria-hidden="true" />
-                  </motion.span>
+                  </m.span>
 
                   <h3 className="mt-5 text-lg font-bold uppercase tracking-tight">
                     {t(`items.${item.key}.title`)}
@@ -65,8 +65,8 @@ export function Audience() {
                   <p className="mt-2 text-sm leading-relaxed text-w-70">
                     {t(`items.${item.key}.desc`)}
                   </p>
-                </motion.div>
-              </motion.div>
+                </m.div>
+              </m.div>
             );
           })}
         </RevealGroup>

@@ -9,15 +9,18 @@ import { AgeGate } from '@/components/ui/AgeGate';
 import { ContactWidget } from '@/components/layout/ContactWidget';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
+import { MotionProvider } from '@/components/ui/MotionProvider';
 import { routing } from '@/i18n/routing';
 import { SITE } from '@/lib/constants';
 
+// Variable Montserrat: one file per subset covers 400-900 instead of six static
+// instances, which roughly halves the font bytes on the critical path.
 const montserrat = Montserrat({
   subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700', '800', '900'],
   display: 'swap',
   variable: '--font-montserrat',
   preload: true,
+  fallback: ['system-ui', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
 });
 
 export function generateStaticParams() {
@@ -90,14 +93,23 @@ export default async function LocaleLayout({
       <head>
         <link rel="preconnect" href="https://loopenergy.ru" />
         <link rel="dns-prefetch" href="https://loopenergy.ru" />
+        {/* Runs before first paint so returning visitors never flash the age gate. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(localStorage.getItem('le_age_confirmed')==='1')document.documentElement.classList.add('age-ok')}catch(e){}",
+          }}
+        />
       </head>
       <body className="min-h-screen bg-bg text-white antialiased">
         <NextIntlClientProvider>
-          <AgeGate />
-          <Header />
-          <main id="top">{children}</main>
-          <Footer />
-          <ContactWidget />
+          <MotionProvider>
+            <AgeGate />
+            <Header />
+            <main id="top">{children}</main>
+            <Footer />
+            <ContactWidget />
+          </MotionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

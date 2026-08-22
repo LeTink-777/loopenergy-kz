@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Mail, MessageCircle, Phone, Send, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
@@ -24,7 +24,7 @@ export function ContactWidget() {
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 md:bottom-6 md:right-6">
       <AnimatePresence>
         {open ? (
-          <motion.div
+          <m.div
             key="contact-panel"
             role="dialog"
             aria-label={t('title')}
@@ -46,13 +46,13 @@ export function ContactWidget() {
               </button>
             </div>
 
-            <motion.div
+            <m.div
               className="mt-4 space-y-4"
               initial="hidden"
               animate="visible"
               variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } } }}
             >
-              <motion.section
+              <m.section
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE } },
@@ -71,9 +71,9 @@ export function ContactWidget() {
                   <Send className="h-4 w-4 text-accent-light" aria-hidden="true" />
                   {CONTACTS.consumerTelegram.label}
                 </a>
-              </motion.section>
+              </m.section>
 
-              <motion.section
+              <m.section
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE } },
@@ -109,23 +109,24 @@ export function ContactWidget() {
                     {CONTACTS.wholesaleTelegram.label}
                   </a>
                 </div>
-              </motion.section>
-            </motion.div>
-          </motion.div>
+              </m.section>
+            </m.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
 
-      <motion.button
+      <m.button
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
+        aria-label={t('button')}
         whileHover={{ scale: 1.04, y: -2 }}
         whileTap={{ scale: 0.95 }}
         transition={springPop}
         className="inline-flex items-center gap-2.5 rounded-pill border border-accent/25 bg-[#241e2b]/85 px-5 py-3.5 text-sm font-bold uppercase tracking-wide text-white shadow-[0_18px_44px_-18px_rgba(149,97,233,0.75)] backdrop-blur-xl"
       >
         <AnimatePresence mode="wait" initial={false}>
-          <motion.span
+          <m.span
             key={open ? 'x' : 'phone'}
             initial={{ opacity: 0, rotate: -80, scale: 0.6 }}
             animate={{ opacity: 1, rotate: 0, scale: 1 }}
@@ -134,10 +135,10 @@ export function ContactWidget() {
             className="grid place-items-center text-accent-light"
           >
             {open ? <X className="h-[18px] w-[18px]" /> : <MessageCircle className="h-[18px] w-[18px]" />}
-          </motion.span>
+          </m.span>
         </AnimatePresence>
         <span className="hidden xs:inline">{t('button')}</span>
-      </motion.button>
+      </m.button>
     </div>
   );
 }

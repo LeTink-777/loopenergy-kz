@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
@@ -20,36 +20,36 @@ export function ProductInfo() {
           <RevealGroup className="order-2 lg:order-1">
             <SectionHeading badge={t('badge')} title={t('title')} align="left" />
 
-            <motion.p variants={fadeUp} className="mt-6 text-base text-w-70">
+            <m.p variants={fadeUp} className="mt-6 text-base text-w-70">
               {t('p1')}
-            </motion.p>
-            <motion.p variants={fadeUp} className="mt-4 text-base text-w-70">
+            </m.p>
+            <m.p variants={fadeUp} className="mt-4 text-base text-w-70">
               {t('p2')}
-            </motion.p>
+            </m.p>
 
-            <motion.h3
+            <m.h3
               variants={fadeUp}
               className="mt-9 text-xs font-bold uppercase tracking-[0.2em] text-w-50"
             >
               {t('ingredientsTitle')}
-            </motion.h3>
+            </m.h3>
 
-            <motion.ul variants={fadeUp} className="mt-4 flex flex-wrap gap-2.5">
+            <m.ul variants={fadeUp} className="mt-4 flex flex-wrap gap-2.5">
               {ingredients.map((item) => (
-                <motion.li
+                <m.li
                   key={item}
                   whileHover={{ y: -3, borderColor: 'rgba(183, 141, 255, 0.6)' }}
                   transition={{ type: 'spring', stiffness: 420, damping: 26 }}
                   className="rounded-pill border border-accent/30 bg-accent/[0.08] px-4 py-2 text-sm font-medium text-w-80"
                 >
                   {item}
-                </motion.li>
+                </m.li>
               ))}
-            </motion.ul>
+            </m.ul>
 
-            <motion.p variants={fadeUp} className="mt-7 text-xs leading-relaxed text-w-50">
+            <m.p variants={fadeUp} className="mt-7 text-xs leading-relaxed text-w-50">
               {t('note')}
-            </motion.p>
+            </m.p>
           </RevealGroup>
 
           <Reveal variants={fromSide('right')} className="order-1 lg:order-2">
@@ -61,7 +61,7 @@ export function ProductInfo() {
                 }}
                 aria-hidden="true"
               />
-              <motion.div
+              <m.div
                 className="relative aspect-square w-full"
                 animate={{ y: [0, -12, 0] }}
                 transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
@@ -70,10 +70,10 @@ export function ProductInfo() {
                   src={IMG.hero}
                   alt={t('title')}
                   fill
-                  sizes="(max-width: 1024px) 88vw, 520px"
+                  sizes="(max-width: 1024px) 90vw, 520px"
                   className="object-contain drop-shadow-[0_36px_64px_rgba(0,0,0,0.5)]"
                 />
-              </motion.div>
+              </m.div>
             </div>
           </Reveal>
         </div>

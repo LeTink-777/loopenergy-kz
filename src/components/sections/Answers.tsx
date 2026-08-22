@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
 import { RevealGroup } from '@/components/ui/Reveal';
@@ -20,8 +20,8 @@ export function Answers() {
 
         <RevealGroup stagger={0.1} className="mt-12 grid gap-5 md:grid-cols-2">
           {ANSWER_KEYS.map((key) => (
-            <motion.div key={key} variants={fadeUp}>
-              <motion.dl
+            <m.div key={key} variants={fadeUp}>
+              <m.dl
                 whileHover={{ y: -5, boxShadow: '0 22px 56px -22px rgba(149,97,233,0.32)' }}
                 transition={{ duration: 0.35, ease: EASE }}
                 className="purple-ring h-full p-6 sm:p-7"
@@ -30,8 +30,8 @@ export function Answers() {
                   {t(`items.${key}.q`)}
                 </dt>
                 <dd className="mt-2.5 text-sm leading-relaxed text-w-70">{t(`items.${key}.a`)}</dd>
-              </motion.dl>
-            </motion.div>
+              </m.dl>
+            </m.div>
           ))}
         </RevealGroup>
       </div>
