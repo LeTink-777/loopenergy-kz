@@ -158,7 +158,9 @@
   }
 
   .h1 {
-    font-size: var(--text-5xl);
+    /* Tuned to the hero column rather than the viewport: the headline shares its
+       row with the product shot, so it tops out below --text-5xl. */
+    font-size: clamp(1.75rem, 1rem + 3.4vw, 3.25rem);
     font-weight: 800;
     line-height: 1.06;
     letter-spacing: -0.02em;
@@ -208,6 +210,22 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
     gap: var(--space-md);
+  }
+
+  /* Hero splits evenly as soon as two columns fit, then hands the extra room to
+     the headline once there is enough of it — long Russian and Kazakh words need
+     the width more than the product shot does. */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  @media (min-width: 1100px) {
+    .hero-grid {
+      grid-template-columns: 1.32fr 0.68fr;
+    }
   }
 
   .grid-2col {

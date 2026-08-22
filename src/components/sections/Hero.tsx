@@ -82,7 +82,7 @@ export function Hero() {
       />
 
       <div className="container-content">
-        <div className="grid-2col">
+        <div className="hero-grid">
           <div className="min-w-0 text-center lg:text-left">
             <m.span
               initial={{ opacity: 0, y: 16 }}
