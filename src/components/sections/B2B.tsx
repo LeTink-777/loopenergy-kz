@@ -18,7 +18,7 @@ type Status = 'idle' | 'loading' | 'success' | 'error';
 const fieldClass =
   'w-full rounded-2xl border border-w-10 bg-white/[0.03] px-4 py-3.5 text-fluid-sm text-white placeholder:text-w-50 outline-none transition-[border-color,box-shadow] duration-300 focus:border-accent/60 focus:shadow-[0_0_0_4px_rgba(149,97,233,0.18)]';
 
-export function B2B() {
+export function B2B({ headingLevel = 'h2' }: { headingLevel?: 'h1' | 'h2' } = {}) {
   const t = useTranslations('b2b');
   const features = t.raw('features') as Content['b2b']['features'];
   const cities = t.raw('form.field_city_options') as Content['b2b']['form']['field_city_options'];
@@ -87,6 +87,7 @@ export function B2B() {
               badge={t('badge')}
               title={t('h2')}
               accent={t('h2_accent')}
+              as={headingLevel}
               subtitle={t('description')}
               align="left"
             />

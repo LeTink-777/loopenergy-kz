@@ -10,6 +10,7 @@ export function SectionHeading({
   accent,
   subtitle,
   align = 'center',
+  as = 'h2',
 }: {
   badge?: string;
   title: string;
@@ -17,7 +18,10 @@ export function SectionHeading({
   accent?: string;
   subtitle?: string;
   align?: 'center' | 'left';
+  /** `h1` when the section is the page's own masthead. */
+  as?: 'h1' | 'h2';
 }) {
+  const Heading = as === 'h1' ? m.h1 : m.h2;
   const alignment = align === 'center' ? 'items-center text-center' : 'items-start text-left';
 
   return (
@@ -32,7 +36,7 @@ export function SectionHeading({
         </m.span>
       ) : null}
 
-      <m.h2 variants={fadeUp} className="h2 max-w-3xl text-balance">
+      <Heading variants={fadeUp} className="h2 max-w-3xl text-balance">
         {title}
         {accent ? (
           <>
@@ -40,7 +44,7 @@ export function SectionHeading({
             <span className="text-gradient">{accent}</span>
           </>
         ) : null}
-      </m.h2>
+      </Heading>
 
       {subtitle ? (
         <m.p variants={fadeUp} className="max-w-2xl text-fluid-base text-w-70">
