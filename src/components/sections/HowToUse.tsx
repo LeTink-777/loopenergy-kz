@@ -1,9 +1,10 @@
 'use client';
 
 import { m } from 'framer-motion';
+import { TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { RevealGroup } from '@/components/ui/Reveal';
+import { Reveal, RevealGroup } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 import { EASE } from '@/components/ui/motion';
@@ -56,6 +57,18 @@ export function HowToUse() {
               </m.div>
             </m.div>
           ))}
+        </RevealGroup>
+
+        {/* Straight from the manufacturer's leaflet — dosage guidance must be
+            visible on the page, not buried in the FAQ. */}
+        <RevealGroup className="mt-fluid-lg">
+          <Reveal as="div" className="purple-ring mx-auto flex max-w-3xl items-start gap-3 p-fluid-md">
+            <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-accent-light" aria-hidden="true" />
+            <div>
+              <p className="text-fluid-sm font-bold text-white">{t('max_daily')}</p>
+              <p className="mt-1 text-fluid-sm leading-relaxed text-w-70">{t('warning')}</p>
+            </div>
+          </Reveal>
         </RevealGroup>
       </div>
     </section>
