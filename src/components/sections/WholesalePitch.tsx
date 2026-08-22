@@ -83,14 +83,17 @@ export function WholesalePitch() {
         <div className="container-content">
           <RevealGroup>
             <SectionHeading title={t('palette_title')} subtitle={t('palette_text')} align="left" />
-            <Reveal as="div" className="purple-ring mt-fluid-lg overflow-hidden">
+            {/* The sheet is portrait, so it is centred at a readable height
+                rather than stretched to the container — full width made this
+                one section 1600px tall. */}
+            <Reveal as="div" className="purple-ring mt-fluid-lg overflow-hidden bg-[#2a2330] p-fluid-md">
               <Image
-                src="/assets/brand/flavors-palette.jpg"
+                src="/assets/brand/flavors-palette.webp"
                 alt={t('palette_title')}
-                width={1600}
-                height={900}
-                sizes="(max-width: 1024px) 100vw, 1280px"
-                className="h-auto w-full object-cover"
+                width={490}
+                height={682}
+                sizes="(max-width: 640px) 88vw, 480px"
+                className="mx-auto h-auto w-full max-w-[480px] rounded-xl"
               />
             </Reveal>
           </RevealGroup>
@@ -103,17 +106,20 @@ export function WholesalePitch() {
             <SectionHeading title={t('merch_title')} subtitle={t('merch_text')} align="left" />
             <div className="mt-fluid-lg grid gap-fluid-md sm:grid-cols-2">
               {[
-                { src: '/assets/brand/merch-stand.jpg', alt: t('merch_stand_alt') },
-                { src: '/assets/brand/merch-tentcard.jpg', alt: t('merch_tent_alt') },
+                { src: '/assets/brand/merch-stand.webp', alt: t('merch_stand_alt') },
+                { src: '/assets/brand/merch-tentcard.webp', alt: t('merch_tent_alt') },
               ].map((shot) => (
-                <Reveal key={shot.src} as="div" className="purple-ring overflow-hidden">
+                {/* The two shots have different aspect ratios now they are
+                    cropped to their subjects, so the frame sets the shape and
+                    the product is centred inside it. */}
+                <Reveal key={shot.src} as="div" className="purple-ring overflow-hidden bg-[#2a2330]">
                   <Image
                     src={shot.src}
                     alt={shot.alt}
-                    width={1200}
-                    height={900}
+                    width={905}
+                    height={824}
                     sizes="(max-width: 640px) 92vw, 45vw"
-                    className="h-auto w-full object-cover"
+                    className="aspect-[4/3] h-full w-full object-contain p-fluid-sm"
                   />
                 </Reveal>
               ))}
