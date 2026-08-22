@@ -1,0 +1,312 @@
+'use client';
+
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check, Handshake, Loader2, Send, Tag, Truck } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useState, type FormEvent } from 'react';
+
+import { RevealGroup } from '@/components/ui/Reveal';
+import { SectionHeading } from '@/components/ui/SectionHeading';
+import { EASE, fadeUp, springPop } from '@/components/ui/motion';
+import { CITIES } from '@/lib/constants';
+
+const PROPS = [
+  { key: 'exclusive', Icon: Handshake },
+  { key: 'price', Icon: Tag },
+  { key: 'logistics', Icon: Truck },
+  { key: 'support', Icon: Send },
+] as const;
+
+type Status = 'idle' | 'loading' | 'success' | 'error';
+
+const fieldClass =
+  'w-full rounded-2xl border border-w-10 bg-white/[0.03] px-4 py-3.5 text-sm text-white placeholder:text-w-50 outline-none transition-[border-color,box-shadow] duration-300 focus:border-accent/60 focus:shadow-[0_0_0_4px_rgba(149,97,233,0.18)]';
+
+export function B2B() {
+  const t = useTranslations('b2b');
+  const locale = useLocale();
+  const [status, setStatus] = useState<Status>('idle');
+  const [error, setError] = useState<string | null>(null);
+
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+
+    const payload = {
+      name: String(data.get('name') ?? ''),
+      company: String(data.get('company') ?? ''),
+      phone: String(data.get('phone') ?? ''),
+      city: String(data.get('city') ?? ''),
+      comment: String(data.get('comment') ?? ''),
+      locale,
+    };
+
+    if (!payload.name.trim() || !payload.phone.trim() || !payload.city.trim()) {
+      setError(t('form.errorRequired'));
+      setStatus('error');
+      return;
+    }
+
+    setStatus('loading');
+    setError(null);
+
+    try {
+      const response = await fetch('/api/b2b-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const result = (await response.json().catch(() => null)) as { error?: string } | null;
+        setError(result?.error === 'invalid_phone' ? t('form.errorPhone') : t('form.errorGeneric'));
+        setStatus('error');
+        return;
+      }
+
+      form.reset();
+      setStatus('success');
+    } catch {
+      setError(t('form.errorGeneric'));
+      setStatus('error');
+    }
+  };
+
+  return (
+    <section id="b2b" className="section-pad relative scroll-mt-28">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] opacity-70 blur-3xl"
+        style={{
+          background: 'radial-gradient(45% 60% at 70% 30%, rgba(149,97,233,0.2), transparent 70%)',
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="container-content">
+        <div className="grid gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-14">
+          <RevealGroup>
+            <SectionHeading
+              badge={t('badge')}
+              title={t('title')}
+              subtitle={t('subtitle')}
+              align="left"
+            />
+
+            <ul className="mt-9 grid gap-4 sm:grid-cols-2">
+              {PROPS.map(({ key, Icon }) => (
+                <motion.li key={key} variants={fadeUp}>
+                  <motion.div
+                    whileHover={{ y: -4, boxShadow: '0 20px 50px -22px rgba(149,97,233,0.32)' }}
+                    transition={{ duration: 0.35, ease: EASE }}
+                    className="purple-ring h-full p-5"
+                  >
+                    <span className="grid h-11 w-11 place-items-center rounded-2xl border border-accent/25 bg-accent/10 text-accent-light">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <h3 className="mt-4 text-base font-bold uppercase tracking-tight">
+                      {t(`props.${key}.title`)}
+                    </h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-w-70">
+                      {t(`props.${key}.desc`)}
+                    </p>
+                  </motion.div>
+                </motion.li>
+              ))}
+            </ul>
+          </RevealGroup>
+
+          <RevealGroup>
+            <motion.div variants={fadeUp} className="purple-ring relative overflow-hidden p-6 sm:p-8">
+              <AnimatePresence mode="wait" initial={false}>
+                {status === 'success' ? (
+                  <motion.div
+                    key="success"
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.4, ease: EASE }}
+                    className="flex min-h-[420px] flex-col items-center justify-center text-center"
+                  >
+                    <motion.span
+                      className="grid h-16 w-16 place-items-center rounded-full bg-emerald-400/15 text-emerald-300"
+                      initial={{ scale: 0.5, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: 'spring', stiffness: 340, damping: 16, delay: 0.1 }}
+                    >
+                      <Check className="h-8 w-8" aria-hidden="true" />
+                    </motion.span>
+
+                    <h3 className="mt-6 text-xl font-extrabold uppercase tracking-tight">
+                      {t('form.successTitle')}
+                    </h3>
+                    <p className="mt-2 max-w-sm text-sm text-w-70">{t('form.successText')}</p>
+
+                    <motion.button
+                      type="button"
+                      onClick={() => setStatus('idle')}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={springPop}
+                      className="mt-7 rounded-pill border border-w-15 px-6 py-3 text-xs font-bold uppercase tracking-wide text-w-80 transition-colors hover:border-accent/45 hover:text-white"
+                    >
+                      {t('form.again')}
+                    </motion.button>
+                  </motion.div>
+                ) : (
+                  <motion.form
+                    key="form"
+                    onSubmit={onSubmit}
+                    noValidate
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, ease: EASE }}
+                    className="flex flex-col gap-4"
+                  >
+                    <div>
+                      <h3 className="text-xl font-extrabold uppercase tracking-tight">
+                        {t('form.title')}
+                      </h3>
+                      <p className="mt-1.5 text-sm text-w-70">{t('form.subtitle')}</p>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <label className="flex flex-col gap-2">
+                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-w-50">
+                          {t('form.name')} *
+                        </span>
+                        <input
+                          name="name"
+                          type="text"
+                          required
+                          autoComplete="name"
+                          placeholder={t('form.namePlaceholder')}
+                          className={fieldClass}
+                        />
+                      </label>
+
+                      <label className="flex flex-col gap-2">
+                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-w-50">
+                          {t('form.company')}
+                        </span>
+                        <input
+                          name="company"
+                          type="text"
+                          autoComplete="organization"
+                          placeholder={t('form.companyPlaceholder')}
+                          className={fieldClass}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <label className="flex flex-col gap-2">
+                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-w-50">
+                          {t('form.phone')} *
+                        </span>
+                        <input
+                          name="phone"
+                          type="tel"
+                          required
+                          inputMode="tel"
+                          autoComplete="tel"
+                          placeholder={t('form.phonePlaceholder')}
+                          className={fieldClass}
+                        />
+                      </label>
+
+                      <label className="flex flex-col gap-2">
+                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-w-50">
+                          {t('form.city')} *
+                        </span>
+                        <select name="city" required defaultValue="" className={fieldClass}>
+                          <option value="" disabled>
+                            {t('form.cityPlaceholder')}
+                          </option>
+                          {CITIES.map((city) => (
+                            <option key={city} value={city}>
+                              {city}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+
+                    <label className="flex flex-col gap-2">
+                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-w-50">
+                        {t('form.comment')}
+                      </span>
+                      <textarea
+                        name="comment"
+                        rows={4}
+                        placeholder={t('form.commentPlaceholder')}
+                        className={`${fieldClass} resize-none`}
+                      />
+                    </label>
+
+                    <AnimatePresence>
+                      {error ? (
+                        <motion.p
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.25, ease: EASE }}
+                          role="alert"
+                          className="text-sm text-rose-300"
+                        >
+                          {error}
+                        </motion.p>
+                      ) : null}
+                    </AnimatePresence>
+
+                    <motion.button
+                      type="submit"
+                      disabled={status === 'loading'}
+                      whileHover={status === 'loading' ? undefined : { scale: 1.02, y: -2 }}
+                      whileTap={status === 'loading' ? undefined : { scale: 0.98 }}
+                      transition={springPop}
+                      className="mt-1 inline-flex items-center justify-center gap-2.5 rounded-pill bg-accent-grad px-7 py-4 text-sm font-bold uppercase tracking-wide text-white shadow-glow disabled:opacity-70"
+                    >
+                      <AnimatePresence mode="wait" initial={false}>
+                        {status === 'loading' ? (
+                          <motion.span
+                            key="loading"
+                            className="inline-flex items-center gap-2.5"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                          >
+                            <motion.span
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}
+                              className="grid place-items-center"
+                            >
+                              <Loader2 className="h-4 w-4" aria-hidden="true" />
+                            </motion.span>
+                            {t('form.submitting')}
+                          </motion.span>
+                        ) : (
+                          <motion.span
+                            key="idle"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                          >
+                            {t('form.submit')}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </motion.button>
+
+                    <p className="text-xs leading-relaxed text-w-50">{t('form.consent')}</p>
+                  </motion.form>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </RevealGroup>
+        </div>
+      </div>
+    </section>
+  );
+}
