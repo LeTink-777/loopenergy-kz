@@ -7,6 +7,10 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  experimental: {
+    // Tree-shakes icon imports so only the glyphs we use reach the bundle.
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'loopenergy.ru' }],
     formats: ['image/avif', 'image/webp'],

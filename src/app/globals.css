@@ -229,7 +229,11 @@
     display: flex;
     gap: var(--space-md);
     overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    /* Snapping is switched on by `data-snap` only after the visitor first
+       touches the rail. A snap container performs an automatic snap-scroll at
+       layout time, and Chrome finalises LCP on the first scroll — declaring
+       `scroll-snap-type` up front leaves the whole document with no LCP
+       candidate at all. By the time a pointer lands, LCP is already settled. */
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
@@ -237,6 +241,10 @@
     margin-inline: calc(var(--container-padding) * -1);
     padding-inline: var(--container-padding);
     padding-block-end: var(--space-xs);
+  }
+
+  .products-rail[data-snap='on'] {
+    scroll-snap-type: x proximity;
   }
 
   .products-rail::-webkit-scrollbar {
@@ -388,9 +396,12 @@
 
   .scroll-x-snap {
     -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     scrollbar-width: none;
+  }
+
+  .scroll-x-snap[data-snap='on'] {
+    scroll-snap-type: x proximity;
   }
 
   .scroll-x-snap::-webkit-scrollbar {

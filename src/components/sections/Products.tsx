@@ -3,6 +3,7 @@
 import { m } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useEffect, useRef } from 'react';
 
 import { ProductCard } from '@/components/ui/ProductCard';
 import { RevealGroup } from '@/components/ui/Reveal';
@@ -12,6 +13,21 @@ import { PRODUCTS } from '@/lib/constants';
 
 export function Products() {
   const t = useTranslations('products');
+  const rail = useRef<HTMLDivElement>(null);
+
+  // Turn on scroll snapping the first time the visitor reaches for the rail.
+  // Declaring it in CSS up front makes Chrome snap-scroll during layout, which
+  // finalises Largest Contentful Paint before any element can be recorded.
+  useEffect(() => {
+    const node = rail.current;
+    if (!node) return;
+
+    const enable = () => node.setAttribute('data-snap', 'on');
+    const events = ['pointerdown', 'touchstart', 'keydown', 'wheel'] as const;
+    events.forEach((event) => node.addEventListener(event, enable, { once: true, passive: true }));
+
+    return () => events.forEach((event) => node.removeEventListener(event, enable));
+  }, []);
 
   return (
     <section id="products" className="section-pad relative scroll-mt-28">
@@ -30,6 +46,7 @@ export function Products() {
 
         <RevealGroup
           stagger={0.12}
+          innerRef={rail}
           className="products-rail mt-fluid-xl"
         >
           {PRODUCTS.map((product, index) => (

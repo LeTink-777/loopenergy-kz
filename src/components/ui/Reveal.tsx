@@ -1,7 +1,7 @@
 'use client';
 
 import { m, type Variants } from 'framer-motion';
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
 
 import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 import { staggerContainer } from './motion';
@@ -67,6 +67,7 @@ export function RevealGroup({
   amount = 0.15,
   as = 'div',
   id,
+  innerRef,
 }: {
   children: ReactNode;
   className?: string;
@@ -75,12 +76,15 @@ export function RevealGroup({
   amount?: number;
   as?: RevealTag;
   id?: string;
+  /** Escape hatch for callers that need the underlying node (e.g. scroll rails). */
+  innerRef?: Ref<HTMLDivElement>;
 }) {
   const Component = TAGS[as];
   const { reducedMotion } = useUniversalMotion();
 
   return (
     <Component
+      ref={innerRef as never}
       id={id}
       className={className}
       initial="hidden"

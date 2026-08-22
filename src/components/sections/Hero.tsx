@@ -15,7 +15,14 @@ const FEATURES = [
   { key: 'health', image: IMG.feature3 },
 ] as const;
 
-/** Splits a line into words so the headline can reveal word by word. */
+/**
+ * Splits a line into words so the headline settles in word by word.
+ *
+ * Transform-only on purpose: an element whose first paint is at `opacity: 0` is
+ * permanently disqualified as a Largest Contentful Paint candidate, and Framer's
+ * compositor-driven opacity never re-registers it. Animating `y` alone keeps the
+ * headline paintable — and therefore measurable — from the very first frame.
+ */
 function Words({ text, delay = 0, className }: { text: string; delay?: number; className?: string }) {
   return (
     <>
@@ -23,8 +30,8 @@ function Words({ text, delay = 0, className }: { text: string; delay?: number; c
         <m.span
           key={`${word}-${index}`}
           className={`inline-block max-w-full break-words ${className ?? ''}`}
-          initial={{ opacity: 0, y: '0.4em' }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ y: '0.16em' }}
+          animate={{ y: 0 }}
           transition={{ duration: 0.55, ease: EASE, delay: delay + index * 0.045 }}
         >
           {word}
