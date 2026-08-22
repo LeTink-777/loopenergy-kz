@@ -568,7 +568,7 @@ export const content = {
         'Картой онлайн или через Kaspi. Приём онлайн-платежей подключается — пока менеджер подтверждает заказ по телефону.',
     },
 
-    energy_burst: {
+    can_animation: {
       aria_label: 'Прокручиваемая анимация LOOP Energy',
       scroll_hint: 'Листай вниз',
       still_alt: 'Банка кофеиновых паучей LOOP Energy',
@@ -1241,7 +1241,7 @@ export const content = {
         'Картамен онлайн немесе Kaspi арқылы. Онлайн төлем қосылуда — әзірге менеджер тапсырысты телефон арқылы растайды.',
     },
 
-    energy_burst: {
+    can_animation: {
       aria_label: 'LOOP Energy айналдырмалы анимациясы',
       scroll_hint: 'Төмен жылжыт',
       still_alt: 'LOOP Energy кофеин пауштарының банкасы',

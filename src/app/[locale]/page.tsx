@@ -3,7 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { Audience } from '@/components/sections/Audience';
 import { B2BTeaser } from '@/components/sections/B2BTeaser';
-import { EnergyBurst } from '@/components/sections/EnergyBurst';
+import { CanAnimation } from '@/components/sections/CanAnimation';
 import { FAQ } from '@/components/sections/FAQ';
 import { Hero } from '@/components/sections/Hero';
 import { HowToUse } from '@/components/sections/HowToUse';
@@ -29,7 +29,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(resolved)) }}
       />
       <Hero />
-      <EnergyBurst />
+      <CanAnimation />
       <TrustBar />
       <Stats />
       <ProductInfo />
