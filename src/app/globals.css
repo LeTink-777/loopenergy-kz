@@ -123,6 +123,16 @@
     min-width: 44px;
   }
 
+  /* Checkboxes, radios and visually-hidden inputs draw their touch target from
+     the label that wraps them, so the 44px floor above would only stretch the
+     box out of shape. */
+  input[type='checkbox'],
+  input[type='radio'],
+  .sr-only {
+    min-height: 0;
+    min-width: 0;
+  }
+
   input,
   select,
   textarea {

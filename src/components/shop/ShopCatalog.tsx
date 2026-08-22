@@ -175,7 +175,7 @@ export function ShopCatalog() {
         {visible.length > 0 ? (
           <RevealGroup stagger={0.08} className="grid-products">
             {visible.map((product, index) => (
-              <ProductGridCard key={product.id} product={product} priority={index < 2} />
+              <ProductGridCard key={product.id} product={product} priority={index < 2} headingLevel="h2" />
             ))}
           </RevealGroup>
         ) : (

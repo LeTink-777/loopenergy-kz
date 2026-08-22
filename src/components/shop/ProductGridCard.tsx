@@ -17,7 +17,17 @@ import type { Locale } from '@/lib/content';
 import { t as pick, type Product } from '@/lib/products';
 import { useCartStore } from '@/store/cartStore';
 
-export function ProductGridCard({ product, priority = false }: { product: Product; priority?: boolean }) {
+export function ProductGridCard({
+  product,
+  priority = false,
+  headingLevel = 'h3',
+}: {
+  product: Product;
+  priority?: boolean;
+  /** `h2` where the cards sit directly under the page `h1`. */
+  headingLevel?: 'h2' | 'h3';
+}) {
+  const Heading = headingLevel;
   const locale = useLocale() as Locale;
   const t = useTranslations('shop');
   const addItem = useCartStore((s) => s.addItem);
@@ -78,11 +88,11 @@ export function ProductGridCard({ product, priority = false }: { product: Produc
         </Link>
 
         <div className="flex flex-1 flex-col">
-          <h3 className="text-fluid-md font-bold uppercase tracking-tight">
+          <Heading className="text-fluid-md font-bold uppercase tracking-tight">
             <Link href={`/shop/${product.slug}`} className="transition-colors hover:text-accent-light">
               {name}
             </Link>
-          </h3>
+          </Heading>
           <p className="mt-1 flex-1 text-fluid-sm leading-relaxed text-w-70">
             {pick(product.tagline, locale)}
           </p>
