@@ -107,6 +107,38 @@ export function buildMetadata(locale: Locale): Metadata {
   };
 }
 
+type PageKey = 'shop' | 'delivery' | 'wholesale' | 'cart' | 'checkout' | 'order';
+
+/**
+ * Metadata for a sub-page: inherits the site defaults, overrides title,
+ * description and the canonical/hreflang set for that path.
+ */
+export function pageMetadata(locale: Locale, key: PageKey, path: string): Metadata {
+  const c = content[locale];
+  // Sub-page namespaces carry an optional meta_title / meta_description pair.
+  const section = c[key] as Partial<Record<'meta_title' | 'meta_description' | 'h1', string>>;
+  const title = section.meta_title ?? section.h1 ?? c.meta.home_title;
+  const description = section.meta_description ?? c.meta.home_description;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `/${locale}${path}`,
+      languages: { ru: `/ru${path}`, kk: `/kz${path}`, 'x-default': `/ru${path}` },
+    },
+    openGraph: {
+      type: 'website',
+      siteName: SITE.name,
+      locale: ogLocale(locale),
+      url: `${SITE.url}/${locale}${path}`,
+      title,
+      description,
+      images: [{ url: '/og-image.png', width: 1200, height: 630, alt: c.meta.og_image_alt }],
+    },
+  };
+}
+
 /**
  * Structured data graph. FAQPage pulls from the same copy the page renders, so
  * a rich result can never drift from what a visitor actually sees.

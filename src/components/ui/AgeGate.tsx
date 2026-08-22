@@ -9,7 +9,7 @@ import { EASE, springPop } from './motion';
 const STORAGE_KEY = 'le_age_confirmed';
 
 /**
- * One-time 18+ confirmation, remembered in localStorage.
+ * One-time 21+ confirmation, remembered in localStorage.
  *
  * The gate is server-rendered so a first-time visitor sees it in the very first
  * paint. Returning visitors never see it either: an inline script in the layout
