@@ -66,7 +66,7 @@ export function Footer() {
       />
 
       <div className="container-content relative pb-safe-cta pt-fluid-2xl">
-        <RevealGroup className="grid-auto-sm">
+        <RevealGroup className="grid-footer">
           <Reveal variants={fadeUp} className="lg:col-span-1">
             <p className="text-fluid-lg font-black uppercase tracking-[0.14em]">
               LOOP<span className="text-accent-light">&nbsp;Energy</span>

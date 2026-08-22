@@ -194,8 +194,14 @@
      device breakpoint. `min()` keeps the track from overflowing narrow screens. --- */
   .grid-auto-sm {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
     gap: var(--space-md);
+  }
+
+  .grid-footer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(155px, 100%), 1fr));
+    gap: var(--space-lg);
   }
 
   .grid-auto-md {
@@ -370,7 +376,14 @@
 
 @layer utilities {
   .pb-safe-cta {
-    padding-bottom: max(var(--space-2xl), calc(var(--space-2xl) + var(--safe-bottom)));
+    padding-bottom: calc(var(--space-2xl) + var(--safe-bottom));
+  }
+
+  /* Clear the sticky CTA wherever it is on screen. */
+  @media (max-width: 959px) {
+    .pb-safe-cta {
+      padding-bottom: calc(var(--space-2xl) + var(--safe-bottom) + 72px);
+    }
   }
 
   .scroll-x-snap {
