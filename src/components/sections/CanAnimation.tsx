@@ -31,8 +31,30 @@ const LIGHT = { r: 183, g: 141, b: 255 };
 const WHITE = { r: 255, g: 255, b: 255 };
 
 const CAN_SRC = '/assets/brand/can-hero.webp';
+const LID_SRC = '/assets/tin/lid.webp';
+const BODY_SRC = '/assets/tin/body.webp';
 const POUCH_SRC = '/assets/pouches/pouch-main.webp';
 const LOGO_SRC = '/assets/brand/logo.svg';
+
+/**
+ * Geometry measured off the source render the lid and body were cut from, in
+ * the body sprite's own pixels. `seat` is the affine that lands the lid disc
+ * on the rim: the lid was photographed leaning against the tin, so putting it
+ * back means mapping its ellipse onto the rim's, and both being projections of
+ * the same circle makes that mapping exact rather than an approximation.
+ */
+const TIN = {
+  lid: [600, 348],
+  body: [619, 514],
+  /** Lid origin in body coordinates, in the pose it was photographed in. */
+  rest: [315, -116],
+  /** m00, m01, m10, m11, tx, ty. */
+  seat: [0.86294, 0.33775, -0.62839, 1.50277, -9.11, 130.32],
+  /** Centre and semi-axes of the tin's mouth. */
+  rim: [307.57, 202.5, 296.4, 204.2],
+  /** Centre of the assembled tin, so stage 1 sits in the middle of the frame. */
+  closedCentre: [309.5, 254.5],
+} as const;
 
 // Stage boundaries live together so the timeline reads in one place.
 const SPLIT_IN = 0.2;
@@ -149,7 +171,8 @@ export function CanAnimation() {
   /** CSS-pixel size. Every drawing maths uses this, never `canvas.width`. */
   const sizeRef = useRef({ w: 0, h: 0 });
   const stateRef = useRef({
-    canImage: null as HTMLImageElement | null,
+    lidImage: null as HTMLImageElement | null,
+    bodyImage: null as HTMLImageElement | null,
     pouchImage: null as HTMLImageElement | null,
     logoImage: null as HTMLImageElement | null,
     frame: 0,
@@ -324,7 +347,6 @@ export function CanAnimation() {
     const cy = h / 2;
     const p = progressRef.current;
     const unit = Math.min(w, h);
-    const canSize = unit * 0.62;
     // Sprite radii are authored in desktop pixels. Left unscaled, a phone gets
     // the same 40px blobs across a third of the width, and the swarm reads as
     // a handful of smudges instead of a spray.
@@ -363,110 +385,109 @@ export function CanAnimation() {
     // Scrolling back up rewinds the sequence instead of leaving it spent.
     if (p < SPLIT_IN && s.spinLocked) s.spinLocked = false;
 
-    // ── Stages 1–2: the tin hovers, turns, then splits ────────────────────
-    // Both halves are the same image under one rotated transform, so at
-    // separation 0 they reassemble seamlessly and stage 1 needs no special case.
+    // ── Stages 1–2: the tin hovers, then the lid comes off ────────────────
+    // The lid and the body are two cut-outs of one product render, so they
+    // share a camera and a light. `TIN.seat` is the affine that puts the lid
+    // disc back on the rim — both are projections of the same circle, so an
+    // affine between them is exact, and interpolating away from it lifts the
+    // lid off the tin instead of sliding a cropped picture around.
     const splitT = easeInOut(clamp01((p - SPLIT_IN) / (POUCH_IN - SPLIT_IN)));
-    // Once the pouch is out the halves keep drifting clear of the frame.
+    // Once the pouch is out, both halves keep clearing the frame.
     const driftT = easeOut(clamp01((p - POUCH_IN) / (BURST_IN - POUCH_IN)));
     const tinAlpha = clamp01(p / 0.05) * (1 - clamp01((p - 0.56) / 0.1));
 
-    // The tin also recedes as it opens, which is what buys the halves room to
-    // separate without either of them sliding off the top or bottom edge.
-    const drawn = canSize * mix(mix(0.86, 1, clamp01(p / 0.06)), 0.78, splitT);
-    const gap = canSize * (0.34 * splitT + 0.5 * driftT);
+    const scale = (unit * 0.66) / TIN.body[0];
+    const originX = cx - TIN.closedCentre[0] * scale;
+    const originY = cy - TIN.closedCentre[1] * scale;
+    // Where the tin's mouth is on screen — the pouch rises out of this, not
+    // out of the middle of the canvas.
+    const rimX = originX + TIN.rim[0] * scale;
+    let rimY = originY + TIN.rim[1] * scale;
 
-    if (s.canImage && tinAlpha > 0.01) {
-      if (p < SPLIT_IN) {
-        s.spin += 0.004;
-      } else if (!s.spinLocked) {
-        s.spinLock = s.spin;
-        s.spinLocked = true;
-      }
-
-      // The spin unwinds to level over the first sliver of the split, so the
-      // tin cracks along a horizontal seam rather than a tumbling one.
-      const rot = p < SPLIT_IN ? s.spin : s.spinLock * (1 - easeOut(clamp01((p - SPLIT_IN) / 0.08)));
-
+    if (s.bodyImage && s.lidImage && tinAlpha > 0.01) {
+      // A 3/4 tin spun about the screen axis reads as a wheel, so it breathes
+      // and rocks instead.
+      const rock = Math.sin(s.frame * 0.013) * 0.03 * (1 - splitT);
       const bob = Math.sin(s.frame * 0.02) * unit * 0.012 * (1 - splitT);
+      const drop = unit * (0.16 * splitT + 0.4 * driftT);
+      const lift = unit * (0.44 * splitT + 0.6 * driftT);
+      // The lid un-warps back to the pose it was photographed in as it rises.
+      const opened = easeOut(clamp01((p - SPLIT_IN) / 0.22));
+
+      rimY += drop + bob;
 
       ctx.save();
-      ctx.translate(cx, cy + bob);
-      ctx.rotate(rot);
       ctx.globalAlpha = tinAlpha;
+      ctx.translate(cx, cy + bob);
+      ctx.rotate(rock);
+      ctx.translate(-cx, -cy);
 
-      const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, canSize * 0.95);
+      const halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, unit * 0.62);
       const pulse = Math.sin(s.frame * 0.045) * 0.5 + 0.5;
       halo.addColorStop(0, `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},${0.18 + pulse * 0.12})`);
       halo.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = halo;
-      ctx.fillRect(-canSize, -canSize, canSize * 2, canSize * 2);
+      ctx.fillRect(cx - unit, cy - unit, unit * 2, unit * 2);
 
-      if (gap < 0.5) {
-        // Whole tin: no clip, so no antialiased hairline down the middle.
-        ctx.drawImage(s.canImage, -drawn / 2, -drawn / 2, drawn, drawn);
-      } else {
-        // Each half is clipped to its own half of the *artwork*, not to a half
-        // of the frame. Clipping in frame space shows the band between the two
-        // cut edges twice — once in each half — which reads as a broken image.
-        // Both rects still live in the tin's rotated space, which is why the
-        // seam tilts with whatever spin is left to unwind.
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(-w * 2, -h * 2, w * 4, h * 2 - gap);
-        ctx.clip();
-        ctx.drawImage(s.canImage, -drawn / 2, -gap - drawn / 2, drawn, drawn);
-        ctx.restore();
+      ctx.save();
+      ctx.translate(originX, originY + drop);
+      ctx.scale(scale, scale);
+      ctx.drawImage(s.bodyImage, 0, 0, TIN.body[0], TIN.body[1]);
+      ctx.restore();
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(-w * 2, gap, w * 4, h * 2);
-        ctx.clip();
-        ctx.drawImage(s.canImage, -drawn / 2, gap - drawn / 2, drawn, drawn);
-        ctx.restore();
-      }
-
-      // What the tin is holding, leaking out of the gap as it opens.
+      // Light out of the open mouth, drawn between the two parts so the lid
+      // still caps it while the tin is shut.
       if (splitT > 0.01) {
+        ctx.save();
         ctx.globalCompositeOperation = 'lighter';
+        ctx.translate(rimX, rimY);
+        ctx.scale(1, TIN.rim[3] / TIN.rim[2]);
+        const mouth = ctx.createRadialGradient(0, 0, 0, 0, 0, TIN.rim[2] * scale);
+        mouth.addColorStop(0, `rgba(${WHITE.r},${WHITE.g},${WHITE.b},${0.5 * splitT})`);
+        mouth.addColorStop(0.45, `rgba(${LIGHT.r},${LIGHT.g},${LIGHT.b},${0.35 * splitT})`);
+        mouth.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = mouth;
+        const r = TIN.rim[2] * scale;
+        ctx.fillRect(-r, -r, r * 2, r * 2);
+        ctx.restore();
 
-        // A lit edge on each cut face. Without it the two halves read as a
-        // picture that failed to load rather than an object sliced open.
-        const edgeW = drawn * 0.92;
-        const edgeH = Math.max(1.5, unit * 0.004);
-        const edge = ctx.createLinearGradient(-edgeW / 2, 0, edgeW / 2, 0);
-        edge.addColorStop(0, 'rgba(183,141,255,0)');
-        edge.addColorStop(0.5, `rgba(${WHITE.r},${WHITE.g},${WHITE.b},${0.85 * splitT})`);
-        edge.addColorStop(1, 'rgba(183,141,255,0)');
-        ctx.fillStyle = edge;
-        ctx.fillRect(-edgeW / 2, -gap - edgeH, edgeW, edgeH);
-        ctx.fillRect(-edgeW / 2, gap, edgeW, edgeH);
-
-        const bloom = ctx.createRadialGradient(0, 0, 0, 0, 0, canSize * 0.75 * splitT);
-        bloom.addColorStop(0, `rgba(${LIGHT.r},${LIGHT.g},${LIGHT.b},${0.5 * splitT})`);
-        bloom.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = bloom;
-        ctx.fillRect(-canSize, -canSize, canSize * 2, canSize * 2);
-
-        // Sparks escaping the gap. Positions are a function of frame and index,
-        // so they cost no state and rewind for free when the visitor scrolls up.
+        // Sparks lifting out of the tin. Positions are a function of frame and
+        // index, so they cost no state and rewind for free on the way back up.
         const sparks = s.burstPalette.length ? budgetRef.current.sparks : 0;
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
         for (let i = 0; i < sparks; i += 1) {
           const seed = Math.sin(i * 12.9898) * 43758.5453;
           const jitter = seed - Math.floor(seed);
-          const phase = ((s.frame * 0.012 + i / sparks) % 1 + 1) % 1;
-          const dir = i % 2 === 0 ? -1 : 1;
-          const sx = (jitter - 0.5) * edgeW * 0.85;
-          const sy = dir * (gap * 0.15 + phase * gap * 0.85);
+          const phase = (((s.frame * 0.012 + i / sparks) % 1) + 1) % 1;
+          const climb = phase * (lift + unit * 0.12);
+          const sx = rimX + (jitter - 0.5) * TIN.rim[2] * scale * 1.5;
+          const sy = rimY - climb;
           const a = (1 - phase) * splitT * 0.9;
-          const r = unit * 0.006 * (0.5 + jitter);
+          const rad = unit * 0.006 * (0.5 + jitter);
 
           ctx.globalAlpha = tinAlpha * a;
-          ctx.drawImage(s.burstPalette[i % s.burstPalette.length], sx - r * 4, sy - r * 4, r * 8, r * 8);
+          ctx.drawImage(s.burstPalette[i % s.burstPalette.length], sx - rad * 4, sy - rad * 4, rad * 8, rad * 8);
         }
-        ctx.globalAlpha = tinAlpha;
-        ctx.globalCompositeOperation = 'source-over';
+        ctx.restore();
       }
+
+      ctx.save();
+      ctx.translate(originX, originY - lift);
+      ctx.scale(scale, scale);
+      ctx.transform(
+        mix(TIN.seat[0], 1, opened),
+        mix(TIN.seat[2], 0, opened),
+        mix(TIN.seat[1], 0, opened),
+        mix(TIN.seat[3], 1, opened),
+        // Only part of the way back to where it was photographed: the pose is
+        // what sells the lift, but the full sideways drift walks it out of the
+        // frame when what the eye wants is the lid coming straight up.
+        mix(TIN.seat[4], TIN.rest[0] * 0.45, opened),
+        mix(TIN.seat[5], TIN.rest[1], opened),
+      );
+      ctx.drawImage(s.lidImage, 0, 0, TIN.lid[0], TIN.lid[1]);
+      ctx.restore();
 
       ctx.restore();
       ctx.globalAlpha = 1;
@@ -487,7 +508,7 @@ export function CanAnimation() {
       const scale = mix(0.35, 1, rise);
 
       ctx.save();
-      ctx.translate(cx, cy + unit * 0.14 * (1 - rise));
+      ctx.translate(rimX, mix(rimY, cy, rise) + unit * 0.06 * (1 - rise));
       ctx.rotate(tilt);
       ctx.scale(scale, scale);
       ctx.globalAlpha = clamp01(stage * 3);
@@ -515,13 +536,15 @@ export function CanAnimation() {
       const stage = clamp01((p - BURST_IN) / (WORD_IN - BURST_IN));
 
       if (!s.burstSpawned) {
-        s.burst = spawnBurst(cx, cy, pouchW, pouchH);
+        s.burst = spawnBurst(cx, cy, pouchW, pouchH);   // the pouch has reached centre by now
         s.burstSpawned = true;
       }
 
-      if (stage < 0.14) {
-        const flash = 1 - stage / 0.14;
-        ctx.fillStyle = `rgba(255,255,255,${flash * 0.65})`;
+      // Scroll drives this, so a slow reader can park mid-flash — hence a
+      // shorter, gentler one than a timed animation would want.
+      if (stage < 0.1) {
+        const flash = 1 - stage / 0.1;
+        ctx.fillStyle = `rgba(255,255,255,${flash * flash * 0.45})`;
         ctx.fillRect(0, 0, w, h);
       }
 
@@ -634,8 +657,11 @@ export function CanAnimation() {
 
         // Fetch the artwork only once the section is close — loading it on
         // mount would compete with the hero image for the LCP.
-        if (entry.isIntersecting && !stateRef.current.canImage) {
-          const load = (src: string, onto: 'canImage' | 'pouchImage' | 'logoImage') => {
+        if (entry.isIntersecting && !stateRef.current.bodyImage) {
+          const load = (
+            src: string,
+            onto: 'lidImage' | 'bodyImage' | 'pouchImage' | 'logoImage',
+          ) => {
             const img = new Image();
             img.src = src;
             img.decoding = 'async';
@@ -649,7 +675,8 @@ export function CanAnimation() {
               }
             };
           };
-          load(CAN_SRC, 'canImage');
+          load(LID_SRC, 'lidImage');
+          load(BODY_SRC, 'bodyImage');
           load(POUCH_SRC, 'pouchImage');
           load(LOGO_SRC, 'logoImage');
         }
