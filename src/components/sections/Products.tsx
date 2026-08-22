@@ -3,33 +3,19 @@
 import { m } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef } from 'react';
 
-import { ProductCard } from '@/components/ui/ProductCard';
+import { Link } from '@/i18n/navigation';
+import { useUniversalMotion } from '@/hooks/useUniversalMotion';
+
+import { ProductGridCard } from '@/components/shop/ProductGridCard';
 import { RevealGroup } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { fadeUp, springPop } from '@/components/ui/motion';
-import type { Content } from '@/lib/content';
+import { products } from '@/lib/products';
 
 export function Products() {
   const t = useTranslations('products');
-  const items = t.raw('items') as Content['products']['items'];
-  const units = { caffeine: t('caffeine_unit'), portions: t('portions_unit') };
-  const rail = useRef<HTMLDivElement>(null);
-
-  // Turn on scroll snapping the first time the visitor reaches for the rail.
-  // Declaring it in CSS up front makes Chrome snap-scroll during layout, which
-  // finalises Largest Contentful Paint before any element can be recorded.
-  useEffect(() => {
-    const node = rail.current;
-    if (!node) return;
-
-    const enable = () => node.setAttribute('data-snap', 'on');
-    const events = ['pointerdown', 'touchstart', 'keydown', 'wheel'] as const;
-    events.forEach((event) => node.addEventListener(event, enable, { once: true, passive: true }));
-
-    return () => events.forEach((event) => node.removeEventListener(event, enable));
-  }, []);
+  const { hoverScale, tapPress } = useUniversalMotion();
 
   return (
     <section id="products" className="section-pad relative scroll-mt-28">
@@ -48,35 +34,26 @@ export function Products() {
 
         <RevealGroup
           stagger={0.12}
-          innerRef={rail}
-          className="products-rail mt-fluid-xl"
+          className="grid-products mt-fluid-xl"
         >
-          {items.map((product, index) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              index={index}
-              units={units}
-              priority={index < 2}
-            />
+          {products.map((product, index) => (
+            <ProductGridCard key={product.id} product={product} priority={index < 2} />
           ))}
         </RevealGroup>
 
         <RevealGroup className="mt-fluid-lg flex justify-center">
-          <m.a
-            variants={fadeUp}
-            href="#b2b"
-            whileHover={{ scale: 1.03, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            transition={springPop}
-            className="group inline-flex items-center gap-2 rounded-pill border border-w-15 bg-white/[0.03] px-7 py-4 text-fluid-sm font-bold uppercase tracking-wide text-w-80 transition-colors hover:border-accent/45 hover:text-white"
-          >
-            {t('show_all')}
-            <ArrowUpRight
-              className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              aria-hidden="true"
-            />
-          </m.a>
+          <m.div variants={fadeUp} whileHover={hoverScale} whileTap={tapPress} transition={springPop}>
+            <Link
+              href="/shop"
+              className="group inline-flex min-h-[52px] items-center gap-2 rounded-pill border border-w-15 bg-white/[0.03] px-7 text-fluid-sm font-bold uppercase tracking-wide text-w-80 transition-colors hover:border-accent/45 hover:text-white"
+            >
+              {t('show_all')}
+              <ArrowUpRight
+                className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                aria-hidden="true"
+              />
+            </Link>
+          </m.div>
         </RevealGroup>
       </div>
     </section>

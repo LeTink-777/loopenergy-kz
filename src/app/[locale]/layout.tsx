@@ -9,6 +9,7 @@ import { ContactWidget } from '@/components/layout/ContactWidget';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { StickyCta } from '@/components/layout/StickyCta';
+import { ToastHost } from '@/components/ui/ToastHost';
 import { MotionProvider } from '@/components/ui/MotionProvider';
 import { routing } from '@/i18n/routing';
 import type { Locale } from '@/lib/content';
@@ -69,6 +70,7 @@ export default async function LocaleLayout({
             <Footer />
             <ContactWidget />
             <StickyCta />
+            <ToastHost />
           </MotionProvider>
         </NextIntlClientProvider>
       </body>

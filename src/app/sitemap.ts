@@ -2,16 +2,24 @@ import type { MetadataRoute } from 'next';
 
 import { routing } from '@/i18n/routing';
 import { SITE } from '@/lib/constants';
+import { products } from '@/lib/products';
+
+/** Cart, checkout and order pages are personal and stay out of the index. */
+const PATHS = ['', '/shop', '/delivery', '/wholesale'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
-  const languages = { ru: `${SITE.url}/ru`, kk: `${SITE.url}/kz` };
+  const paths = [...PATHS, ...products.map((product) => `/shop/${product.slug}`)];
 
-  return routing.locales.map((locale) => ({
-    url: `${SITE.url}/${locale}`,
-    lastModified,
-    changeFrequency: 'weekly',
-    priority: locale === routing.defaultLocale ? 1 : 0.9,
-    alternates: { languages },
-  }));
+  return routing.locales.flatMap((locale) =>
+    paths.map((path) => ({
+      url: `${SITE.url}/${locale}${path}`,
+      lastModified,
+      changeFrequency: 'weekly' as const,
+      priority: path === '' ? 1 : path === '/shop' ? 0.9 : 0.7,
+      alternates: {
+        languages: { ru: `${SITE.url}/ru${path}`, kk: `${SITE.url}/kz${path}` },
+      },
+    })),
+  );
 }

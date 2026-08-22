@@ -1,18 +1,23 @@
 'use client';
 
 import { AnimatePresence, m, useMotionValueEvent, useScroll, useSpring } from 'framer-motion';
-import { Menu, ShoppingCart, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+import { CartIcon } from '@/components/cart/CartIcon';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { Link } from '@/i18n/navigation';
 import { EASE, springPop } from '@/components/ui/motion';
 import { NAV_LINKS } from '@/lib/constants';
 
 /** Nav item whose underline wipes in from the left on hover/focus. */
 function NavLink({ href, label }: { href: string; label: string }) {
+  const isRoute = href.startsWith('/');
+  const Component = isRoute ? m.create(Link) : m.a;
+
   return (
-    <m.a
+    <Component
       href={href}
       initial="rest"
       animate="rest"
@@ -28,7 +33,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
         variants={{ rest: { scaleX: 0 }, active: { scaleX: 1 } }}
         transition={{ duration: 0.32, ease: EASE }}
       />
-    </m.a>
+    </Component>
   );
 }
 
@@ -85,13 +90,13 @@ export function Header() {
           }}
           transition={{ duration: 0.35, ease: EASE }}
         >
-          <a
-            href="#hero"
+          <Link
+            href="/"
             className="inline-flex min-h-[44px] shrink-0 items-center whitespace-nowrap text-fluid-md font-black uppercase tracking-[0.12em]"
             onClick={() => setMenuOpen(false)}
           >
             LOOP<span className="text-accent-light">&nbsp;Energy</span>
-          </a>
+          </Link>
 
           <ul className="hidden items-center gap-1 nav:flex">
             {NAV_LINKS.map((link) => (
@@ -104,16 +109,7 @@ export function Header() {
           <div className="flex items-center gap-2 md:gap-3">
             <LanguageSwitcher className="hidden xs:flex" />
 
-            <m.a
-              href="#products"
-              aria-label={t('cart')}
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.94 }}
-              transition={springPop}
-              className="relative grid h-11 w-11 place-items-center rounded-pill border border-w-10 bg-white/[0.04] text-w-80 transition-colors hover:border-accent/40 hover:text-white"
-            >
-              <ShoppingCart className="h-[18px] w-[18px]" aria-hidden="true" />
-            </m.a>
+            <CartIcon />
 
             <m.button
               type="button"
@@ -169,13 +165,23 @@ export function Header() {
                     visible: { opacity: 1, x: 0, transition: { duration: 0.45, ease: EASE } },
                   }}
                 >
-                  <a
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="block border-b border-w-10 py-fluid-sm text-fluid-2xl font-extrabold uppercase tracking-tight text-white"
-                  >
-                    {t(`nav.${link.key}`)}
-                  </a>
+                  {link.href.startsWith('/') ? (
+                    <Link
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className="block border-b border-w-10 py-fluid-sm text-fluid-2xl font-extrabold uppercase tracking-tight text-white"
+                    >
+                      {t(`nav.${link.key}`)}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className="block border-b border-w-10 py-fluid-sm text-fluid-2xl font-extrabold uppercase tracking-tight text-white"
+                    >
+                      {t(`nav.${link.key}`)}
+                    </a>
+                  )}
                 </m.li>
               ))}
             </m.ul>
@@ -187,13 +193,13 @@ export function Header() {
               exit={{ opacity: 0 }}
             >
               <LanguageSwitcher />
-              <a
-                href="#b2b"
+              <Link
+                href="/wholesale"
                 onClick={() => setMenuOpen(false)}
                 className="inline-flex min-h-[48px] items-center rounded-pill bg-accent-grad px-6 text-fluid-xs font-bold uppercase tracking-wide text-white shadow-glow"
               >
                 {t('nav.partnership')}
-              </a>
+              </Link>
             </m.div>
           </m.div>
         ) : null}

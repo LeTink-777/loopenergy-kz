@@ -4,6 +4,8 @@ import { m } from 'framer-motion';
 import { Mail, Phone, Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { Link } from '@/i18n/navigation';
+
 import { Reveal, RevealGroup } from '@/components/ui/Reveal';
 import { fadeUp, springPop } from '@/components/ui/motion';
 import { CONTACTS, NAV_LINKS, SITE, SOCIALS } from '@/lib/constants';
@@ -51,6 +53,22 @@ function SocialGlyph({ name }: { name: string }) {
   );
 }
 
+/** Internal routes need the locale-aware Link; hash targets stay plain anchors. */
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const className =
+    'inline-flex min-h-[44px] items-center text-fluid-sm text-w-70 transition-colors hover:text-accent-light';
+
+  return href.startsWith('/') ? (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  ) : (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  );
+}
+
 export function Footer() {
   const t = useTranslations();
   // Rendered on the server at request time, so the notice never goes stale.
@@ -86,12 +104,7 @@ export function Footer() {
             <ul className="mt-fluid-xs">
               {NAV_LINKS.map((link) => (
                 <li key={link.key}>
-                  <a
-                    href={link.href}
-                    className="inline-flex min-h-[44px] items-center text-fluid-sm text-w-70 transition-colors hover:text-accent-light"
-                  >
-                    {t(`header.nav.${link.key}`)}
-                  </a>
+                  <FooterLink href={link.href}>{t(`header.nav.${link.key}`)}</FooterLink>
                 </li>
               ))}
             </ul>

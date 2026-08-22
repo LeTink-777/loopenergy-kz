@@ -7,7 +7,8 @@ import { useState } from 'react';
 
 import { EASE } from '@/components/ui/motion';
 import { formatTenge } from '@/lib/constants';
-import type { Content } from '@/lib/content';
+import { products } from '@/lib/products';
+import { Link } from '@/i18n/navigation';
 
 /**
  * Always-reachable CTA for screens too narrow to show the header nav.
@@ -23,8 +24,7 @@ export function StickyCta() {
     setShown(latest > 600);
   });
 
-  const items = t.raw('products.items') as Content['products']['items'];
-  const cheapest = items.reduce((low, item) => (Number(item.price) < Number(low.price) ? item : low), items[0]);
+  const cheapest = products.reduce((low, item) => (item.price < low.price ? item : low), products[0]);
 
   return (
     <AnimatePresence>
@@ -42,17 +42,17 @@ export function StickyCta() {
               {t('products.badge')}
             </p>
             <p className="whitespace-nowrap text-fluid-md font-extrabold leading-tight">
-              {t('products.from_price', { price: formatTenge(Number(cheapest.price)) })}
+              {t('products.from_price', { price: formatTenge(cheapest.price) })}
             </p>
           </div>
 
-          <a
-            href="#products"
+          <Link
+            href="/shop"
             className="inline-flex min-h-[44px] max-w-[190px] flex-1 items-center justify-center gap-2 rounded-pill bg-accent-grad px-fluid-sm text-fluid-xs font-bold uppercase tracking-wide text-white shadow-glow-sm"
           >
             <span className="truncate">{t('header.nav.catalog')}</span>
             <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
-          </a>
+          </Link>
         </m.div>
       ) : null}
     </AnimatePresence>

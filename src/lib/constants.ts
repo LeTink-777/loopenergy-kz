@@ -35,12 +35,13 @@ export const PRODUCT_IMAGES: Record<string, string> = {
 /** Kept for structured data, which needs an id → image map at build time. */
 export const PRODUCTS = Object.entries(PRODUCT_IMAGES).map(([id, image]) => ({ id, image }));
 
+/** `/`-prefixed entries are locale-aware routes; `#` entries scroll the homepage. */
 export const NAV_LINKS = [
-  { key: 'home', href: '#hero' },
-  { key: 'catalog', href: '#products' },
-  { key: 'about', href: '#product' },
-  { key: 'partnership', href: '#b2b' },
-  { key: 'faq', href: '#faq' },
+  { key: 'shop', href: '/shop' },
+  { key: 'about', href: '/#product' },
+  { key: 'delivery', href: '/delivery' },
+  { key: 'wholesale', href: '/wholesale' },
+  { key: 'faq', href: '/#faq' },
 ] as const;
 
 export const SOCIALS = [

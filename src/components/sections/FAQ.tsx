@@ -12,7 +12,13 @@ import type { Content } from '@/lib/content';
 
 export function FAQ() {
   const t = useTranslations('faq');
-  const items = t.raw('items') as Content['faq']['items'];
+  const tAnswers = useTranslations('answers');
+  // The short-answers block was folded in here, so the rendered list and the
+  // FAQPage structured data describe exactly the same questions.
+  const items = [
+    ...(t.raw('items') as Content['faq']['items']),
+    ...(tAnswers.raw('items') as Content['answers']['items']),
+  ];
   const baseId = useId();
   // Accordion is single-open: opening one question closes the previous.
   const [openKey, setOpenKey] = useState<string | null>(null);
