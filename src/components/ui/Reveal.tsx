@@ -3,7 +3,8 @@
 import { m, type Variants } from 'framer-motion';
 import type { ReactNode } from 'react';
 
-import { fadeUp, staggerContainer } from './motion';
+import { useUniversalMotion } from '@/hooks/useUniversalMotion';
+import { staggerContainer } from './motion';
 
 /** Only the elements we actually reveal — keeps motion components stable across renders. */
 const TAGS = {
@@ -35,11 +36,12 @@ export function Reveal({
   className,
   delay = 0,
   as = 'div',
-  variants = fadeUp,
-  amount = 0.25,
+  variants,
+  amount = 0.2,
   id,
 }: RevealProps) {
   const Component = TAGS[as];
+  const { revealVariants } = useUniversalMotion();
 
   return (
     <Component
@@ -48,7 +50,7 @@ export function Reveal({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount }}
-      variants={variants}
+      variants={variants ?? (revealVariants as Variants)}
       transition={{ delay }}
     >
       {children}
@@ -62,7 +64,7 @@ export function RevealGroup({
   className,
   stagger = 0.1,
   delayChildren = 0,
-  amount = 0.2,
+  amount = 0.15,
   as = 'div',
   id,
 }: {
@@ -75,6 +77,7 @@ export function RevealGroup({
   id?: string;
 }) {
   const Component = TAGS[as];
+  const { reducedMotion } = useUniversalMotion();
 
   return (
     <Component
@@ -83,7 +86,7 @@ export function RevealGroup({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount }}
-      variants={staggerContainer(stagger, delayChildren)}
+      variants={staggerContainer(reducedMotion ? 0 : stagger, delayChildren)}
     >
       {children}
     </Component>

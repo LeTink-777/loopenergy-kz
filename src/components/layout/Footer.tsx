@@ -66,10 +66,10 @@ export function Footer() {
       />
 
       <div className="container-content relative pb-safe-cta pt-fluid-2xl">
-        <RevealGroup className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <RevealGroup className="grid-auto-sm">
           <Reveal variants={fadeUp} className="lg:col-span-1">
-            <p className="text-fluid-md font-black uppercase tracking-[0.14em]">
-              LOOP<span className="text-accent-light"> Energy</span>
+            <p className="text-fluid-lg font-black uppercase tracking-[0.14em]">
+              LOOP<span className="text-accent-light">&nbsp;Energy</span>
             </p>
             <p className="mt-4 max-w-xs text-fluid-sm leading-relaxed text-w-70">{t('footer.tagline')}</p>
             <span className="mt-5 inline-flex items-center gap-2 rounded-pill border border-accent/30 bg-accent/10 px-3.5 py-2 text-[11px] font-bold uppercase leading-snug tracking-[0.12em] text-accent-light">
@@ -82,12 +82,12 @@ export function Footer() {
             <h3 className="text-fluid-xs font-bold uppercase tracking-[0.2em] text-w-50">
               {t('footer.navTitle')}
             </h3>
-            <ul className="mt-4 space-y-2.5">
+            <ul className="mt-fluid-xs">
               {NAV_LINKS.map((link) => (
                 <li key={link.key}>
                   <a
                     href={link.href}
-                    className="text-fluid-sm text-w-70 transition-colors hover:text-accent-light"
+                    className="inline-flex min-h-[44px] items-center text-fluid-sm text-w-70 transition-colors hover:text-accent-light"
                   >
                     {t(`nav.${link.key}`)}
                   </a>
@@ -100,11 +100,11 @@ export function Footer() {
             <h3 className="text-fluid-xs font-bold uppercase tracking-[0.2em] text-w-50">
               {t('footer.contactsTitle')}
             </h3>
-            <ul className="mt-4 space-y-2.5 text-fluid-sm">
+            <ul className="mt-fluid-xs text-fluid-sm">
               <li>
                 <a
                   href={CONTACTS.phone.href}
-                  className="inline-flex items-center gap-2 text-w-70 transition-colors hover:text-accent-light"
+                  className="inline-flex min-h-[44px] items-center gap-2 text-w-70 transition-colors hover:text-accent-light"
                 >
                   <Phone className="h-4 w-4" aria-hidden="true" />
                   {CONTACTS.phone.label}
@@ -113,7 +113,7 @@ export function Footer() {
               <li>
                 <a
                   href={CONTACTS.email.href}
-                  className="inline-flex items-center gap-2 text-w-70 transition-colors hover:text-accent-light"
+                  className="inline-flex min-h-[44px] items-center gap-2 text-w-70 transition-colors hover:text-accent-light"
                 >
                   <Mail className="h-4 w-4" aria-hidden="true" />
                   {CONTACTS.email.label}
@@ -124,7 +124,7 @@ export function Footer() {
                   href={CONTACTS.wholesaleTelegram.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-w-70 transition-colors hover:text-accent-light"
+                  className="inline-flex min-h-[44px] items-center gap-2 text-w-70 transition-colors hover:text-accent-light"
                 >
                   <Send className="h-4 w-4" aria-hidden="true" />
                   {CONTACTS.wholesaleTelegram.label}
@@ -137,7 +137,7 @@ export function Footer() {
             <h3 className="text-fluid-xs font-bold uppercase tracking-[0.2em] text-w-50">
               {t('footer.socialsTitle')}
             </h3>
-            <div className="mt-4 flex flex-wrap gap-2.5">
+            <div className="mt-fluid-xs flex flex-wrap gap-fluid-2xs">
               {SOCIALS.map((social) => (
                 <m.a
                   key={social.key}
@@ -162,8 +162,8 @@ export function Footer() {
           </Reveal>
         </RevealGroup>
 
-        <Reveal className="mt-12 border-t border-w-10 pt-7">
-          <div className="flex flex-col gap-4 text-fluid-xs text-w-50 md:flex-row md:items-center md:justify-between">
+        <Reveal className="mt-fluid-xl border-t border-w-10 pt-fluid-md">
+          <div className="flex flex-col gap-fluid-sm text-fluid-xs text-w-50 md:flex-row md:items-center md:justify-between">
             <p>
               © {year} {SITE.name}. {t('footer.rights')}.
             </p>

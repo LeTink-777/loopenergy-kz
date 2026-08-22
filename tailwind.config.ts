@@ -7,7 +7,7 @@ const config: Config = {
       screens: {
         // Logical thresholds only — never a device name.
         xs: '380px',
-        nav: '700px',
+        nav: '960px',
       },
       colors: {
         bg: 'var(--bg)',

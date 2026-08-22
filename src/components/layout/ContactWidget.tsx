@@ -66,7 +66,7 @@ export function ContactWidget() {
                   href={CONTACTS.consumerTelegram.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2.5 flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
+                  className="mt-fluid-xs flex min-h-[46px] items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
                 >
                   <Send className="h-4 w-4 text-accent-light" aria-hidden="true" />
                   {CONTACTS.consumerTelegram.label}
@@ -87,14 +87,14 @@ export function ContactWidget() {
                 <div className="mt-2.5 space-y-2">
                   <a
                     href={CONTACTS.phone.href}
-                    className="flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
+                    className="flex min-h-[46px] items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
                   >
                     <Phone className="h-4 w-4 text-accent-light" aria-hidden="true" />
                     {CONTACTS.phone.label}
                   </a>
                   <a
                     href={CONTACTS.email.href}
-                    className="flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
+                    className="flex min-h-[46px] items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
                   >
                     <Mail className="h-4 w-4 text-accent-light" aria-hidden="true" />
                     {CONTACTS.email.label}
@@ -103,7 +103,7 @@ export function ContactWidget() {
                     href={CONTACTS.wholesaleTelegram.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
+                    className="flex min-h-[46px] items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
                   >
                     <Send className="h-4 w-4 text-accent-light" aria-hidden="true" />
                     {CONTACTS.wholesaleTelegram.label}

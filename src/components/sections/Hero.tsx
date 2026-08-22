@@ -5,6 +5,7 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
+import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 import { EASE, springPop } from '@/components/ui/motion';
 import { IMG } from '@/lib/constants';
 
@@ -21,9 +22,9 @@ function Words({ text, delay = 0, className }: { text: string; delay?: number; c
       {text.split(' ').map((word, index) => (
         <m.span
           key={`${word}-${index}`}
-          className={`inline-block ${className ?? ''}`}
-          initial={{ opacity: 0, y: '0.5em', rotateX: -35 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
+          className={`inline-block max-w-full break-words ${className ?? ''}`}
+          initial={{ opacity: 0, y: '0.4em' }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: EASE, delay: delay + index * 0.045 }}
         >
           {word}
@@ -36,18 +37,20 @@ function Words({ text, delay = 0, className }: { text: string; delay?: number; c
 
 export function Hero() {
   const t = useTranslations('hero');
+  const { floatAnimation, floatTransition, hoverScale, tapPress, hoverLift } = useUniversalMotion();
 
   return (
-    <section id="hero" className="relative isolate overflow-hidden pb-16 pt-32 md:pb-24 md:pt-40">
+    <section
+      id="hero"
+      className="hero-shell relative isolate overflow-hidden pb-fluid-xl pt-[calc(var(--header-h)+var(--space-2xl))]"
+    >
       {/* Decorative brand wave, slowly breathing behind the content. */}
       <m.div
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] opacity-70 md:h-[820px]"
-        initial={{ scale: 1, opacity: 0 }}
-        animate={{ scale: [1, 1.02, 1], opacity: 0.7 }}
-        transition={{
-          scale: { duration: 8, repeat: Infinity, ease: 'easeInOut' },
-          opacity: { duration: 1.2, ease: EASE },
-        }}
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[clamp(360px,60vw,820px)]"
+        initial={{ scale: 1 }}
+        style={{ opacity: 'clamp(0.35, (100vw - 320px) / 900, 0.75)' }}
+        animate={{ scale: [1, 1.02, 1] }}
+        transition={{ scale: { duration: 8, repeat: Infinity, ease: 'easeInOut' } }}
         aria-hidden="true"
       >
         <Image
@@ -62,14 +65,14 @@ export function Hero() {
       </m.div>
 
       <div
-        className="pointer-events-none absolute left-1/2 top-[-160px] -z-10 h-[520px] w-[820px] max-w-[130vw] -translate-x-1/2 rounded-full opacity-70 blur-3xl"
+        className="pointer-events-none absolute left-1/2 top-[-160px] -z-10 h-[clamp(280px,45vw,520px)] w-[min(820px,130vw)] -translate-x-1/2 rounded-full opacity-70 blur-3xl"
         style={{ background: 'radial-gradient(circle, rgba(149,97,233,0.32), transparent 68%)' }}
         aria-hidden="true"
       />
 
       <div className="container-content">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:gap-10">
-          <div className="text-center lg:text-left">
+        <div className="grid-2col">
+          <div className="min-w-0 text-center lg:text-left">
             <m.span
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -96,7 +99,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: EASE, delay: 0.5 }}
-              className="mx-auto mt-6 max-w-xl text-fluid-base text-w-70  lg:mx-0"
+              className="mx-auto mt-fluid-sm max-w-[52ch] text-fluid-md text-w-70 lg:mx-0"
             >
               {t('subtitle')}
             </m.p>
@@ -105,12 +108,12 @@ export function Hero() {
               initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: EASE, delay: 0.6 }}
-              className="mt-9 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start"
+              className="mt-fluid-lg flex flex-wrap justify-center gap-fluid-xs lg:justify-start"
             >
               <m.a
                 href="#products"
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
+                whileHover={hoverScale}
+                whileTap={tapPress}
                 transition={springPop}
                 className="group inline-flex items-center justify-center gap-2 rounded-pill bg-accent-grad px-7 py-4 text-fluid-sm font-bold uppercase tracking-wide text-white shadow-glow"
               >
@@ -123,8 +126,8 @@ export function Hero() {
 
               <m.a
                 href="#product"
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
+                whileHover={hoverScale}
+                whileTap={tapPress}
                 transition={springPop}
                 className="inline-flex items-center justify-center rounded-pill border border-w-15 bg-white/[0.03] px-7 py-4 text-fluid-sm font-bold uppercase tracking-wide text-w-80 backdrop-blur-sm transition-colors hover:border-accent/45 hover:text-white"
               >
@@ -134,15 +137,15 @@ export function Hero() {
           </div>
 
           <m.div
-            className="relative mx-auto w-full max-w-[520px]"
+            className="relative mx-auto w-[min(480px,100%)]"
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: EASE, delay: 0.2 }}
           >
             <m.div
               className="relative aspect-square w-full"
-              animate={{ y: [0, -12, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              animate={floatAnimation}
+              transition={floatTransition}
             >
               <Image
                 src={IMG.hero}
@@ -157,7 +160,7 @@ export function Hero() {
         </div>
 
         <m.ul
-          className="mt-14 grid gap-4 sm:grid-cols-3 md:mt-20"
+          className="grid-auto-sm mt-fluid-2xl"
           initial="hidden"
           animate="visible"
           variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 0.7 } } }}
@@ -175,7 +178,9 @@ export function Hero() {
               }}
             >
               <m.div
-                whileHover={{ y: -6, boxShadow: '0 24px 60px -20px rgba(149, 97, 233, 0.2)' }}
+                whileHover={
+                  hoverLift && { ...hoverLift, boxShadow: '0 24px 60px -20px rgba(149, 97, 233, 0.2)' }
+                }
                 transition={{ duration: 0.35, ease: EASE }}
                 className="purple-ring flex h-full items-center gap-4 p-4 sm:flex-col sm:items-start sm:p-6"
               >

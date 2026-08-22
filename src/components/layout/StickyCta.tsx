@@ -46,9 +46,9 @@ export function StickyCta() {
 
           <a
             href="#products"
-            className="inline-flex max-w-[200px] flex-1 items-center justify-center gap-2 rounded-pill bg-accent-grad px-fluid-sm py-3 text-fluid-xs font-bold uppercase tracking-wide text-white shadow-glow-sm"
+            className="inline-flex min-h-[44px] max-w-[190px] flex-1 items-center justify-center gap-2 rounded-pill bg-accent-grad px-fluid-sm text-fluid-xs font-bold uppercase tracking-wide text-white shadow-glow-sm"
           >
-            <span className="truncate">{t('hero.ctaPrimary')}</span>
+            <span className="truncate">{t('nav.catalog')}</span>
             <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
           </a>
         </m.div>

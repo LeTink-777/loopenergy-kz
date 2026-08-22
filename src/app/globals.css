@@ -25,8 +25,8 @@
   --text-xl: clamp(1.2rem, 1rem + 1vw, 1.6rem);
   --text-2xl: clamp(1.4rem, 1.1rem + 1.5vw, 2rem);
   --text-3xl: clamp(1.6rem, 1.2rem + 2vw, 2.5rem);
-  --text-4xl: clamp(1.8rem, 1.2rem + 3vw, 3.5rem);
-  --text-5xl: clamp(2rem, 1.2rem + 4vw, 5rem);
+  --text-4xl: clamp(1.6rem, 1.1rem + 3vw, 3.5rem);
+  --text-5xl: clamp(1.75rem, 1rem + 4vw, 5rem);
 
   /* Fluid spacing scale. */
   --space-2xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.35rem);
@@ -144,8 +144,11 @@
 }
 
 @layer components {
+  /* Content column is exactly 1280px at its widest; the fluid gutter sits
+     outside it, so wide screens do not eat into the layout. */
   .container-content {
-    width: min(var(--container-max), 100%);
+    width: 100%;
+    max-width: calc(1280px + var(--container-padding) * 2);
     margin-inline: auto;
     padding-inline: var(--container-padding);
   }
@@ -160,6 +163,8 @@
     line-height: 1.06;
     letter-spacing: -0.02em;
     text-transform: uppercase;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
 
   .h2 {
@@ -168,6 +173,8 @@
     line-height: 1.12;
     letter-spacing: -0.02em;
     text-transform: uppercase;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
 
   .h3 {
@@ -258,7 +265,15 @@
   .grid-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
-    gap: var(--space-md);
+    gap: 1px;
+    overflow: hidden;
+    background: var(--white-10);
+  }
+
+  .grid-stats > * {
+    background: var(--bg);
+    padding-block: var(--space-md);
+    padding-inline: var(--space-sm);
   }
 
   .grid-steps {
@@ -315,6 +330,13 @@
     right: max(16px, calc(var(--safe-right) + 16px));
   }
 
+  /* Below the nav threshold the sticky CTA occupies the bottom edge. */
+  @media (max-width: 959px) {
+    .contact-widget {
+      bottom: calc(max(20px, calc(var(--safe-bottom) + 20px)) + 64px);
+    }
+  }
+
   /* Narrow screens have no header CTA, so keep one permanently reachable. */
   .sticky-cta {
     position: fixed;
@@ -333,7 +355,8 @@
     border-top: 1px solid rgba(149, 97, 233, 0.2);
   }
 
-  @media (min-width: 700px) {
+  /* Mirrors the `nav` breakpoint: once the header nav is visible, the bar goes. */
+  @media (min-width: 960px) {
     .sticky-cta {
       display: none;
     }

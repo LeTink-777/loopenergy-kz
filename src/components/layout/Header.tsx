@@ -18,13 +18,13 @@ function NavLink({ href, label }: { href: string; label: string }) {
       animate="rest"
       whileHover="active"
       whileFocus="active"
-      className="relative flex items-center px-3 py-2 text-fluid-sm font-medium text-w-70"
+      className="relative flex min-h-[44px] items-center whitespace-nowrap px-2.5 py-2 text-fluid-sm font-medium text-w-70"
       variants={{ rest: { color: 'rgba(255,255,255,0.7)' }, active: { color: '#ffffff' } }}
       transition={{ duration: 0.25, ease: EASE }}
     >
       {label}
       <m.span
-        className="absolute inset-x-3 bottom-1 block h-px origin-left bg-accent-light"
+        className="absolute inset-x-2.5 bottom-1.5 block h-px origin-left bg-accent-light"
         variants={{ rest: { scaleX: 0 }, active: { scaleX: 1 } }}
         transition={{ duration: 0.32, ease: EASE }}
       />
@@ -87,10 +87,10 @@ export function Header() {
         >
           <a
             href="#hero"
-            className="shrink-0 whitespace-nowrap text-fluid-md font-black uppercase tracking-[0.12em]"
+            className="inline-flex min-h-[44px] shrink-0 items-center whitespace-nowrap text-fluid-md font-black uppercase tracking-[0.12em]"
             onClick={() => setMenuOpen(false)}
           >
-            LOOP<span className="text-accent-light"> Energy</span>
+            LOOP<span className="text-accent-light">&nbsp;Energy</span>
           </a>
 
           <ul className="hidden items-center gap-1 nav:flex">

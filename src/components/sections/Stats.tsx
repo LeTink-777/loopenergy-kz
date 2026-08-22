@@ -16,13 +16,13 @@ export function Stats() {
       <div className="container-content">
         <RevealGroup
           stagger={0.15}
-          className="purple-ring grid-stats px-fluid-md py-fluid-lg"
+          className="purple-ring grid-stats"
         >
           {STATS.map((stat) => (
             <m.div
               key={stat.key}
               variants={fadeUp}
-              className="flex flex-col items-center gap-1.5 border-w-10 px-fluid-xs text-center [&:not(:first-child)]:border-l"
+              className="flex flex-col items-center gap-1.5 text-center"
             >
               <span className="text-fluid-3xl font-extrabold tracking-tight text-white">
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />

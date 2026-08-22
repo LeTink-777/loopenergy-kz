@@ -3,6 +3,7 @@
 import { m, type HTMLMotionProps } from 'framer-motion';
 import type { ReactNode } from 'react';
 
+import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 import { EASE } from './motion';
 
 type PurpleBorderCardProps = {
@@ -26,14 +27,15 @@ export function PurpleBorderCard({
   lift = 6,
   ...rest
 }: PurpleBorderCardProps) {
+  const { isTouch, reducedMotion } = useUniversalMotion();
+  const canHover = interactive && !isTouch && !reducedMotion;
+
   return (
     <m.div
       className={`purple-ring ${className}`}
       initial={false}
       whileHover={
-        interactive
-          ? { y: -lift, boxShadow: '0 24px 60px -20px rgba(149, 97, 233, 0.2)' }
-          : undefined
+        canHover ? { y: -lift, boxShadow: '0 24px 60px -20px rgba(149, 97, 233, 0.2)' } : undefined
       }
       transition={{ duration: 0.35, ease: EASE }}
       {...rest}

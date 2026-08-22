@@ -77,7 +77,7 @@ export function AgeGate() {
             />
 
             <p className="text-fluid-lg font-black uppercase tracking-[0.24em] text-white">
-              LOOP<span className="text-accent-light"> Energy</span>
+              LOOP<span className="text-accent-light">&nbsp;Energy</span>
             </p>
 
             <p className="mt-6 text-fluid-xs font-bold uppercase tracking-[0.2em] text-accent-light">
