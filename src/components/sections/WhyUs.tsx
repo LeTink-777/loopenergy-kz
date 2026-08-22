@@ -16,7 +16,7 @@ export function WhyUs() {
   return (
     <section id="why" className="section-pad relative scroll-mt-28">
       <div className="container-content">
-        <div className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+        <div className="grid-2col">
           <Reveal variants={fromSide('left')}>
             <div className="relative mx-auto w-full max-w-[540px]">
               <m.div
@@ -74,7 +74,7 @@ export function WhyUs() {
 
                     <div>
                       <h3 className="h3 uppercase tracking-tight">{t(`items.${item}.title`)}</h3>
-                      <p className="mt-1 text-sm leading-relaxed text-w-70">
+                      <p className="mt-1 text-fluid-sm leading-relaxed text-w-70">
                         {t(`items.${item}.desc`)}
                       </p>
                     </div>

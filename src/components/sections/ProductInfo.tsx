@@ -16,20 +16,20 @@ export function ProductInfo() {
   return (
     <section id="product" className="section-pad relative scroll-mt-28">
       <div className="container-content">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <RevealGroup className="order-2 lg:order-1">
+        <div className="grid-2col">
+          <RevealGroup className="order-2 min-w-0 lg:order-1">
             <SectionHeading badge={t('badge')} title={t('title')} align="left" />
 
-            <m.p variants={fadeUp} className="mt-6 text-base text-w-70">
+            <m.p variants={fadeUp} className="mt-6 text-fluid-base text-w-70">
               {t('p1')}
             </m.p>
-            <m.p variants={fadeUp} className="mt-4 text-base text-w-70">
+            <m.p variants={fadeUp} className="mt-4 text-fluid-base text-w-70">
               {t('p2')}
             </m.p>
 
             <m.h3
               variants={fadeUp}
-              className="mt-9 text-xs font-bold uppercase tracking-[0.2em] text-w-50"
+              className="mt-9 text-fluid-xs font-bold uppercase tracking-[0.2em] text-w-50"
             >
               {t('ingredientsTitle')}
             </m.h3>
@@ -40,19 +40,19 @@ export function ProductInfo() {
                   key={item}
                   whileHover={{ y: -3, borderColor: 'rgba(183, 141, 255, 0.6)' }}
                   transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-                  className="rounded-pill border border-accent/30 bg-accent/[0.08] px-4 py-2 text-sm font-medium text-w-80"
+                  className="rounded-pill border border-accent/30 bg-accent/[0.08] px-4 py-2 text-fluid-sm font-medium text-w-80"
                 >
                   {item}
                 </m.li>
               ))}
             </m.ul>
 
-            <m.p variants={fadeUp} className="mt-7 text-xs leading-relaxed text-w-50">
+            <m.p variants={fadeUp} className="mt-7 text-fluid-xs leading-relaxed text-w-50">
               {t('note')}
             </m.p>
           </RevealGroup>
 
-          <Reveal variants={fromSide('right')} className="order-1 lg:order-2">
+          <Reveal variants={fromSide('right')} className="order-1 min-w-0 lg:order-2">
             <div className="relative mx-auto w-full max-w-[520px]">
               <div
                 className="pointer-events-none absolute inset-0 -z-10 blur-3xl"

@@ -18,7 +18,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
       animate="rest"
       whileHover="active"
       whileFocus="active"
-      className="relative block px-3 py-2 text-sm font-medium text-w-70"
+      className="relative block px-3 py-2 text-fluid-sm font-medium text-w-70"
       variants={{ rest: { color: 'rgba(255,255,255,0.7)' }, active: { color: '#ffffff' } }}
       transition={{ duration: 0.25, ease: EASE }}
     >
@@ -87,7 +87,7 @@ export function Header() {
         >
           <a
             href="#hero"
-            className="shrink-0 text-base font-black uppercase tracking-[0.14em] md:text-lg"
+            className="shrink-0 text-fluid-base font-black uppercase tracking-[0.14em] "
             onClick={() => setMenuOpen(false)}
           >
             LOOP<span className="text-accent-light"> Energy</span>
@@ -172,7 +172,7 @@ export function Header() {
                   <a
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
-                    className="block border-b border-w-10 py-4 text-2xl font-extrabold uppercase tracking-tight text-white"
+                    className="block border-b border-w-10 py-4 text-fluid-xl font-extrabold uppercase tracking-tight text-white"
                   >
                     {t(`nav.${link.key}`)}
                   </a>
@@ -190,7 +190,7 @@ export function Header() {
               <a
                 href="#b2b"
                 onClick={() => setMenuOpen(false)}
-                className="rounded-pill bg-accent-grad px-6 py-3 text-xs font-bold uppercase tracking-wide text-white shadow-glow"
+                className="rounded-pill bg-accent-grad px-6 py-3 text-fluid-xs font-bold uppercase tracking-wide text-white shadow-glow"
               >
                 {t('nav.partnership')}
               </a>

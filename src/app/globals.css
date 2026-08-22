@@ -210,6 +210,45 @@
     gap: var(--space-md);
   }
 
+  /* Product rail: a snap-scrolling carousel while space is tight, promoted to an
+     auto-fill grid the moment two full cards fit. No device breakpoints involved. */
+  .products-rail {
+    display: flex;
+    gap: var(--space-md);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Bleed to the viewport edges so cards scroll past the container padding. */
+    margin-inline: calc(var(--container-padding) * -1);
+    padding-inline: var(--container-padding);
+    padding-block-end: var(--space-xs);
+  }
+
+  .products-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .products-rail > * {
+    scroll-snap-align: start;
+    flex: 0 0 min(300px, 82vw);
+  }
+
+  @media (min-width: 640px) {
+    .products-rail {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+      overflow-x: visible;
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+
+    .products-rail > * {
+      flex: none;
+    }
+  }
+
   .grid-audience {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(290px, 100%), 1fr));

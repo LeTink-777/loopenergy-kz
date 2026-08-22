@@ -35,7 +35,7 @@ export function ContactWidget() {
             className="purple-ring purple-ring-blur w-[min(92vw,340px)] origin-bottom-right overflow-hidden !bg-[#241e2b]/95 p-5 shadow-[0_28px_70px_-24px_rgba(0,0,0,0.85)] backdrop-blur-2xl"
           >
             <div className="flex items-start justify-between gap-3">
-              <h3 className="text-base font-bold uppercase tracking-tight">{t('title')}</h3>
+              <h3 className="text-fluid-base font-bold uppercase tracking-tight">{t('title')}</h3>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -61,12 +61,12 @@ export function ContactWidget() {
                 <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-accent-light">
                   {t('consumersTitle')}
                 </p>
-                <p className="mt-1 text-xs text-w-50">{t('consumersDesc')}</p>
+                <p className="mt-1 text-fluid-xs text-w-50">{t('consumersDesc')}</p>
                 <a
                   href={CONTACTS.consumerTelegram.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2.5 flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
+                  className="mt-2.5 flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
                 >
                   <Send className="h-4 w-4 text-accent-light" aria-hidden="true" />
                   {CONTACTS.consumerTelegram.label}
@@ -82,19 +82,19 @@ export function ContactWidget() {
                 <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-accent-light">
                   {t('wholesaleTitle')}
                 </p>
-                <p className="mt-1 text-xs text-w-50">{t('wholesaleDesc')}</p>
+                <p className="mt-1 text-fluid-xs text-w-50">{t('wholesaleDesc')}</p>
 
                 <div className="mt-2.5 space-y-2">
                   <a
                     href={CONTACTS.phone.href}
-                    className="flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
+                    className="flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
                   >
                     <Phone className="h-4 w-4 text-accent-light" aria-hidden="true" />
                     {CONTACTS.phone.label}
                   </a>
                   <a
                     href={CONTACTS.email.href}
-                    className="flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
+                    className="flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
                   >
                     <Mail className="h-4 w-4 text-accent-light" aria-hidden="true" />
                     {CONTACTS.email.label}
@@ -103,7 +103,7 @@ export function ContactWidget() {
                     href={CONTACTS.wholesaleTelegram.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
+                    className="flex items-center gap-2.5 rounded-2xl border border-w-10 bg-white/[0.03] px-3.5 py-2.5 text-fluid-sm text-w-80 transition-colors hover:border-accent/40 hover:text-white"
                   >
                     <Send className="h-4 w-4 text-accent-light" aria-hidden="true" />
                     {CONTACTS.wholesaleTelegram.label}
@@ -123,7 +123,7 @@ export function ContactWidget() {
         whileHover={{ scale: 1.04, y: -2 }}
         whileTap={{ scale: 0.95 }}
         transition={springPop}
-        className="inline-flex items-center gap-2.5 rounded-pill border border-accent/25 bg-[#241e2b]/85 px-5 py-3.5 text-sm font-bold uppercase tracking-wide text-white shadow-[0_18px_44px_-18px_rgba(149,97,233,0.75)] backdrop-blur-xl"
+        className="inline-flex items-center gap-2.5 rounded-pill border border-accent/25 bg-[#241e2b]/85 px-5 py-3.5 text-fluid-sm font-bold uppercase tracking-wide text-white shadow-[0_18px_44px_-18px_rgba(149,97,233,0.75)] backdrop-blur-xl"
       >
         <AnimatePresence mode="wait" initial={false}>
           <m.span

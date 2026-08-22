@@ -22,7 +22,7 @@ export function SectionHeading({
       {badge ? (
         <m.span
           variants={fadeUp}
-          className="inline-flex items-center gap-2 rounded-pill border border-accent/30 bg-accent/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-accent-light"
+          className="inline-flex items-center gap-2 rounded-pill border border-accent/30 bg-accent/10 px-4 py-1.5 text-fluid-xs font-bold uppercase tracking-[0.18em] text-accent-light"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-accent-light" />
           {badge}
@@ -34,7 +34,7 @@ export function SectionHeading({
       </m.h2>
 
       {subtitle ? (
-        <m.p variants={fadeUp} className="max-w-2xl text-base text-w-70">
+        <m.p variants={fadeUp} className="max-w-2xl text-fluid-base text-w-70">
           {subtitle}
         </m.p>
       ) : null}

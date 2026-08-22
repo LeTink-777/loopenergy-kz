@@ -20,7 +20,7 @@ const PROPS = [
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
 const fieldClass =
-  'w-full rounded-2xl border border-w-10 bg-white/[0.03] px-4 py-3.5 text-sm text-white placeholder:text-w-50 outline-none transition-[border-color,box-shadow] duration-300 focus:border-accent/60 focus:shadow-[0_0_0_4px_rgba(149,97,233,0.18)]';
+  'w-full rounded-2xl border border-w-10 bg-white/[0.03] px-4 py-3.5 text-fluid-sm text-white placeholder:text-w-50 outline-none transition-[border-color,box-shadow] duration-300 focus:border-accent/60 focus:shadow-[0_0_0_4px_rgba(149,97,233,0.18)]';
 
 export function B2B() {
   const t = useTranslations('b2b');
@@ -84,7 +84,7 @@ export function B2B() {
       />
 
       <div className="container-content">
-        <div className="grid gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-14">
+        <div className="grid-2col !items-start">
           <RevealGroup>
             <SectionHeading
               badge={t('badge')}
@@ -93,7 +93,7 @@ export function B2B() {
               align="left"
             />
 
-            <ul className="mt-9 grid gap-4 sm:grid-cols-2">
+            <ul className="grid-auto-sm mt-fluid-lg">
               {PROPS.map(({ key, Icon }) => (
                 <m.li key={key} variants={fadeUp}>
                   <m.div
@@ -104,10 +104,10 @@ export function B2B() {
                     <span className="grid h-11 w-11 place-items-center rounded-2xl border border-accent/25 bg-accent/10 text-accent-light">
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </span>
-                    <h3 className="mt-4 text-base font-bold uppercase tracking-tight">
+                    <h3 className="mt-4 text-fluid-base font-bold uppercase tracking-tight">
                       {t(`props.${key}.title`)}
                     </h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-w-70">
+                    <p className="mt-1.5 text-fluid-sm leading-relaxed text-w-70">
                       {t(`props.${key}.desc`)}
                     </p>
                   </m.div>
@@ -137,10 +137,10 @@ export function B2B() {
                       <Check className="h-8 w-8" aria-hidden="true" />
                     </m.span>
 
-                    <h3 className="mt-6 text-xl font-extrabold uppercase tracking-tight">
+                    <h3 className="mt-6 text-fluid-lg font-extrabold uppercase tracking-tight">
                       {t('form.successTitle')}
                     </h3>
-                    <p className="mt-2 max-w-sm text-sm text-w-70">{t('form.successText')}</p>
+                    <p className="mt-2 max-w-sm text-fluid-sm text-w-70">{t('form.successText')}</p>
 
                     <m.button
                       type="button"
@@ -148,7 +148,7 @@ export function B2B() {
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                       transition={springPop}
-                      className="mt-7 rounded-pill border border-w-15 px-6 py-3 text-xs font-bold uppercase tracking-wide text-w-80 transition-colors hover:border-accent/45 hover:text-white"
+                      className="mt-7 rounded-pill border border-w-15 px-6 py-3 text-fluid-xs font-bold uppercase tracking-wide text-w-80 transition-colors hover:border-accent/45 hover:text-white"
                     >
                       {t('form.again')}
                     </m.button>
@@ -165,15 +165,15 @@ export function B2B() {
                     className="flex flex-col gap-4"
                   >
                     <div>
-                      <h3 className="text-xl font-extrabold uppercase tracking-tight">
+                      <h3 className="text-fluid-lg font-extrabold uppercase tracking-tight">
                         {t('form.title')}
                       </h3>
-                      <p className="mt-1.5 text-sm text-w-70">{t('form.subtitle')}</p>
+                      <p className="mt-1.5 text-fluid-sm text-w-70">{t('form.subtitle')}</p>
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-fluid-sm sm:grid-cols-2">
                       <label className="flex flex-col gap-2">
-                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-w-50">
+                        <span className="text-fluid-xs font-semibold uppercase tracking-[0.12em] text-w-50">
                           {t('form.name')} *
                         </span>
                         <input
@@ -187,7 +187,7 @@ export function B2B() {
                       </label>
 
                       <label className="flex flex-col gap-2">
-                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-w-50">
+                        <span className="text-fluid-xs font-semibold uppercase tracking-[0.12em] text-w-50">
                           {t('form.company')}
                         </span>
                         <input
@@ -200,9 +200,9 @@ export function B2B() {
                       </label>
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-fluid-sm sm:grid-cols-2">
                       <label className="flex flex-col gap-2">
-                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-w-50">
+                        <span className="text-fluid-xs font-semibold uppercase tracking-[0.12em] text-w-50">
                           {t('form.phone')} *
                         </span>
                         <input
@@ -217,7 +217,7 @@ export function B2B() {
                       </label>
 
                       <label className="flex flex-col gap-2">
-                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-w-50">
+                        <span className="text-fluid-xs font-semibold uppercase tracking-[0.12em] text-w-50">
                           {t('form.city')} *
                         </span>
                         <select name="city" required defaultValue="" className={fieldClass}>
@@ -234,7 +234,7 @@ export function B2B() {
                     </div>
 
                     <label className="flex flex-col gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-w-50">
+                      <span className="text-fluid-xs font-semibold uppercase tracking-[0.12em] text-w-50">
                         {t('form.comment')}
                       </span>
                       <textarea
@@ -253,7 +253,7 @@ export function B2B() {
                           exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.25, ease: EASE }}
                           role="alert"
-                          className="text-sm text-rose-300"
+                          className="text-fluid-sm text-rose-300"
                         >
                           {error}
                         </m.p>
@@ -266,7 +266,7 @@ export function B2B() {
                       whileHover={status === 'loading' ? undefined : { scale: 1.02, y: -2 }}
                       whileTap={status === 'loading' ? undefined : { scale: 0.98 }}
                       transition={springPop}
-                      className="mt-1 inline-flex items-center justify-center gap-2.5 rounded-pill bg-accent-grad px-7 py-4 text-sm font-bold uppercase tracking-wide text-white shadow-glow disabled:opacity-70"
+                      className="mt-1 inline-flex items-center justify-center gap-2.5 rounded-pill bg-accent-grad px-7 py-4 text-fluid-sm font-bold uppercase tracking-wide text-white shadow-glow disabled:opacity-70"
                     >
                       <AnimatePresence mode="wait" initial={false}>
                         {status === 'loading' ? (
@@ -299,7 +299,7 @@ export function B2B() {
                       </AnimatePresence>
                     </m.button>
 
-                    <p className="text-xs leading-relaxed text-w-50">{t('form.consent')}</p>
+                    <p className="text-fluid-xs leading-relaxed text-w-50">{t('form.consent')}</p>
                   </m.form>
                 )}
               </AnimatePresence>

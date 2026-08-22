@@ -27,7 +27,7 @@ export function Audience() {
           <SectionHeading badge={t('badge')} title={t('title')} subtitle={t('subtitle')} />
         </RevealGroup>
 
-        <RevealGroup stagger={0.1} className="mt-12 flex flex-wrap justify-center gap-5">
+        <RevealGroup stagger={0.1} className="grid-audience mt-fluid-xl">
           {AUDIENCE.map((item) => {
             const Icon = ICONS[item.icon];
 
@@ -38,7 +38,7 @@ export function Audience() {
                   hidden: { opacity: 0, y: 30 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
                 }}
-                className="w-full sm:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]"
+                className="h-full"
               >
                 <m.div
                   initial="rest"
@@ -59,10 +59,10 @@ export function Audience() {
                     <Icon className="h-[22px] w-[22px]" aria-hidden="true" />
                   </m.span>
 
-                  <h3 className="mt-5 text-lg font-bold uppercase tracking-tight">
+                  <h3 className="mt-5 text-fluid-md font-bold uppercase tracking-tight">
                     {t(`items.${item.key}.title`)}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-w-70">
+                  <p className="mt-2 text-fluid-sm leading-relaxed text-w-70">
                     {t(`items.${item.key}.desc`)}
                   </p>
                 </m.div>

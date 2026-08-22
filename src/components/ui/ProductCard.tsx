@@ -64,9 +64,9 @@ export function ProductCard({ product, priority = false }: { product: Product; p
         </div>
 
         <div className="flex flex-1 flex-col">
-          <h3 className="text-lg font-bold uppercase tracking-tight">{name}</h3>
+          <h3 className="text-fluid-md font-bold uppercase tracking-tight">{name}</h3>
 
-          <p className="mt-2 flex-1 text-sm leading-relaxed text-w-70">
+          <p className="mt-2 flex-1 text-fluid-sm leading-relaxed text-w-70">
             {t(`items.${product.key}.desc`)}
           </p>
 
@@ -83,11 +83,11 @@ export function ProductCard({ product, priority = false }: { product: Product; p
           <div className="mt-5 flex flex-wrap items-end justify-between gap-3">
             <div className="shrink-0">
               {product.oldPrice ? (
-                <p className="whitespace-nowrap text-sm text-w-50 line-through">
+                <p className="whitespace-nowrap text-fluid-sm text-w-50 line-through">
                   {formatTenge(product.oldPrice)}
                 </p>
               ) : null}
-              <p className="whitespace-nowrap text-2xl font-extrabold tracking-tight">
+              <p className="whitespace-nowrap text-fluid-xl font-extrabold tracking-tight">
                 {formatTenge(product.price)}
               </p>
             </div>
@@ -99,7 +99,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
               whileTap={{ scale: 0.94 }}
               transition={springPop}
               aria-live="polite"
-              className={`inline-flex min-w-[132px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-pill px-5 py-3 text-xs font-bold uppercase tracking-wide transition-colors ${
+              className={`inline-flex min-w-[132px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-pill px-5 py-3 text-fluid-xs font-bold uppercase tracking-wide transition-colors ${
                 added ? 'bg-emerald-400/90 text-[#10231a]' : 'bg-accent-grad text-white shadow-glow-sm'
               }`}
             >

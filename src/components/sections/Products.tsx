@@ -30,21 +30,21 @@ export function Products() {
 
         <RevealGroup
           stagger={0.12}
-          className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          className="products-rail mt-fluid-xl"
         >
           {PRODUCTS.map((product, index) => (
             <ProductCard key={product.id} product={product} priority={index < 2} />
           ))}
         </RevealGroup>
 
-        <RevealGroup className="mt-10 flex justify-center">
+        <RevealGroup className="mt-fluid-lg flex justify-center">
           <m.a
             variants={fadeUp}
             href="#b2b"
             whileHover={{ scale: 1.03, y: -2 }}
             whileTap={{ scale: 0.97 }}
             transition={springPop}
-            className="group inline-flex items-center gap-2 rounded-pill border border-w-15 bg-white/[0.03] px-7 py-4 text-sm font-bold uppercase tracking-wide text-w-80 transition-colors hover:border-accent/45 hover:text-white"
+            className="group inline-flex items-center gap-2 rounded-pill border border-w-15 bg-white/[0.03] px-7 py-4 text-fluid-sm font-bold uppercase tracking-wide text-w-80 transition-colors hover:border-accent/45 hover:text-white"
           >
             {t('showAll')}
             <ArrowUpRight

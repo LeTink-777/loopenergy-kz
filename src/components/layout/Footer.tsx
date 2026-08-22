@@ -68,10 +68,10 @@ export function Footer() {
       <div className="container-content relative py-14 md:py-20">
         <RevealGroup className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <Reveal variants={fadeUp} className="lg:col-span-1">
-            <p className="text-lg font-black uppercase tracking-[0.14em]">
+            <p className="text-fluid-md font-black uppercase tracking-[0.14em]">
               LOOP<span className="text-accent-light"> Energy</span>
             </p>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-w-70">{t('footer.tagline')}</p>
+            <p className="mt-4 max-w-xs text-fluid-sm leading-relaxed text-w-70">{t('footer.tagline')}</p>
             <span className="mt-5 inline-flex items-center gap-2 rounded-pill border border-accent/30 bg-accent/10 px-3.5 py-2 text-[11px] font-bold uppercase leading-snug tracking-[0.12em] text-accent-light">
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-light" />
               {t('footer.distributor')}
@@ -79,7 +79,7 @@ export function Footer() {
           </Reveal>
 
           <Reveal variants={fadeUp}>
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-w-50">
+            <h3 className="text-fluid-xs font-bold uppercase tracking-[0.2em] text-w-50">
               {t('footer.navTitle')}
             </h3>
             <ul className="mt-4 space-y-2.5">
@@ -87,7 +87,7 @@ export function Footer() {
                 <li key={link.key}>
                   <a
                     href={link.href}
-                    className="text-sm text-w-70 transition-colors hover:text-accent-light"
+                    className="text-fluid-sm text-w-70 transition-colors hover:text-accent-light"
                   >
                     {t(`nav.${link.key}`)}
                   </a>
@@ -97,10 +97,10 @@ export function Footer() {
           </Reveal>
 
           <Reveal variants={fadeUp}>
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-w-50">
+            <h3 className="text-fluid-xs font-bold uppercase tracking-[0.2em] text-w-50">
               {t('footer.contactsTitle')}
             </h3>
-            <ul className="mt-4 space-y-2.5 text-sm">
+            <ul className="mt-4 space-y-2.5 text-fluid-sm">
               <li>
                 <a
                   href={CONTACTS.phone.href}
@@ -134,7 +134,7 @@ export function Footer() {
           </Reveal>
 
           <Reveal variants={fadeUp}>
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-w-50">
+            <h3 className="text-fluid-xs font-bold uppercase tracking-[0.2em] text-w-50">
               {t('footer.socialsTitle')}
             </h3>
             <div className="mt-4 flex flex-wrap gap-2.5">
@@ -155,7 +155,7 @@ export function Footer() {
               ))}
             </div>
 
-            <p className="mt-5 text-xs text-w-50">
+            <p className="mt-5 text-fluid-xs text-w-50">
               {t('footer.mirror')}{' '}
               <span className="font-semibold text-w-70">{SITE.mirror}</span>
             </p>
@@ -163,7 +163,7 @@ export function Footer() {
         </RevealGroup>
 
         <Reveal className="mt-12 border-t border-w-10 pt-7">
-          <div className="flex flex-col gap-4 text-xs text-w-50 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-4 text-fluid-xs text-w-50 md:flex-row md:items-center md:justify-between">
             <p>
               © {year} {SITE.name}. {t('footer.rights')}.
             </p>

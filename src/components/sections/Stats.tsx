@@ -16,20 +16,18 @@ export function Stats() {
       <div className="container-content">
         <RevealGroup
           stagger={0.15}
-          className="purple-ring grid grid-cols-2 gap-y-8 px-4 py-8 sm:px-8 md:grid-cols-4 md:gap-y-0"
+          className="purple-ring grid-stats px-fluid-md py-fluid-lg"
         >
-          {STATS.map((stat, index) => (
+          {STATS.map((stat) => (
             <m.div
               key={stat.key}
               variants={fadeUp}
-              className={`flex flex-col items-center gap-1.5 px-2 text-center md:px-6 ${
-                index > 0 ? 'md:border-l md:border-w-10' : ''
-              } ${index % 2 === 1 ? 'border-l border-w-10 md:border-l' : ''}`}
+              className="flex flex-col items-center gap-1.5 border-w-10 px-fluid-xs text-center [&:not(:first-child)]:border-l"
             >
-              <span className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-[42px]">
+              <span className="text-fluid-3xl font-extrabold tracking-tight text-white">
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />
               </span>
-              <span className="text-xs font-medium uppercase tracking-[0.1em] text-w-50 sm:text-sm">
+              <span className="text-fluid-xs font-medium uppercase tracking-[0.1em] text-w-50 ">
                 {t(stat.key)}
               </span>
             </m.div>

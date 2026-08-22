@@ -76,19 +76,19 @@ export function AgeGate() {
               aria-hidden="true"
             />
 
-            <p className="text-xl font-black uppercase tracking-[0.24em] text-white">
+            <p className="text-fluid-lg font-black uppercase tracking-[0.24em] text-white">
               LOOP<span className="text-accent-light"> Energy</span>
             </p>
 
-            <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-accent-light">
+            <p className="mt-6 text-fluid-xs font-bold uppercase tracking-[0.2em] text-accent-light">
               {t('title')}
             </p>
 
-            <h2 id="age-gate-title" className="mt-3 text-3xl font-extrabold uppercase leading-tight">
+            <h2 id="age-gate-title" className="mt-3 text-fluid-2xl font-extrabold uppercase leading-tight">
               {t('question')}
             </h2>
 
-            <p className="mx-auto mt-4 max-w-md text-sm text-w-70">{t('subtitle')}</p>
+            <p className="mx-auto mt-4 max-w-md text-fluid-sm text-w-70">{t('subtitle')}</p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <m.button
@@ -97,7 +97,7 @@ export function AgeGate() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 transition={springPop}
-                className="rounded-pill bg-accent-grad px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-white shadow-glow"
+                className="rounded-pill bg-accent-grad px-8 py-3.5 text-fluid-sm font-bold uppercase tracking-wide text-white shadow-glow"
               >
                 {t('yes')}
               </m.button>
@@ -108,13 +108,13 @@ export function AgeGate() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 transition={springPop}
-                className="rounded-pill border border-w-15 px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-w-70 transition-colors hover:border-accent/40 hover:text-white"
+                className="rounded-pill border border-w-15 px-8 py-3.5 text-fluid-sm font-bold uppercase tracking-wide text-w-70 transition-colors hover:border-accent/40 hover:text-white"
               >
                 {t('no')}
               </m.button>
             </div>
 
-            <p className="mt-6 text-xs text-w-50">{t('note')}</p>
+            <p className="mt-6 text-fluid-xs text-w-50">{t('note')}</p>
           </m.div>
         </m.div>
       ) : null}

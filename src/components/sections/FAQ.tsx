@@ -40,7 +40,7 @@ export function FAQ() {
                     onClick={() => setOpenKey(isOpen ? null : key)}
                     className="flex w-full items-center justify-between gap-5 px-5 py-5 text-left sm:px-7"
                   >
-                    <span className="text-base font-semibold text-white sm:text-lg">
+                    <span className="text-fluid-base font-semibold text-white ">
                       {t(`items.${key}.q`)}
                     </span>
 
@@ -70,7 +70,7 @@ export function FAQ() {
                       }}
                       className="overflow-hidden"
                     >
-                      <p className="px-5 pb-6 pr-14 text-sm leading-relaxed text-w-70 sm:px-7 sm:pr-20">
+                      <p className="px-5 pb-6 pr-14 text-fluid-sm leading-relaxed text-w-70 sm:px-7 sm:pr-20">
                         {t(`items.${key}.a`)}
                       </p>
                     </m.div>

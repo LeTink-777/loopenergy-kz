@@ -18,7 +18,7 @@ export function Answers() {
           <SectionHeading badge={t('badge')} title={t('title')} />
         </RevealGroup>
 
-        <RevealGroup stagger={0.1} className="mt-12 grid gap-5 md:grid-cols-2">
+        <RevealGroup stagger={0.1} className="grid-auto-md mt-fluid-xl">
           {ANSWER_KEYS.map((key) => (
             <m.div key={key} variants={fadeUp}>
               <m.dl
@@ -26,10 +26,10 @@ export function Answers() {
                 transition={{ duration: 0.35, ease: EASE }}
                 className="purple-ring h-full p-6 sm:p-7"
               >
-                <dt className="text-base font-bold uppercase tracking-tight text-white">
+                <dt className="text-fluid-base font-bold uppercase tracking-tight text-white">
                   {t(`items.${key}.q`)}
                 </dt>
-                <dd className="mt-2.5 text-sm leading-relaxed text-w-70">{t(`items.${key}.a`)}</dd>
+                <dd className="mt-2.5 text-fluid-sm leading-relaxed text-w-70">{t(`items.${key}.a`)}</dd>
               </m.dl>
             </m.div>
           ))}

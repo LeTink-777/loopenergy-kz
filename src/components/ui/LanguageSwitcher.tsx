@@ -52,7 +52,7 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
             type="button"
             onClick={() => select(locale)}
             aria-current={isActive ? 'true' : undefined}
-            className={`relative z-10 flex-1 rounded-pill px-3 py-1 text-xs font-bold uppercase tracking-[0.1em] transition-colors duration-200 ${
+            className={`relative z-10 flex-1 rounded-pill px-3 py-1 text-fluid-xs font-bold uppercase tracking-[0.1em] transition-colors duration-200 ${
               isActive ? 'text-white' : 'text-w-50 hover:text-w-80'
             }`}
           >

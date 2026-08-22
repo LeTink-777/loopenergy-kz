@@ -74,7 +74,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: EASE, delay: 0.06 }}
-              className="inline-flex items-center gap-2 rounded-pill border border-accent/35 bg-accent/12 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-accent-light backdrop-blur-sm sm:text-xs"
+              className="inline-flex items-center gap-2 rounded-pill border border-accent/35 bg-accent/12 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-accent-light backdrop-blur-sm "
             >
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
               {t('badge')}
@@ -96,7 +96,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: EASE, delay: 0.5 }}
-              className="mx-auto mt-6 max-w-xl text-base text-w-70 sm:text-lg lg:mx-0"
+              className="mx-auto mt-6 max-w-xl text-fluid-base text-w-70  lg:mx-0"
             >
               {t('subtitle')}
             </m.p>
@@ -112,7 +112,7 @@ export function Hero() {
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 transition={springPop}
-                className="group inline-flex items-center justify-center gap-2 rounded-pill bg-accent-grad px-7 py-4 text-sm font-bold uppercase tracking-wide text-white shadow-glow"
+                className="group inline-flex items-center justify-center gap-2 rounded-pill bg-accent-grad px-7 py-4 text-fluid-sm font-bold uppercase tracking-wide text-white shadow-glow"
               >
                 {t('ctaPrimary')}
                 <ArrowRight
@@ -126,7 +126,7 @@ export function Hero() {
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 transition={springPop}
-                className="inline-flex items-center justify-center rounded-pill border border-w-15 bg-white/[0.03] px-7 py-4 text-sm font-bold uppercase tracking-wide text-w-80 backdrop-blur-sm transition-colors hover:border-accent/45 hover:text-white"
+                className="inline-flex items-center justify-center rounded-pill border border-w-15 bg-white/[0.03] px-7 py-4 text-fluid-sm font-bold uppercase tracking-wide text-w-80 backdrop-blur-sm transition-colors hover:border-accent/45 hover:text-white"
               >
                 {t('ctaGhost')}
               </m.a>
@@ -190,7 +190,7 @@ export function Hero() {
                 </div>
                 <div>
                   <h2 className="h3 uppercase tracking-tight">{t(`features.${feature.key}.title`)}</h2>
-                  <p className="mt-1.5 text-sm leading-relaxed text-w-70">
+                  <p className="mt-1.5 text-fluid-sm leading-relaxed text-w-70">
                     {t(`features.${feature.key}.desc`)}
                   </p>
                 </div>

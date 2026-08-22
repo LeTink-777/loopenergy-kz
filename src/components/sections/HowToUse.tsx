@@ -18,7 +18,7 @@ export function HowToUse() {
           <SectionHeading badge={t('badge')} title={t('title')} subtitle={t('subtitle')} />
         </RevealGroup>
 
-        <RevealGroup stagger={0.14} className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGroup stagger={0.14} className="grid-steps mt-fluid-xl">
           {HOW_STEPS.map((step, index) => (
             <m.div
               key={step}
@@ -41,13 +41,13 @@ export function HowToUse() {
                 transition={{ duration: 0.35, ease: EASE }}
                 className="purple-ring relative h-full p-6"
               >
-                <span className="inline-grid h-10 w-10 place-items-center rounded-pill bg-accent-grad text-sm font-extrabold text-white shadow-glow-sm">
+                <span className="inline-grid h-10 w-10 place-items-center rounded-pill bg-accent-grad text-fluid-sm font-extrabold text-white shadow-glow-sm">
                   {index + 1}
                 </span>
-                <h3 className="mt-5 text-lg font-bold uppercase tracking-tight">
+                <h3 className="mt-5 text-fluid-md font-bold uppercase tracking-tight">
                   {t(`steps.${step}.title`)}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-w-70">{t(`steps.${step}.desc`)}</p>
+                <p className="mt-2 text-fluid-sm leading-relaxed text-w-70">{t(`steps.${step}.desc`)}</p>
               </m.div>
             </m.div>
           ))}
