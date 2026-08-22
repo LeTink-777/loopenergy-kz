@@ -72,8 +72,8 @@ export function Footer() {
               LOOP<span className="text-accent-light">&nbsp;Energy</span>
             </p>
             <p className="mt-4 max-w-xs text-fluid-sm leading-relaxed text-w-70">{t('footer.tagline')}</p>
-            <span className="mt-5 inline-flex items-center gap-2 rounded-pill border border-accent/30 bg-accent/10 px-3.5 py-2 text-[11px] font-bold uppercase leading-snug tracking-[0.12em] text-accent-light">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-light" />
+            <span className="mt-fluid-sm inline-flex items-start gap-2 rounded-pill border border-accent/30 bg-accent/10 px-3.5 py-2 text-fluid-xs font-bold uppercase leading-snug tracking-[0.12em] text-accent-light">
+              <span className="mt-[0.45em] h-1.5 w-1.5 shrink-0 rounded-full bg-accent-light" />
               {t('footer.distributor')}
             </span>
           </Reveal>

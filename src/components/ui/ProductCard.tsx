@@ -41,7 +41,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
 
           {product.badge ? (
             <span
-              className={`absolute left-4 top-4 z-10 rounded-pill px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${badgeTone[product.badge]}`}
+              className={`absolute left-4 top-4 z-10 rounded-pill px-3 py-1 text-fluid-xs font-bold uppercase tracking-wider ${badgeTone[product.badge]}`}
             >
               {t(`badges.${product.badge}`)}
             </span>
@@ -71,10 +71,10 @@ export function ProductCard({ product, priority = false }: { product: Product; p
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-pill border border-accent/25 bg-accent/10 px-3 py-1 text-[11px] font-semibold text-accent-light">
+            <span className="rounded-pill border border-accent/25 bg-accent/10 px-3 py-1 text-fluid-xs font-semibold text-accent-light">
               {product.caffeine} {t('caffeine')}
             </span>
-            <span className="rounded-pill border border-w-10 px-3 py-1 text-[11px] font-semibold text-w-70">
+            <span className="rounded-pill border border-w-10 px-3 py-1 text-fluid-xs font-semibold text-w-70">
               {product.portions} {t('perPack')}
             </span>
           </div>

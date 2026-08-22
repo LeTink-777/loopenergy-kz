@@ -30,7 +30,7 @@ export function HowToUse() {
               }}
             >
               <span
-                className="pointer-events-none absolute -top-7 right-3 select-none text-[112px] font-black leading-[0.8] tracking-tighter text-white/[0.07]"
+                className="pointer-events-none absolute -top-7 right-3 select-none text-[clamp(72px,12vw,116px)] font-black leading-[0.8] tracking-tighter text-white/[0.07]"
                 aria-hidden="true"
               >
                 {index + 1}

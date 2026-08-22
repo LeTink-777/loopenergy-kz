@@ -77,7 +77,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: EASE, delay: 0.06 }}
-              className="inline-flex items-center gap-2 rounded-pill border border-accent/35 bg-accent/12 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-accent-light backdrop-blur-sm "
+              className="inline-flex items-center gap-2 rounded-pill border border-accent/35 bg-accent/12 px-4 py-2 text-fluid-xs font-bold uppercase tracking-[0.16em] text-accent-light backdrop-blur-sm"
             >
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
               {t('badge')}

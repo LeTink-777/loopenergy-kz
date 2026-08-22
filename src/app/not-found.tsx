@@ -8,14 +8,14 @@ export default function NotFound() {
     <html lang="ru">
       <body className="grid min-h-screen place-items-center bg-bg px-6 text-center text-white">
         <div>
-          <p className="text-lg font-black uppercase tracking-[0.14em]">
-            LOOP<span className="text-accent-light"> Energy</span>
+          <p className="text-fluid-lg font-black uppercase tracking-[0.14em]">
+            LOOP<span className="text-accent-light">&nbsp;Energy</span>
           </p>
-          <h1 className="mt-6 text-6xl font-extrabold tracking-tight">404</h1>
-          <p className="mt-3 text-w-70">Страница не найдена / Бет табылмады</p>
+          <h1 className="mt-fluid-sm text-fluid-5xl font-extrabold tracking-tight">404</h1>
+          <p className="mt-fluid-xs text-fluid-base text-w-70">Страница не найдена / Бет табылмады</p>
           <Link
             href="/ru"
-            className="mt-8 inline-block rounded-pill bg-accent-grad px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-white"
+            className="mt-fluid-lg inline-flex min-h-[48px] items-center rounded-pill bg-accent-grad px-7 text-fluid-sm font-bold uppercase tracking-wide text-white"
           >
             На главную
           </Link>

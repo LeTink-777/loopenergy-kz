@@ -58,7 +58,7 @@ export function ContactWidget() {
                   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE } },
                 }}
               >
-                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-accent-light">
+                <p className="text-fluid-xs font-bold uppercase tracking-[0.16em] text-accent-light">
                   {t('consumersTitle')}
                 </p>
                 <p className="mt-1 text-fluid-xs text-w-50">{t('consumersDesc')}</p>
@@ -79,7 +79,7 @@ export function ContactWidget() {
                   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE } },
                 }}
               >
-                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-accent-light">
+                <p className="text-fluid-xs font-bold uppercase tracking-[0.16em] text-accent-light">
                   {t('wholesaleTitle')}
                 </p>
                 <p className="mt-1 text-fluid-xs text-w-50">{t('wholesaleDesc')}</p>
