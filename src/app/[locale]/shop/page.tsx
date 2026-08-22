@@ -33,7 +33,10 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
     <div className="section-pad pt-[calc(var(--header-h)+var(--space-xl))]">
       <div className="container-content">
         <PageHeader title={t('h1')} accent={t('h1_accent')} subline={t('subline')} />
-        <div className="mt-fluid-xl">
+
+        <p className="promo-banner mt-6">{t('promo')}</p>
+
+        <div className="mt-8">
           <ShopCatalog />
         </div>
       </div>

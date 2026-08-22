@@ -30,6 +30,7 @@ export function ProductGridCard({
   const Heading = headingLevel;
   const locale = useLocale() as Locale;
   const t = useTranslations('shop');
+  const tProduct = useTranslations('product_page');
   const addItem = useCartStore((s) => s.addItem);
   const { hoverScale, tapPress, isTouch } = useUniversalMotion();
 
@@ -91,6 +92,15 @@ export function ProductGridCard({
             </Link>
           </Heading>
           <p className="product-card-tagline">{pick(product.tagline, locale)}</p>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span className="rounded-pill border border-accent/25 bg-accent/10 px-3 py-1 text-fluid-xs font-semibold text-accent-light">
+              {product.caffeine} {tProduct('caffeine_unit')}
+            </span>
+            <span className="rounded-pill border border-w-10 px-3 py-1 text-fluid-xs font-semibold text-w-70">
+              {product.pouches} {tProduct('pouches_unit')}
+            </span>
+          </div>
 
           {product.strength.length > 0 ? (
             <div className="mt-4">

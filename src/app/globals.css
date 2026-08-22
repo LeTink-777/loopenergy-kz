@@ -41,7 +41,9 @@
 
   /* Controls are fixed, not fluid: consistent hit areas beat proportional ones,
      and equal heights are what make a row of chips read as one system. */
-  --btn-height-sm: 40px;
+  /* 44px, not 40px: the WCAG/HIG touch floor wins over the 8px grid for
+     anything tappable, and the global min-height would override 40px anyway. */
+  --btn-height-sm: 44px;
   --btn-height-md: 48px;
   --btn-height-lg: 56px;
   --pill-height: 52px;
