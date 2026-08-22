@@ -15,29 +15,70 @@
   --white-15: rgba(255, 255, 255, 0.15);
   --white-10: rgba(255, 255, 255, 0.1);
   --white-02: rgba(255, 255, 255, 0.02);
-  --header-h: 76px;
+
+  /* Fluid type scale — one value covers 280px through 2560px. */
+  --text-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.8rem);
+  --text-sm: clamp(0.8rem, 0.73rem + 0.35vw, 0.95rem);
+  --text-base: clamp(0.9rem, 0.82rem + 0.4vw, 1.05rem);
+  --text-md: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
+  --text-lg: clamp(1.1rem, 0.95rem + 0.75vw, 1.4rem);
+  --text-xl: clamp(1.2rem, 1rem + 1vw, 1.6rem);
+  --text-2xl: clamp(1.4rem, 1.1rem + 1.5vw, 2rem);
+  --text-3xl: clamp(1.6rem, 1.2rem + 2vw, 2.5rem);
+  --text-4xl: clamp(1.8rem, 1.2rem + 3vw, 3.5rem);
+  --text-5xl: clamp(2rem, 1.2rem + 4vw, 5rem);
+
+  /* Fluid spacing scale. */
+  --space-2xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.35rem);
+  --space-xs: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
+  --space-sm: clamp(0.75rem, 0.6rem + 0.75vw, 1rem);
+  --space-md: clamp(1rem, 0.75rem + 1.25vw, 1.5rem);
+  --space-lg: clamp(1.5rem, 1rem + 2.5vw, 2.5rem);
+  --space-xl: clamp(2rem, 1.25rem + 3.75vw, 4rem);
+  --space-2xl: clamp(3rem, 1.75rem + 6.25vw, 6rem);
+  --space-3xl: clamp(4rem, 2rem + 10vw, 9rem);
+
+  --radius-card: clamp(16px, 2vw + 10px, 34px);
+  --radius-pill: 9999px;
+
+  --container-padding: clamp(16px, 4vw, 80px);
+  --container-max: min(1280px, 100% - var(--container-padding) * 2);
+
+  /* Notches, punch-holes and rounded corners on every platform. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  --header-h: clamp(52px, 6vw + 40px, 72px);
 }
 
 @layer base {
-  * {
+  *,
+  *::before,
+  *::after {
     -webkit-tap-highlight-color: transparent;
   }
 
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: calc(var(--header-h) + 24px);
+    scroll-padding-top: calc(var(--header-h) + var(--space-lg));
+    /* `clip` contains stray overflow without breaking position: sticky. */
+    overflow-x: clip;
   }
 
   body {
     background-color: var(--bg);
     color: #fff;
     font-family: var(--font-montserrat), Montserrat, system-ui, sans-serif;
-    font-size: 16px;
+    font-size: var(--text-base);
     font-weight: 400;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow-x: clip;
+    /* Stops pull-to-refresh from fighting the fixed UI. */
+    overscroll-behavior-y: contain;
   }
 
   p {
@@ -55,55 +96,82 @@
     border-radius: 6px;
   }
 
+  /* No double-tap zoom on anything interactive. */
+  button,
+  a,
+  [role='button'],
   input,
   select,
   textarea,
-  button {
+  summary {
+    touch-action: manipulation;
+  }
+
+  /* Comfortable targets — WCAG 2.2, Apple HIG and Material all land on 44px.
+     min-height/min-width are inert on inline elements, so body-copy links keep
+     their natural flow while real controls grow. */
+  button,
+  [role='button'],
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  button,
+  [role='button'] {
+    min-width: 44px;
+  }
+
+  input,
+  select,
+  textarea {
     font-family: inherit;
+    /* Anything under 16px makes iOS zoom the viewport on focus. */
+    font-size: max(16px, var(--text-base));
   }
 
   select option {
     background: var(--bg);
     color: #fff;
   }
+
+  img,
+  svg,
+  video {
+    max-width: 100%;
+  }
 }
 
 @layer components {
   .container-content {
-    width: 100%;
-    max-width: 1280px;
+    width: min(var(--container-max), 100%);
     margin-inline: auto;
-    padding-inline: 16px;
-  }
-
-  @media (min-width: 768px) {
-    .container-content {
-      padding-inline: 24px;
-    }
+    padding-inline: var(--container-padding);
   }
 
   .section-pad {
-    padding-block: clamp(56px, 6.4vw, 92px);
+    padding-block: var(--space-2xl);
   }
 
   .h1 {
-    font-size: clamp(2.25rem, 4.1vw, 3.375rem);
+    font-size: var(--text-5xl);
     font-weight: 800;
     line-height: 1.06;
-    letter-spacing: -1.5px;
+    letter-spacing: -0.02em;
     text-transform: uppercase;
   }
 
   .h2 {
-    font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+    font-size: var(--text-4xl);
     font-weight: 800;
     line-height: 1.12;
-    letter-spacing: -1px;
+    letter-spacing: -0.02em;
     text-transform: uppercase;
   }
 
   .h3 {
-    font-size: 1.125rem;
+    font-size: var(--text-md);
     font-weight: 600;
     line-height: 1.4;
   }
@@ -115,18 +183,56 @@
     color: transparent;
   }
 
-  /* Gradient border rendered on a pseudo-element with a mask so only the
-     1px ring is painted — matches the original brand cards. */
+  /* --- Universal grids: columns form from available space, never from a
+     device breakpoint. `min()` keeps the track from overflowing narrow screens. --- */
+  .grid-auto-sm {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: var(--space-md);
+  }
+
+  .grid-auto-md {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+    gap: var(--space-md);
+  }
+
+  .grid-2col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  .grid-products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr));
+    gap: var(--space-md);
+  }
+
+  .grid-audience {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(290px, 100%), 1fr));
+    gap: var(--space-md);
+  }
+
+  .grid-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+    gap: var(--space-md);
+  }
+
+  .grid-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(215px, 100%), 1fr));
+    gap: var(--space-md);
+  }
+
+  /* Gradient border painted on a masked pseudo-element, so only the ring shows. */
   .purple-ring {
     position: relative;
     background: var(--card-bg);
-    border-radius: 34px;
-  }
-
-  /* Opt-in blur — only cards that actually sit over artwork pay for it. */
-  .purple-ring-blur {
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    border-radius: var(--radius-card);
   }
 
   .purple-ring::before {
@@ -152,22 +258,56 @@
     pointer-events: none;
   }
 
+  /* Opt-in blur — only glass that sits over artwork pays for it. */
+  .purple-ring-blur {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
   /* Set by the inline script in the layout head, before the first paint. */
   html.age-ok [data-age-gate] {
     display: none;
   }
+}
 
-  .noise-veil {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-    background-size: 3px 3px;
+@layer utilities {
+  .scroll-x-snap {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+
+  .scroll-x-snap::-webkit-scrollbar {
+    display: none;
+  }
+
+  .snap-item {
+    scroll-snap-align: start;
+  }
+
+  .safe-px {
+    padding-left: max(var(--container-padding), var(--safe-left));
+    padding-right: max(var(--container-padding), var(--safe-right));
   }
 }
 
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
+/* Galaxy Fold closed and other ultra-narrow screens. */
+@media (max-width: 300px) {
+  :root {
+    --container-padding: 12px;
+  }
 }
-.scrollbar-none {
-  scrollbar-width: none;
+
+/* Foldables opened flat and phones in landscape: short but wide. */
+@media (min-width: 600px) and (max-height: 520px) {
+  :root {
+    --space-2xl: clamp(2rem, 1.5rem + 3vw, 3.5rem);
+  }
+
+  .hero-shell {
+    min-height: auto;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -4,6 +4,11 @@ const config: Config = {
   content: ['./src/**/*.{ts,tsx,mdx}'],
   theme: {
     extend: {
+      screens: {
+        // Logical thresholds only — never a device name.
+        xs: '380px',
+        nav: '700px',
+      },
       colors: {
         bg: 'var(--bg)',
         'bg-soft': 'var(--bg-soft)',
@@ -23,17 +28,36 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-montserrat)', 'Montserrat', 'system-ui', 'sans-serif'],
       },
+      fontSize: {
+        'fluid-xs': 'var(--text-xs)',
+        'fluid-sm': 'var(--text-sm)',
+        'fluid-base': 'var(--text-base)',
+        'fluid-md': 'var(--text-md)',
+        'fluid-lg': 'var(--text-lg)',
+        'fluid-xl': 'var(--text-xl)',
+        'fluid-2xl': 'var(--text-2xl)',
+        'fluid-3xl': 'var(--text-3xl)',
+        'fluid-4xl': 'var(--text-4xl)',
+        'fluid-5xl': 'var(--text-5xl)',
+      },
+      spacing: {
+        'fluid-2xs': 'var(--space-2xs)',
+        'fluid-xs': 'var(--space-xs)',
+        'fluid-sm': 'var(--space-sm)',
+        'fluid-md': 'var(--space-md)',
+        'fluid-lg': 'var(--space-lg)',
+        'fluid-xl': 'var(--space-xl)',
+        'fluid-2xl': 'var(--space-2xl)',
+        'fluid-3xl': 'var(--space-3xl)',
+        'safe-bottom': 'var(--safe-bottom)',
+        'safe-top': 'var(--safe-top)',
+      },
       borderRadius: {
-        card: '34px',
-        pill: '999px',
+        card: 'var(--radius-card)',
+        pill: 'var(--radius-pill)',
       },
       maxWidth: {
         content: '1280px',
-      },
-      fontSize: {
-        h1: ['clamp(2.25rem, 4.1vw, 3.375rem)', { lineHeight: '1.06', letterSpacing: '-1.5px', fontWeight: '800' }],
-        h2: ['clamp(1.75rem, 3.6vw, 2.75rem)', { lineHeight: '1.12', letterSpacing: '-1px', fontWeight: '800' }],
-        h3: ['1.125rem', { lineHeight: '1.4', fontWeight: '600' }],
       },
       boxShadow: {
         glow: '0 18px 60px -18px rgba(149, 97, 233, 0.55)',
@@ -41,9 +65,6 @@ const config: Config = {
       },
       backgroundImage: {
         'accent-grad': 'linear-gradient(135deg, var(--accent-light), var(--accent) 55%, var(--accent-dark))',
-      },
-      screens: {
-        xs: '420px',
       },
     },
   },
