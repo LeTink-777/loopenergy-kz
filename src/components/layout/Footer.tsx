@@ -9,7 +9,7 @@ import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 
 import { Reveal, RevealGroup } from '@/components/ui/Reveal';
 import { fadeUp, springPop } from '@/components/ui/motion';
-import { CONTACTS, NAV_LINKS, SITE, SOCIALS } from '@/lib/constants';
+import { CONTACTS, FOOTER_LINKS, SITE, SOCIALS } from '@/lib/constants';
 
 const TELEGRAM_PATH =
   'M22 4.5 2.7 11.9c-1 .4-1 1.8.1 2.1l4.7 1.4 1.8 5.4c.3.8 1.3 1 1.9.4l2.6-2.6 4.8 3.5c.7.5 1.7.1 1.9-.7L23.7 5.7c.2-.9-.7-1.6-1.7-1.2Z';
@@ -111,7 +111,7 @@ export function Footer() {
               {t('footer.nav_title')}
             </h3>
             <ul className="mt-fluid-xs">
-              {NAV_LINKS.map((link) => (
+              {FOOTER_LINKS.map((link) => (
                 <li key={link.key}>
                   <FooterLink href={link.href}>{t(`header.nav.${link.key}`)}</FooterLink>
                 </li>

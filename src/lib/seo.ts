@@ -107,7 +107,7 @@ export function buildMetadata(locale: Locale): Metadata {
   };
 }
 
-type PageKey = 'shop' | 'delivery' | 'wholesale' | 'cart' | 'checkout' | 'order';
+type PageKey = 'shop' | 'delivery' | 'wholesale' | 'cart' | 'checkout' | 'order' | 'certificates';
 
 /**
  * Metadata for a sub-page: inherits the site defaults, overrides title,

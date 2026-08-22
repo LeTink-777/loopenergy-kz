@@ -1,7 +1,7 @@
 'use client';
 
 import { m } from 'framer-motion';
-import { ArrowLeft, ChevronDown, ShieldAlert, ShoppingBag, Truck } from 'lucide-react';
+import { ArrowLeft, ChevronDown, FileDown, ShieldAlert, ShoppingBag, Truck } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { ProductImage } from '@/components/ui/ProductImage';
 import { useState } from 'react';
@@ -285,6 +285,26 @@ export function ProductDetail({ product }: { product: Product }) {
             <p className="text-fluid-sm font-semibold text-white">{t('contra_title')}</p>
             <p className="mt-1 text-fluid-sm leading-relaxed text-w-70">{t('contra_text')}</p>
           </div>
+        </div>
+      </section>
+
+      <section className="mt-fluid-xl">
+        <h2 className="text-fluid-md font-bold uppercase tracking-tight">{t('downloads_title')}</h2>
+        <div className="mt-fluid-sm flex flex-wrap gap-fluid-xs">
+          {[
+            { href: '/assets/docs/consumer-leaflet.pdf', label: t('download_leaflet') },
+            { href: '/assets/docs/declaration.pdf', label: t('download_declaration') },
+          ].map((doc) => (
+            <a
+              key={doc.href}
+              href={doc.href}
+              download
+              className="btn btn-sm btn-ghost uppercase tracking-wide"
+            >
+              <FileDown className="h-4 w-4 shrink-0" aria-hidden="true" />
+              {doc.label}
+            </a>
+          ))}
         </div>
       </section>
 

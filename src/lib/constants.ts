@@ -44,6 +44,12 @@ export const NAV_LINKS = [
   { key: 'faq', href: '/#faq' },
 ] as const;
 
+/** The footer has room for the secondary pages the header bar cannot fit. */
+export const FOOTER_LINKS = [
+  ...NAV_LINKS,
+  { key: 'certificates', href: '/certificates' },
+] as const;
+
 export const SOCIALS = [
   { key: 'telegram', label: 'Telegram', href: 'https://t.me/loop_energy' },
   { key: 'instagram', label: 'Instagram', href: 'https://instagram.com/loopenergy.official' },
