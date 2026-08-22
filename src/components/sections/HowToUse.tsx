@@ -18,7 +18,7 @@ export function HowToUse() {
           <SectionHeading badge={t('badge')} title={t('title')} subtitle={t('subtitle')} />
         </RevealGroup>
 
-        <RevealGroup stagger={0.14} className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <RevealGroup stagger={0.14} className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {HOW_STEPS.map((step, index) => (
             <motion.div
               key={step}
@@ -30,7 +30,7 @@ export function HowToUse() {
               }}
             >
               <span
-                className="pointer-events-none absolute -top-8 left-1 select-none text-[104px] font-black leading-none text-white/[0.05]"
+                className="pointer-events-none absolute -top-7 right-3 select-none text-[112px] font-black leading-[0.8] tracking-tighter text-white/[0.07]"
                 aria-hidden="true"
               >
                 {index + 1}

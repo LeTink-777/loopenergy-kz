@@ -67,7 +67,7 @@ export function Hero() {
       />
 
       <div className="container-content">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:gap-10">
           <div className="text-center lg:text-left">
             <motion.span
               initial={{ opacity: 0, y: 16 }}

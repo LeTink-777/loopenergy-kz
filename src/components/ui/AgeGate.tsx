@@ -61,7 +61,7 @@ export function AgeGate() {
           <div className="absolute inset-0 bg-[#15111a]/85 backdrop-blur-2xl" />
 
           <motion.div
-            className="purple-ring relative w-full max-w-lg px-6 py-10 text-center sm:px-10"
+            className="purple-ring purple-ring-blur relative w-full max-w-lg px-6 py-10 text-center sm:px-10"
             initial={{ opacity: 0, y: 28, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}

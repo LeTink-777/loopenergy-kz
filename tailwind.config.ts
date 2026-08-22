@@ -31,7 +31,7 @@ const config: Config = {
         content: '1280px',
       },
       fontSize: {
-        h1: ['clamp(2.25rem, 5.2vw, 4rem)', { lineHeight: '1.06', letterSpacing: '-1.5px', fontWeight: '800' }],
+        h1: ['clamp(2.25rem, 4.1vw, 3.375rem)', { lineHeight: '1.06', letterSpacing: '-1.5px', fontWeight: '800' }],
         h2: ['clamp(1.75rem, 3.6vw, 2.75rem)', { lineHeight: '1.12', letterSpacing: '-1px', fontWeight: '800' }],
         h3: ['1.125rem', { lineHeight: '1.4', fontWeight: '600' }],
       },
