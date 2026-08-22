@@ -170,7 +170,7 @@ export function Footer() {
             </p>
             <p className="flex items-center gap-2">
               <span className="grid h-6 min-w-[34px] place-items-center rounded-pill border border-accent/35 px-1.5 font-bold text-accent-light">
-                18+
+                21+
               </span>
               <span className="max-w-xl">{t('footer.age_warning')}</span>
             </p>

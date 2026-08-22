@@ -39,7 +39,7 @@ const card = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" 
   <text x="112" y="556" font-family="Montserrat, Arial, sans-serif" font-size="28" font-weight="700" fill="#b78dff">loopenergy.kz</text>
 
   <rect x="1058" y="40" width="86" height="44" rx="14" fill="rgba(149,97,233,0.22)" stroke="rgba(149,97,233,0.6)"/>
-  <text x="1101" y="70" font-family="Montserrat, Arial, sans-serif" font-size="22" font-weight="800" fill="#ffffff" text-anchor="middle">18+</text>
+  <text x="1101" y="70" font-family="Montserrat, Arial, sans-serif" font-size="22" font-weight="800" fill="#ffffff" text-anchor="middle">21+</text>
 </svg>`;
 
 const glyph = await sharp(mark, { density: 384 }).resize(240, 240).png().toBuffer();
