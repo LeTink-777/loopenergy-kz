@@ -34,9 +34,37 @@ src/
 │   └── ui/              # PurpleBorderCard, Reveal, AgeGate, ProductCard, …
 ├── hooks/               # useUniversalMotion
 ├── i18n/                # routing, request config, typed navigation
-├── lib/constants.ts     # products, prices, contacts, cities, asset URLs
-└── messages/            # ru.json, kz.json (identical key trees)
+└── lib/
+    ├── content.ts       # every word on the site, RU + KZ — single source
+    ├── seo.ts           # metadata, icon set, schema.org graph
+    ├── keywords.ts      # Kazakhstan keyword map and page clusters
+    └── constants.ts     # asset URLs, socials, contacts
 ```
+
+## Content and translations
+
+`src/lib/content.ts` is the only place copy lives. next-intl reads it directly
+(`src/i18n/request.ts`), and `src/global.d.ts` feeds its shape back into
+`useTranslations`, so `t('hero.h1')` is checked at build time and a typo in a
+key fails the build rather than rendering blank.
+
+Both locales must carry the same key tree — `Content` is derived from the
+Russian branch, so a missing Kazakh string is a compile error. Numeric copy
+(prices, doses) is stored as strings because next-intl only exposes string
+leaves as typed keys; parse at the point of use.
+
+Copy is written against the clusters in `src/lib/keywords.ts`: the primary term
+lands in the h1, the first paragraph and one h2, with the rest spread across
+section headings. Volumes there are modelled estimates, not a live Wordstat
+export — re-check before spending on ads.
+
+## Icons
+
+`npm run icons` regenerates all 35 platform icons from
+`public/favicon-source.svg`; `npm run og` rebuilds the 1200x630 social card.
+Both write into `public/`, and the output is committed, so a normal build never
+needs sharp. Coverage: browser tabs, every iOS device generation, Android
+densities including maskable, Windows tiles, PWA install and Google Search.
 
 ## Responsive approach
 
