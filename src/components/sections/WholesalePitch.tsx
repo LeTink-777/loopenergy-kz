@@ -108,10 +108,10 @@ export function WholesalePitch() {
               {[
                 { src: '/assets/brand/merch-stand.webp', alt: t('merch_stand_alt') },
                 { src: '/assets/brand/merch-tentcard.webp', alt: t('merch_tent_alt') },
+                // The two shots have different aspect ratios now they are
+                // cropped to their subjects, so the frame sets the shape and
+                // the product is centred inside it.
               ].map((shot) => (
-                {/* The two shots have different aspect ratios now they are
-                    cropped to their subjects, so the frame sets the shape and
-                    the product is centred inside it. */}
                 <Reveal key={shot.src} as="div" className="purple-ring overflow-hidden bg-[#2a2330]">
                   <Image
                     src={shot.src}
