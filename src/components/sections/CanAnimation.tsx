@@ -31,6 +31,8 @@ const LIGHT = { r: 183, g: 141, b: 255 };
 const WHITE = { r: 255, g: 255, b: 255 };
 
 const CAN_SRC = '/assets/brand/can-hero.webp';
+const POUCH_SRC = '/assets/pouches/pouch-main.webp';
+const LOGO_SRC = '/assets/brand/logo.svg';
 
 // Stage boundaries live together so the timeline reads in one place.
 const SPLIT_IN = 0.2;
@@ -115,54 +117,15 @@ function spritePalette(from: Rgb, to: Rgb) {
 
 const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)];
 
-/** Cap height of the wordmark's top line. Both the sampled raster and the
- *  crisp reveal derive every offset from this, so they cannot drift apart. */
-const wordmarkUnit = (w: number, h: number) => Math.min(w * 0.26, h * 0.3, 210);
-
 /**
- * Draws the wordmark the way the brand sets it — LOOP in white over ENERGY in
- * accent. `alpha` of 0 is the particle-only state, 1 the resolved logo.
+ * Where the wordmark sits, in CSS pixels. The offscreen pass the particles aim
+ * at and the crisp reveal both derive from this, so they cannot drift apart.
  */
-function drawWordmark(
-  ctx: CanvasRenderingContext2D,
-  cx: number,
-  cy: number,
-  unit: number,
-  family: string,
-  alpha: number,
-  glow = true,
-) {
-  ctx.save();
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  // The offscreen pass samples this by alpha, and a bloom would fatten every
-  // glyph into a fuzzy halo of targets — so it only glows on screen.
-  if (glow) {
-    ctx.shadowColor = `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},${0.75 * alpha})`;
-    ctx.shadowBlur = unit * 0.3;
-  }
-
-  ctx.font = `900 ${unit}px ${family}`;
-  ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-  ctx.fillText('LOOP', cx, cy - unit * 0.34);
-
-  ctx.font = `900 ${unit * 0.44}px ${family}`;
-  ctx.fillStyle = `rgba(${LIGHT.r},${LIGHT.g},${LIGHT.b},${alpha})`;
-  ctx.fillText('ENERGY', cx, cy + unit * 0.46);
-  ctx.restore();
-}
-
-/** `roundRect` only landed in Safari 16.4, and the fallback is four arcs. */
-function roundRectPath(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-  const radius = Math.min(r, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.arcTo(x + w, y, x + w, y + h, radius);
-  ctx.arcTo(x + w, y + h, x, y + h, radius);
-  ctx.arcTo(x, y + h, x, y, radius);
-  ctx.arcTo(x, y, x + w, y, radius);
-  ctx.closePath();
+function logoRect(w: number, h: number, cy: number, logo: HTMLImageElement) {
+  const width = Math.min(w * 0.62, h * 1.2, 860);
+  const ratio = logo.naturalHeight / logo.naturalWidth || 42 / 83;
+  const height = width * ratio;
+  return { x: w / 2 - width / 2, y: cy - height / 2, w: width, h: height };
 }
 
 export function CanAnimation() {
@@ -185,15 +148,10 @@ export function CanAnimation() {
   const budgetRef = useRef({ burst: 340, text: 900, sparks: 22 });
   /** CSS-pixel size. Every drawing maths uses this, never `canvas.width`. */
   const sizeRef = useRef({ w: 0, h: 0 });
-  /**
-   * The canvas `font` shorthand is parsed by the canvas, not by CSS, so it
-   * cannot resolve `var(--font-montserrat)`. Resolve the stack off the DOM once
-   * and hand the canvas a literal family list.
-   */
-  const familyRef = useRef('Montserrat, system-ui, sans-serif');
-
   const stateRef = useRef({
     canImage: null as HTMLImageElement | null,
+    pouchImage: null as HTMLImageElement | null,
+    logoImage: null as HTMLImageElement | null,
     frame: 0,
     spin: 0,
     spinLock: 0,
@@ -209,15 +167,11 @@ export function CanAnimation() {
     lowFpsStreak: 0,
   });
 
-  // ── Sprite palettes and the resolved font stack ────────────────────────
+  // ── Sprite palettes ────────────────────────────────────────────────────
   useEffect(() => {
     const s = stateRef.current;
     s.burstPalette = spritePalette(ACCENT, LIGHT);
     s.wordPalette = spritePalette(LIGHT, WHITE);
-
-    const host = canvasRef.current ?? document.body;
-    const family = window.getComputedStyle(host).fontFamily;
-    if (family) familyRef.current = family;
   }, []);
 
   // ── Canvas sizing ──────────────────────────────────────────────────────
@@ -299,13 +253,13 @@ export function CanAnimation() {
     }));
   }, []);
 
-  /** Rasterises the wordmark offscreen and samples opaque pixels as targets. */
+  /** Rasterises the lockup offscreen and samples its opaque pixels as targets. */
   const spawnWordParticles = useCallback((w: number, h: number, cy: number) => {
-    const palette = stateRef.current.wordPalette;
-    if (!palette.length) return [];
+    const { wordPalette: palette, logoImage } = stateRef.current;
+    if (!palette.length || !logoImage) return [];
 
-    // Half-scale sampling: a quarter of the pixels to read back, and the
-    // 2px lattice it implies is finer than the particles anyway.
+    // Half-scale sampling: a quarter of the pixels to read back, and the 2px
+    // lattice it implies is finer than the particles drawn on top of it.
     const scale = 0.5;
     const off = document.createElement('canvas');
     off.width = Math.max(1, Math.round(w * scale));
@@ -314,7 +268,8 @@ export function CanAnimation() {
     const octx = off.getContext('2d', { willReadFrequently: true });
     if (!octx) return [];
 
-    drawWordmark(octx, off.width / 2, cy * scale, wordmarkUnit(w, h) * scale, familyRef.current, 1, false);
+    const box = logoRect(w, h, cy, logoImage);
+    octx.drawImage(logoImage, box.x * scale, box.y * scale, box.w * scale, box.h * scale);
 
     const { data } = octx.getImageData(0, 0, off.width, off.height);
     const targets: { tx: number; ty: number }[] = [];
@@ -326,8 +281,6 @@ export function CanAnimation() {
     }
     if (!targets.length) return [];
 
-    // Even sampling beats a shuffle: it keeps the letters legible at low
-    // budgets, where a random subset leaves holes in the strokes.
     // A fractional stride, so a budget that does not divide the target count
     // still spends all of it — flooring to 1 would blow past the budget.
     const stride = Math.max(1, targets.length / budgetRef.current.text);
@@ -520,58 +473,36 @@ export function CanAnimation() {
     }
 
     // ── Stage 3: the pouch rises out of the gap ───────────────────────────
-    const pouchW = unit * 0.19;
-    const pouchH = unit * 0.33;
+    // A real sachet photographed against the water splash, cut out of why.png
+    // and stood upright — the tin holds twenty of these, so this is the object
+    // that should come out of it.
+    const pouchH = unit * 0.38;
+    const pouchW =
+      pouchH * (s.pouchImage ? s.pouchImage.naturalWidth / s.pouchImage.naturalHeight : 0.354);
 
-    if (p >= POUCH_IN && p < BURST_IN) {
+    if (p >= POUCH_IN && p < BURST_IN && s.pouchImage) {
       const stage = clamp01((p - POUCH_IN) / (BURST_IN - POUCH_IN));
       const rise = easeOut(stage);
       const tilt = Math.sin(s.frame * 0.03) * 0.05 * (1 - rise * 0.6);
+      const scale = mix(0.35, 1, rise);
 
       ctx.save();
       ctx.translate(cx, cy + unit * 0.14 * (1 - rise));
       ctx.rotate(tilt);
-      ctx.scale(mix(0.35, 1, rise), mix(0.35, 1, rise));
+      ctx.scale(scale, scale);
       ctx.globalAlpha = clamp01(stage * 3);
 
-      ctx.shadowColor = `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},0.65)`;
-      ctx.shadowBlur = unit * 0.06;
+      // A pool of accent behind it: the sachet is white, and without something
+      // lit behind it, it reads as a hole punched in the background.
+      const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, pouchH * 0.95);
+      halo.addColorStop(0, `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},0.55)`);
+      halo.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = halo;
+      ctx.fillRect(-pouchH, -pouchH, pouchH * 2, pouchH * 2);
 
-      const body = ctx.createLinearGradient(-pouchW / 2, -pouchH / 2, pouchW / 2, pouchH / 2);
-      body.addColorStop(0, `rgb(${LIGHT.r},${LIGHT.g},${LIGHT.b})`);
-      body.addColorStop(0.55, `rgb(${ACCENT.r},${ACCENT.g},${ACCENT.b})`);
-      body.addColorStop(1, 'rgb(95,54,160)');
-
-      roundRectPath(ctx, -pouchW / 2, -pouchH / 2, pouchW, pouchH, pouchW * 0.22);
-      ctx.fillStyle = body;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-
-      // Crimped top seam, the way a real sachet is sealed.
-      ctx.save();
-      roundRectPath(ctx, -pouchW / 2, -pouchH / 2, pouchW, pouchH, pouchW * 0.22);
-      ctx.clip();
-      ctx.fillStyle = 'rgba(255,255,255,0.14)';
-      ctx.fillRect(-pouchW / 2, -pouchH / 2, pouchW, pouchH * 0.12);
-      ctx.fillRect(-pouchW / 2, pouchH * 0.38, pouchW, pouchH * 0.12);
-
-      // Sheen sweeping across the face.
-      const sheenX = Math.sin(s.frame * 0.02) * pouchW * 0.3;
-      const sheen = ctx.createLinearGradient(sheenX - pouchW * 0.3, -pouchH / 2, sheenX + pouchW * 0.3, pouchH / 2);
-      sheen.addColorStop(0, 'rgba(255,255,255,0)');
-      sheen.addColorStop(0.5, 'rgba(255,255,255,0.22)');
-      sheen.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = sheen;
-      ctx.fillRect(-pouchW / 2, -pouchH / 2, pouchW, pouchH);
-      ctx.restore();
-
-      ctx.fillStyle = '#fff';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.font = `900 ${pouchW * 0.3}px ${familyRef.current}`;
-      ctx.fillText('LOOP', 0, -pouchH * 0.08);
-      ctx.font = `700 ${pouchW * 0.16}px ${familyRef.current}`;
-      ctx.fillText('ENERGY', 0, pouchH * 0.06);
+      ctx.shadowColor = `rgba(${LIGHT.r},${LIGHT.g},${LIGHT.b},0.8)`;
+      ctx.shadowBlur = unit * 0.05;
+      ctx.drawImage(s.pouchImage, -pouchW / 2, -pouchH / 2, pouchW, pouchH);
 
       ctx.restore();
       ctx.globalAlpha = 1;
@@ -637,7 +568,9 @@ export function CanAnimation() {
 
       if (!s.wordSpawned) {
         s.word = spawnWordParticles(w, h, cy);
-        s.wordSpawned = true;
+        // Only latch once it actually produced targets, so a frame drawn
+        // before the lockup has loaded retries instead of staying empty.
+        s.wordSpawned = s.word.length > 0;
       }
 
       // The swarm is home well before the end, which leaves the last stretch
@@ -670,8 +603,17 @@ export function CanAnimation() {
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
 
-      if (reveal > 0) {
-        drawWordmark(ctx, cx, cy, wordmarkUnit(w, h), familyRef.current, reveal);
+      if (reveal > 0 && s.logoImage) {
+        const box = logoRect(w, h, cy, s.logoImage);
+        ctx.save();
+        ctx.globalAlpha = reveal;
+        // Two tight passes rather than one wide one: at a large blur radius the
+        // shadow stops following the letterforms and reads as a purple box.
+        ctx.shadowColor = `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},0.85)`;
+        ctx.shadowBlur = box.h * 0.1;
+        ctx.drawImage(s.logoImage, box.x, box.y, box.w, box.h);
+        ctx.drawImage(s.logoImage, box.x, box.y, box.w, box.h);
+        ctx.restore();
       }
     } else if (s.wordSpawned) {
       s.wordSpawned = false;
@@ -690,28 +632,31 @@ export function CanAnimation() {
       ([entry]) => {
         visibleRef.current = entry.isIntersecting;
 
-        // Fetch the tin only once the section is close — loading it on mount
-        // would compete with the hero image for the LCP.
+        // Fetch the artwork only once the section is close — loading it on
+        // mount would compete with the hero image for the LCP.
         if (entry.isIntersecting && !stateRef.current.canImage) {
-          const img = new Image();
-          img.src = CAN_SRC;
-          img.decoding = 'async';
-          img.onload = () => {
-            stateRef.current.canImage = img;
+          const load = (src: string, onto: 'canImage' | 'pouchImage' | 'logoImage') => {
+            const img = new Image();
+            img.src = src;
+            img.decoding = 'async';
+            img.onload = () => {
+              stateRef.current[onto] = img;
+              // The lockup decides where the wordmark particles aim, so a swarm
+              // built before it arrived has to be thrown away.
+              if (onto === 'logoImage') {
+                stateRef.current.wordSpawned = false;
+                stateRef.current.word = [];
+              }
+            };
           };
+          load(CAN_SRC, 'canImage');
+          load(POUCH_SRC, 'pouchImage');
+          load(LOGO_SRC, 'logoImage');
         }
       },
       { rootMargin: '600px' },
     );
     observer.observe(el);
-
-    // The wordmark is sampled from rendered text, so it has to wait for
-    // Montserrat — fallback metrics would sample a different shape.
-    document.fonts?.ready.then(() => {
-      // Re-sample against the real face, not the fallback metrics.
-      stateRef.current.wordSpawned = false;
-      stateRef.current.word = [];
-    });
 
     rafRef.current = requestAnimationFrame(draw);
 
