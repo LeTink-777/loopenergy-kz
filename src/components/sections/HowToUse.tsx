@@ -5,11 +5,15 @@ import { useTranslations } from 'next-intl';
 
 import { RevealGroup } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
+import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 import { EASE } from '@/components/ui/motion';
 import { HOW_STEPS } from '@/lib/constants';
 
 export function HowToUse() {
   const t = useTranslations('how');
+  const { isTouch, reducedMotion, hoverLift } = useUniversalMotion();
+  // Keep the entrance inside the container so cards never sweep past the edge.
+  const drift = reducedMotion ? 0 : isTouch ? 10 : 24;
 
   return (
     <section id="how" className="section-pad relative scroll-mt-28">
@@ -25,7 +29,7 @@ export function HowToUse() {
               className="relative"
               variants={{
                 // Odd cards drift in from the left, even ones from the right.
-                hidden: { opacity: 0, x: index % 2 === 0 ? -44 : 44, y: 18 },
+                hidden: { opacity: 0, x: index % 2 === 0 ? -drift : drift, y: reducedMotion ? 0 : 14 },
                 visible: { opacity: 1, x: 0, y: 0, transition: { duration: 0.7, ease: EASE } },
               }}
             >
@@ -37,7 +41,9 @@ export function HowToUse() {
               </span>
 
               <m.div
-                whileHover={{ y: -6, boxShadow: '0 24px 60px -20px rgba(149, 97, 233, 0.2)' }}
+                whileHover={
+                  hoverLift && { ...hoverLift, boxShadow: '0 24px 60px -20px rgba(149, 97, 233, 0.2)' }
+                }
                 transition={{ duration: 0.35, ease: EASE }}
                 className="purple-ring relative h-full p-6"
               >
