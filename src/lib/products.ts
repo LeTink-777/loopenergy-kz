@@ -10,7 +10,7 @@ export interface Flavor {
   inStock: boolean;
 }
 
-export const ALL_CATEGORIES = ['kit', 'flowpack', 'single'] as const;
+export const ALL_CATEGORIES = ['set', 'single'] as const;
 export type ProductCategory = (typeof ALL_CATEGORIES)[number];
 
 export interface Product {
@@ -63,7 +63,7 @@ export const products: Product[] = [
     priceRub: 4990,
     badge: { ru: '+15 +5', kz: '+15 +5' },
     inStock: true,
-    category: 'kit',
+    category: 'set',
     caffeine: 100,
     pouches: 150,
     flavors: [],
@@ -84,33 +84,10 @@ export const products: Product[] = [
     badge: { ru: 'ХИТ', kz: 'ХИТ' },
     inStock: true,
     isHit: true,
-    category: 'kit',
+    category: 'set',
     caffeine: 100,
     pouches: 240,
     flavors: [],
-  },
-  {
-    id: 'flow-pack',
-    slug: 'flow-pak',
-    name: { ru: 'Флоу пак (5 паучей)', kz: 'Флоу пак (5 пауш)' },
-    tagline: { ru: 'Попробуй за минимальную цену', kz: 'Минималды бағамен көріп көр' },
-    description: {
-      ru: 'Компактный пакет на 5 паучей — идеально чтобы познакомиться со вкусом перед покупкой полной банки.',
-      kz: '5 паушқа арналған ықшам пакет — толық банка сатып алмас бұрын дәммен танысуға мінсіз.',
-    },
-    image: `${ORIGIN}/images/${encodeURIComponent('ВАЙЛЕТ-СПЛЭШ.png')}${V}`,
-    images: [`${ORIGIN}/images/${encodeURIComponent('ВАЙЛЕТ-СПЛЭШ.png')}${V}`],
-    price: 595,
-    badge: { ru: 'ПОПРОБУЙ', kz: 'КӨРІП КӨР' },
-    inStock: true,
-    category: 'flowpack',
-    caffeine: 100,
-    pouches: 5,
-    flavors: [
-      { id: 'violet', name: { ru: 'Вайлет Сплэш', kz: 'Вайлет Сплэш' }, color: '#7B1FA2', inStock: true },
-      { id: 'kiwi', name: { ru: 'Киви Фрэш', kz: 'Киви Фрэш' }, color: '#7CB342', inStock: true },
-      { id: 'peach', name: { ru: 'Пич Бич', kz: 'Пич Бич' }, color: '#FFAB91', inStock: true },
-    ],
   },
   {
     id: 'violet-splash',

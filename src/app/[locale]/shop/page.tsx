@@ -34,7 +34,6 @@ export default async function ShopPage({ params }: { params: Promise<{ locale: s
       <div className="container-content">
         <PageHeader title={t('h1')} accent={t('h1_accent')} subline={t('subline')} />
 
-        <p className="promo-banner mt-6">{t('promo')}</p>
 
         <div className="mt-8">
           <ShopCatalog />

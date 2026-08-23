@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { Suspense } from 'react';
+
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { routing } from '@/i18n/routing';
@@ -34,7 +36,9 @@ export default async function CheckoutPage({ params }: { params: Promise<{ local
       <div className="container-content">
         <PageHeader title={t('h1')} accent={t('h1_accent')} subline={t('subline')} />
         <div className="mt-fluid-lg">
-          <CheckoutForm />
+          <Suspense fallback={<div className="purple-ring min-h-[420px] animate-pulse" aria-hidden="true" />}>
+            <CheckoutForm />
+          </Suspense>
         </div>
       </div>
     </div>

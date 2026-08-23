@@ -38,12 +38,11 @@ const normalisePhone = (raw: string) => {
   return digits;
 };
 
-const CARRIERS = ['kazpost', 'cdek', 'pickup'] as const;
+const CARRIERS = ['kazpost', 'cdek'] as const;
 /** Which options each carrier offers — mirrors the checkout form. */
 const CARRIER_OPTIONS: Record<(typeof CARRIERS)[number], readonly string[]> = {
   kazpost: ['pvz', 'postomat', 'courier'],
   cdek: ['pvz', 'postomat', 'courier', 'express'],
-  pickup: [],
 };
 const PAYMENT_METHODS = ['card', 'kaspi'] as const;
 
@@ -93,7 +92,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: 'invalid_delivery' }, { status: 422 });
   }
 
-  if (carrier !== 'pickup' && !city) {
+  if (!city) {
     return NextResponse.json({ success: false, error: 'missing_city' }, { status: 422 });
   }
 

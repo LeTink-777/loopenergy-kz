@@ -2,9 +2,10 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { m } from 'framer-motion';
-import { CreditCard, Loader2, Wallet } from 'lucide-react';
+import { CreditCard, Loader2, Mail, Truck, Wallet } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
@@ -15,13 +16,13 @@ import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 import { springPop } from '@/components/ui/motion';
 import { formatTenge } from '@/lib/constants';
 import type { Content, Locale } from '@/lib/content';
+import { t as pickText, products } from '@/lib/products';
 import { useCartStore } from '@/store/cartStore';
 
 /** Which ways of receiving an order each carrier actually offers. */
 const CARRIER_OPTIONS = {
   kazpost: ['pvz', 'postomat', 'courier'],
   cdek: ['pvz', 'postomat', 'courier', 'express'],
-  pickup: [],
 } as const;
 
 const FREE_DELIVERY_FROM = 3000;
@@ -52,8 +53,36 @@ export function CheckoutForm() {
   const hydrated = useHydrated();
   const { hoverScale, tapPress } = useUniversalMotion();
 
-  const items = useCartStore((s) => s.items);
+  const cartItems = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
+
+  /**
+   * "Купить сейчас" carries the product in the URL instead of writing it to the
+   * cart, so backing out of checkout leaves the cart exactly as it was. Only
+   * "В корзину" persists anything.
+   */
+  const searchParams = useSearchParams();
+  const buyId = searchParams.get('buy');
+  const buyQty = Math.max(1, Math.min(99, Number(searchParams.get('qty')) || 1));
+  const buyFlavor = searchParams.get('flavor') ?? undefined;
+
+  const directItem = useMemo(() => {
+    const product = buyId ? products.find((p) => p.id === buyId) : undefined;
+    if (!product) return null;
+    const flavour = product.flavors.find((f) => f.id === buyFlavor);
+    return {
+      productId: product.id,
+      slug: product.slug,
+      name: pickText(product.name, locale),
+      image: product.image,
+      price: product.price,
+      quantity: buyQty,
+      flavor: flavour?.id,
+      flavorLabel: flavour ? pickText(flavour.name, locale) : undefined,
+    };
+  }, [buyId, buyFlavor, buyQty, locale]);
+
+  const items = directItem ? [directItem] : cartItems;
   const [submitting, setSubmitting] = useState(false);
 
   const cityList = tRoot.raw('b2b.form.field_city_options') as Content['b2b']['form']['field_city_options'];
@@ -65,7 +94,7 @@ export function CheckoutForm() {
     city: z.string(),
     address: z.string(),
     comment: z.string(),
-    carrier: z.enum(['kazpost', 'cdek', 'pickup']),
+    carrier: z.enum(['kazpost', 'cdek']),
     deliveryOption: z.string(),
     paymentMethod: z.enum(['card', 'kaspi']),
   });
@@ -101,7 +130,7 @@ export function CheckoutForm() {
   // Only a door delivery has an address to put on it; a pick-up point is
   // chosen on the carrier's own map after the order is placed.
   const needsAddress = deliveryOption === 'courier' || deliveryOption === 'express';
-  const needsCity = carrier !== 'pickup';
+  const needsCity = true;
 
   const pickCarrier = (next: FormValues['carrier']) => {
     setValue('carrier', next);
@@ -110,16 +139,16 @@ export function CheckoutForm() {
   };
 
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const deliveryCost = carrier === 'pickup' || subtotal >= FREE_DELIVERY_FROM ? 0 : DELIVERY_FEE;
+  const deliveryCost = subtotal >= FREE_DELIVERY_FROM ? 0 : DELIVERY_FEE;
   const total = subtotal + deliveryCost;
 
   const onSubmit = async (values: FormValues) => {
-    if (values.carrier !== 'pickup' && !values.city) {
+    if (!values.city) {
       toast.error(t('error_city'));
       return;
     }
 
-    if (values.carrier !== 'pickup' && !values.deliveryOption) {
+    if (!values.deliveryOption) {
       toast.error(t('error_option'));
       return;
     }
@@ -150,7 +179,8 @@ export function CheckoutForm() {
         return;
       }
 
-      clearCart();
+      // A direct buy never touched the cart, so there is nothing to clear.
+      if (!directItem) clearCart();
 
       // A live gateway hands back its own payment page; stubs do not.
       if (result.paymentRedirectUrl) {
@@ -185,10 +215,12 @@ export function CheckoutForm() {
     );
   }
 
+  // Icons rather than the carriers' own logos: those are their trademarks,
+  // the marks would imply a partnership we have not signed, and it keeps the
+  // row consistent with the payment options below, which already use icons.
   const carriers = [
-    { id: 'kazpost', label: t('carrier_kazpost'), sub: t('carrier_kazpost_sub') },
-    { id: 'cdek', label: t('carrier_cdek'), sub: t('carrier_cdek_sub') },
-    { id: 'pickup', label: t('carrier_pickup'), sub: t('carrier_pickup_sub') },
+    { id: 'kazpost', label: t('carrier_kazpost'), sub: t('carrier_kazpost_sub'), Icon: Mail },
+    { id: 'cdek', label: t('carrier_cdek'), sub: t('carrier_cdek_sub'), Icon: Truck },
   ] as const;
 
   const optionLabels: Record<string, { label: string; sub?: string }> = {
@@ -270,8 +302,15 @@ export function CheckoutForm() {
                   onChange={() => pickCarrier(option.id)}
                   className="sr-only"
                 />
-                <span className="text-fluid-sm font-semibold text-white">{option.label}</span>
-                <span className="mt-0.5 text-fluid-xs text-w-50">{option.sub}</span>
+                <span className="flex items-center gap-2.5">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-accent/25 bg-accent/10 text-accent-light">
+                    <option.Icon className="h-[18px] w-[18px]" aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-fluid-sm font-semibold text-white">{option.label}</span>
+                    <span className="block text-fluid-xs text-w-50">{option.sub}</span>
+                  </span>
+                </span>
               </label>
             ))}
           </fieldset>
@@ -300,11 +339,7 @@ export function CheckoutForm() {
                 ))}
               </fieldset>
             </>
-          ) : (
-            <p className="mt-fluid-sm rounded-2xl border border-w-10 bg-white/[0.03] px-4 py-3 text-fluid-sm leading-relaxed text-w-70">
-              {t('pickup_note')}
-            </p>
-          )}
+          ) : null}
 
           <div className="mt-fluid-sm grid gap-fluid-sm sm:grid-cols-2">
             {needsCity ? (

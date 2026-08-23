@@ -414,8 +414,7 @@ export const content = {
       filters_apply: 'Показать',
       category_label: 'Формат',
       category_all: 'Все',
-      category_kit: 'Наборы',
-      category_flowpack: 'Флоу паки',
+      category_set: 'Наборы',
       category_single: 'Одиночные',
       sort_label: 'Сортировка',
       sort_popular: 'Популярные',
@@ -429,8 +428,6 @@ export const content = {
       out_of_stock: 'Нет в наличии',
       add_to_cart: 'В корзину',
       toast_added: '{name} — в корзине',
-      promo:
-        'При покупке от 5 товаров мы компенсируем доставку до 500 ₸: если она дороже — вы платите только разницу, если дешевле — доставка за наш счёт.',
     },
 
     product_page: {
@@ -1105,8 +1102,7 @@ export const content = {
       filters_apply: 'Көрсету',
       category_label: 'Формат',
       category_all: 'Барлығы',
-      category_kit: 'Жинақтар',
-      category_flowpack: 'Флоу пак',
+      category_set: 'Жинақтар',
       category_single: 'Жекелей',
       sort_label: 'Сұрыптау',
       sort_popular: 'Танымал',
@@ -1120,8 +1116,6 @@ export const content = {
       out_of_stock: 'Қоймада жоқ',
       add_to_cart: 'Себетке',
       toast_added: '{name} — себетте',
-      promo:
-        '5 тауардан астам сатып алғанда біз жеткізуді 500 ₸ дейін өтейміз: қымбат болса — тек айырмасын төлейсіз, арзан болса — жеткізу біздің есебімізден.',
     },
 
     product_page: {

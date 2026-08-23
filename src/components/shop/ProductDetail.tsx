@@ -85,9 +85,12 @@ export function ProductDetail({ product }: { product: Product }) {
     toast.success(t('toast_added', { name }));
   };
 
+  /** Straight to checkout without touching the cart — the product rides in the
+   *  URL, so backing out leaves the cart as it was. */
   const buyNow = () => {
-    add();
-    router.push('/checkout');
+    const params = new URLSearchParams({ buy: product.id, qty: String(quantity) });
+    if (product.flavors.length > 1 && selectedFlavor) params.set('flavor', selectedFlavor.id);
+    router.push(`/checkout?${params.toString()}`);
   };
 
   const related = relatedProducts(product.slug);
