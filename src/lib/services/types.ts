@@ -107,7 +107,6 @@ export interface OrderItem {
   price: number;
   quantity: number;
   flavor?: string;
-  strength?: string;
 }
 
 export interface CustomerInfo {

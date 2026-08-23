@@ -297,12 +297,11 @@ export function CheckoutForm() {
         <ul className="mt-fluid-sm flex flex-col gap-fluid-xs text-fluid-sm">
           {items.map((item) => (
             <li
-              key={`${item.productId}-${item.flavor ?? ''}-${item.strength ?? ''}`}
+              key={`${item.productId}-${item.flavor ?? ''}`}
               className="flex items-baseline justify-between gap-3"
             >
               <span className="text-w-70">
                 {item.name}
-                {item.strengthLabel ? <span className="text-w-50"> · {item.strengthLabel}</span> : null}
                 <span className="text-w-50"> × {item.quantity}</span>
               </span>
               <span className="whitespace-nowrap font-semibold tabular-nums">

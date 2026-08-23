@@ -11,7 +11,6 @@ type OrderLine = {
   name?: unknown;
   price?: unknown;
   quantity?: unknown;
-  strengthLabel?: unknown;
   flavorLabel?: unknown;
 };
 
@@ -66,7 +65,6 @@ export async function POST(request: Request) {
     name: str(line.name, 120),
     price: Number(line.price) || 0,
     quantity: Math.max(1, Math.min(99, Number(line.quantity) || 1)),
-    strength: str(line.strengthLabel, 60),
     flavor: str(line.flavorLabel, 60),
   }));
 

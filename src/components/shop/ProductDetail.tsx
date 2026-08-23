@@ -61,13 +61,11 @@ export function ProductDetail({ product }: { product: Product }) {
   const addItem = useCartStore((s) => s.addItem);
   const { hoverScale, tapPress } = useUniversalMotion();
 
-  const [strength, setStrength] = useState(product.strength[1]?.id ?? product.strength[0]?.id ?? '');
   const [flavor, setFlavor] = useState(product.flavors[0]?.id ?? '');
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
 
   const name = pick(product.name, locale);
-  const selectedStrength = product.strength.find((s) => s.id === strength);
   const selectedFlavor = product.flavors.find((f) => f.id === flavor);
   const ingredients = tInfo.raw('ingredients') as { name: string; description: string }[];
   const steps = tHow.raw('steps') as { num: string; title: string; description: string }[];
@@ -80,8 +78,6 @@ export function ProductDetail({ product }: { product: Product }) {
       image: product.image,
       price: product.price,
       quantity,
-      strength: selectedStrength?.id,
-      strengthLabel: selectedStrength ? pick(selectedStrength.label, locale) : undefined,
       flavor: product.flavors.length > 1 ? selectedFlavor?.id : undefined,
       flavorLabel:
         product.flavors.length > 1 && selectedFlavor ? pick(selectedFlavor.name, locale) : undefined,
@@ -160,7 +156,7 @@ export function ProductDetail({ product }: { product: Product }) {
 
           <div className="mt-fluid-sm flex flex-wrap gap-2">
             <span className="rounded-pill border border-accent/25 bg-accent/10 px-3.5 py-1.5 text-fluid-xs font-semibold text-accent-light">
-              {selectedStrength?.mg ?? product.caffeine} {t('caffeine_unit')}
+              {product.caffeine} {t('caffeine_unit')}
             </span>
             <span className="rounded-pill border border-w-10 px-3.5 py-1.5 text-fluid-xs font-semibold text-w-70">
               {product.pouches} {t('pouches_unit')}
@@ -168,20 +164,6 @@ export function ProductDetail({ product }: { product: Product }) {
           </div>
 
           <div className="mt-fluid-md flex flex-col gap-fluid-sm">
-            {product.strength.length > 0 ? (
-              <VariantPicker
-                name={`detail-strength-${product.id}`}
-                label={t('strength_title')}
-                value={strength}
-                onChange={setStrength}
-                options={product.strength.map((s) => ({
-                  id: s.id,
-                  label: pick(s.label, locale),
-                  sub: `${s.mg} мг`,
-                }))}
-              />
-            ) : null}
-
             {product.flavors.length > 1 ? (
               <VariantPicker
                 name={`detail-flavor-${product.id}`}

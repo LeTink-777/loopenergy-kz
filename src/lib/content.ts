@@ -404,10 +404,10 @@ export const content = {
     shop: {
       meta_title: 'Каталог кофеиновых паучей LOOP Energy',
       meta_description:
-        'Все вкусы и крепости LOOP Energy в Казахстане. Цены в ₸, доставка по всей стране, заказ без регистрации.',
+        'Все вкусы LOOP Energy в Казахстане. Цены в ₸, доставка по всей стране, заказ без регистрации.',
       h1: 'Каталог',
       h1_accent: 'LOOP Energy',
-      subline: 'Выбирай вкус и крепость. Без регистрации — телефона достаточно.',
+      subline: 'Выбирай вкус. Без регистрации — телефона достаточно.',
       filters_title: 'Фильтры',
       filters_open: 'Фильтры',
       filters_reset: 'Сбросить',
@@ -417,11 +417,6 @@ export const content = {
       category_kit: 'Наборы',
       category_flowpack: 'Флоу паки',
       category_single: 'Одиночные',
-      strength_label: 'Крепость',
-      strength_all: 'Любая',
-      strength_soft: 'Мягкий 30 мг',
-      strength_medium: 'Средний 50 мг',
-      strength_strong: 'Сильный 75 мг',
       sort_label: 'Сортировка',
       sort_popular: 'Популярные',
       sort_price_asc: 'Сначала дешевле',
@@ -440,7 +435,6 @@ export const content = {
 
     product_page: {
       back: 'В каталог',
-      strength_title: 'Крепость',
       flavor_title: 'Вкус',
       quantity_title: 'Количество',
       quantity_less: 'Убрать одну',
@@ -1086,11 +1080,6 @@ export const content = {
       category_kit: 'Жинақтар',
       category_flowpack: 'Флоу пак',
       category_single: 'Жекелей',
-      strength_label: 'Күші',
-      strength_all: 'Кез келген',
-      strength_soft: 'Жұмсақ 30 мг',
-      strength_medium: 'Орташа 50 мг',
-      strength_strong: 'Күшті 75 мг',
       sort_label: 'Сұрыптау',
       sort_popular: 'Танымал',
       sort_price_asc: 'Алдымен арзаны',
@@ -1109,7 +1098,6 @@ export const content = {
 
     product_page: {
       back: 'Каталогқа',
-      strength_title: 'Күші',
       flavor_title: 'Дәмі',
       quantity_title: 'Саны',
       quantity_less: 'Біреуін алу',

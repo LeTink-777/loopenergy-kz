@@ -11,16 +11,14 @@ import { EASE, springPop } from '@/components/ui/motion';
 import {
   CATEGORY_IDS,
   SORT_IDS,
-  STRENGTH_IDS,
   products,
   type CategoryId,
   type SortId,
-  type StrengthId,
 } from '@/lib/products';
 
-type FilterState = { category: CategoryId; strength: StrengthId; sort: SortId; inStockOnly: boolean };
+type FilterState = { category: CategoryId; sort: SortId; inStockOnly: boolean };
 
-const DEFAULTS: FilterState = { category: 'all', strength: 'all', sort: 'popular', inStockOnly: false };
+const DEFAULTS: FilterState = { category: 'all', sort: 'popular', inStockOnly: false };
 
 function Chip({
   active,
@@ -65,14 +63,6 @@ function FilterPanel({
         ))}
       </div>
 
-      <p className="filter-label">{t('strength_label')}</p>
-      <div className="filter-group">
-        {STRENGTH_IDS.map((id) => (
-          <Chip key={id} active={state.strength === id} onClick={() => set({ strength: id })}>
-            {t(`strength_${id}`)}
-          </Chip>
-        ))}
-      </div>
 
       <p className="filter-label">{t('sort_label')}</p>
       <div className="filter-group">
@@ -111,10 +101,6 @@ export function ShopCatalog() {
     let list = products.filter((p) => {
       if (state.category !== 'all' && p.category !== state.category) return false;
       if (state.inStockOnly && !p.inStock) return false;
-      if (state.strength !== 'all') {
-        // Kits and jars ship mixed strengths, so they never match a single filter.
-        return p.strength.some((s) => s.id === state.strength);
-      }
       return true;
     });
 

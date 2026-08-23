@@ -6,7 +6,7 @@ import { EASE } from '@/components/ui/motion';
 
 export type Option = { id: string; label: string; sub?: string; color?: string; disabled?: boolean };
 
-/** Pill row for strengths; renders a colour dot when an option carries one. */
+/** Pill row for flavours; renders a colour dot when an option carries one. */
 export function VariantPicker({
   label,
   options,

@@ -16,7 +16,7 @@ import { useCartStore } from '@/store/cartStore';
 
 /**
  * Deliberately spare: image, NEW flag, name, one line of flavour, price, one
- * button. The strength picker, the caffeine and pouch-count chips and the
+ * button. The caffeine and pouch-count chips and the
  * secondary badges all moved to the product page — in a four-across grid they
  * competed with the thing the card is for, which is getting a tin into the
  * cart or getting you to the detail page.
@@ -38,9 +38,6 @@ export function ProductGridCard({
   const { hoverScale, tapPress, isTouch } = useUniversalMotion();
 
   const name = pick(product.name, locale);
-  // No picker on the card any more, so the cart gets the default strength and
-  // the product page stays the place to choose another.
-  const preset = product.strength[1] ?? product.strength[0];
 
   const add = () => {
     addItem({
@@ -49,8 +46,6 @@ export function ProductGridCard({
       name,
       image: product.image,
       price: product.price,
-      strength: preset?.id,
-      strengthLabel: preset ? pick(preset.label, locale) : undefined,
     });
     toast.success(t('toast_added', { name }));
   };

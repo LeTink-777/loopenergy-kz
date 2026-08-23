@@ -54,8 +54,8 @@ export function CartView() {
       <ul className="flex flex-col gap-fluid-xs">
         <AnimatePresence initial={false}>
           {items.map((item) => {
-            const lineKey = `${item.productId}-${item.flavor ?? ''}-${item.strength ?? ''}`;
-            const variant = [item.strengthLabel, item.flavorLabel].filter(Boolean).join(' · ');
+            const lineKey = `${item.productId}-${item.flavor ?? ''}`;
+            const variant = item.flavorLabel ?? '';
 
             return (
               <m.li
@@ -89,7 +89,7 @@ export function CartView() {
                   <QuantityStepper
                     size="sm"
                     value={item.quantity}
-                    onChange={(next) => updateQuantity(item.productId, next, item.flavor, item.strength)}
+                    onChange={(next) => updateQuantity(item.productId, next, item.flavor)}
                     min={1}
                     labels={{ less: tProduct('quantity_less'), more: tProduct('quantity_more') }}
                   />
@@ -102,7 +102,7 @@ export function CartView() {
                     type="button"
                     aria-label={t('remove')}
                     onClick={() => {
-                      removeItem(item.productId, item.flavor, item.strength);
+                      removeItem(item.productId, item.flavor);
                       toast(t('toast_removed'));
                     }}
                     whileTap={{ scale: 0.9 }}

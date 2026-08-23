@@ -10,13 +10,6 @@ export interface Flavor {
   inStock: boolean;
 }
 
-export interface Strength {
-  id: string;
-  label: Localized;
-  /** Caffeine per pouch. */
-  mg: number;
-}
-
 export const ALL_CATEGORIES = ['kit', 'flowpack', 'single'] as const;
 export type ProductCategory = (typeof ALL_CATEGORIES)[number];
 
@@ -35,7 +28,6 @@ export interface Product {
   oldPrice?: number;
   badge?: Localized;
   flavors: Flavor[];
-  strength: Strength[];
   inStock: boolean;
   isHit?: boolean;
   isNew?: boolean;
@@ -48,12 +40,6 @@ export interface Product {
 const ORIGIN = 'https://loopenergy.ru';
 const V = '?v=mt21jjez';
 
-const STRENGTHS: Strength[] = [
-  { id: 'soft', label: { ru: 'Мягкий', kz: 'Жұмсақ' }, mg: 30 },
-  { id: 'medium', label: { ru: 'Средний', kz: 'Орташа' }, mg: 50 },
-  { id: 'strong', label: { ru: 'Сильный', kz: 'Күшті' }, mg: 75 },
-];
-
 /**
  * Catalogue transcribed from the distributor's official B2C flavour sheet
  * (`public/assets/brand/b2c-full.png`): twelve tins, each 100 mg per pouch,
@@ -65,7 +51,7 @@ export const products: Product[] = [
     id: 'big-kit',
     slug: 'bolshoy-komplekt',
     name: { ru: 'Большой комплект', kz: 'Үлкен жиынтық' },
-    tagline: { ru: '+15 вкусов, +5 крепостей — найди свой', kz: '+15 дәм, +5 күш — өзіңдікін тап' },
+    tagline: { ru: '+15 вкусов — найди свой', kz: '+15 дәм — өзіңдікін тап' },
     description: {
       ru: 'В банке LOOP Energy 20 паучей — столько же энергии, сколько в 20 банках обычного энергетика. Зачем платить в 10 раз больше?',
       kz: 'LOOP Energy банкасында 20 пауш бар — кәдімгі энергетиктің 20 банкасындай энергия. Неге 10 есе көп төлейсіз?',
@@ -81,7 +67,6 @@ export const products: Product[] = [
     caffeine: 100,
     pouches: 150,
     flavors: [],
-    strength: [],
   },
   {
     id: 'showbox',
@@ -89,7 +74,7 @@ export const products: Product[] = [
     name: { ru: 'Шоубокс', kz: 'Шоубокс' },
     tagline: { ru: 'Весь ассортимент в одной коробке', kz: 'Барлық ассортимент бір қорапта' },
     description: {
-      ru: 'Максимальный набор — все вкусы, все крепости. Для тех кто хочет попробовать абсолютно всё.',
+      ru: 'Максимальный набор — все вкусы сразу. Для тех кто хочет попробовать абсолютно всё.',
       kz: 'Максималды жиынтық — барлық дәмдер, барлық күштер. Барлығын татып көргісі келетіндерге.',
     },
     image: `${ORIGIN}/images/${encodeURIComponent('Бокс.png')}${V}`,
@@ -103,7 +88,6 @@ export const products: Product[] = [
     caffeine: 100,
     pouches: 240,
     flavors: [],
-    strength: [],
   },
   {
     id: 'flow-pack',
@@ -127,7 +111,6 @@ export const products: Product[] = [
       { id: 'kiwi', name: { ru: 'Киви Фрэш', kz: 'Киви Фрэш' }, color: '#7CB342', inStock: true },
       { id: 'peach', name: { ru: 'Пич Бич', kz: 'Пич Бич' }, color: '#FFAB91', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'violet-splash',
@@ -149,7 +132,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'violet-splash', name: { ru: 'Лесные ягоды', kz: 'Орман жидектері' }, color: '#7B1FA2', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'bikini-bottom',
@@ -171,7 +153,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'bikini-bottom', name: { ru: 'Ананас', kz: 'Ананас' }, color: '#F9A825', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'frosty-berries',
@@ -195,7 +176,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'frosty-berries', name: { ru: 'Мята и малина', kz: 'Жалбыз және таңқурай' }, color: '#E91E8C', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'blue-gem',
@@ -217,7 +197,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'blue-gem', name: { ru: 'Тропические фрукты', kz: 'Тропикалық жемістер' }, color: '#1565C0', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'sicilian-drip',
@@ -239,7 +218,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'sicilian-drip', name: { ru: 'Апельсин', kz: 'Апельсин' }, color: '#FF6F00', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'sour-blast',
@@ -263,7 +241,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'sour-blast', name: { ru: 'Лимон, ананас и клубника', kz: 'Лимон, ананас және құлпынай' }, color: '#CDDC39', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'vinograd',
@@ -285,7 +262,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'vinograd', name: { ru: 'Виноград', kz: 'Жүзім' }, color: '#6A1B9A', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'limezilla',
@@ -307,7 +283,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'limezilla', name: { ru: 'Лайм', kz: 'Лайм' }, color: '#8BC34A', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'creamy-blush',
@@ -331,7 +306,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'creamy-blush', name: { ru: 'Клубника со сливками', kz: 'Кілегеймен құлпынай' }, color: '#F8BBD0', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'ice-baby',
@@ -353,7 +327,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'ice-baby', name: { ru: 'Сладкая мята', kz: 'Тәтті жалбыз' }, color: '#B3E5FC', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'peach-beach',
@@ -375,7 +348,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'peach-beach', name: { ru: 'Персик', kz: 'Шабдалы' }, color: '#FFAB91', inStock: true },
     ],
-    strength: STRENGTHS,
   },
   {
     id: 'kiwi-fresh',
@@ -400,7 +372,6 @@ export const products: Product[] = [
     flavors: [
       { id: 'kiwi-fresh', name: { ru: 'Яблоко и киви', kz: 'Алма және киви' }, color: '#7CB342', inStock: true },
     ],
-    strength: STRENGTHS,
   },
 ];
 
@@ -427,9 +398,7 @@ export const CATEGORY_IDS = [
   ...ALL_CATEGORIES.filter((c) => products.some((p) => p.category === c)),
 ] as const;
 
-export const STRENGTH_IDS = ['all', 'soft', 'medium', 'strong'] as const;
 export const SORT_IDS = ['popular', 'price-asc', 'price-desc', 'new'] as const;
 
 export type CategoryId = 'all' | ProductCategory;
-export type StrengthId = (typeof STRENGTH_IDS)[number];
 export type SortId = (typeof SORT_IDS)[number];
