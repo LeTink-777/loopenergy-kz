@@ -134,7 +134,7 @@ export function Hero() {
               </m.a>
 
               <m.a
-                href="#product"
+                href="/about"
                 whileHover={hoverScale}
                 whileTap={tapPress}
                 transition={springPop}

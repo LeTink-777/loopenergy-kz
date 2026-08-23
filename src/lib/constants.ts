@@ -38,7 +38,7 @@ export const PRODUCTS = Object.entries(PRODUCT_IMAGES).map(([id, image]) => ({ i
 /** `/`-prefixed entries are locale-aware routes; `#` entries scroll the homepage. */
 export const NAV_LINKS = [
   { key: 'shop', href: '/shop' },
-  { key: 'about', href: '/#product' },
+  { key: 'about', href: '/about' },
   { key: 'delivery', href: '/delivery' },
   { key: 'wholesale', href: '/wholesale' },
   { key: 'faq', href: '/#faq' },
