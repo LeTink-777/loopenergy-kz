@@ -51,19 +51,20 @@ export const FOOTER_LINKS = [
 ] as const;
 
 export const SOCIALS = [
-  { key: 'telegram', label: 'Telegram', href: 'https://t.me/loop_energy' },
-  { key: 'instagram', label: 'Instagram', href: 'https://instagram.com/loopenergy.official' },
+  { key: 'telegram', label: 'Telegram', href: 'https://t.me/Pouches_kz' },
+  { key: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/loop.energy.kz' },
   { key: 'tiktok', label: 'TikTok', href: 'https://tiktok.com/@loopenergy.official' },
 ] as const;
 
 /**
- * Placeholders until the real Kazakhstan numbers are issued — swap the phone
- * and the two Telegram handles before launch.
+ * One Telegram handle serves both retail and wholesale — there is no separate
+ * wholesale account yet, and pointing at a handle that does not exist is worse
+ * than sharing one that does.
  */
 export const CONTACTS = {
-  consumerTelegram: { label: '@loop_energy_kz', href: 'https://t.me/loop_energy_kz' },
-  wholesaleTelegram: { label: '@loopenergy_kz_wholesale', href: 'https://t.me/loopenergy_kz_wholesale' },
-  phone: { label: '+7 (777) 000-00-00', href: 'tel:+77770000000' },
+  consumerTelegram: { label: '@Pouches_kz', href: 'https://t.me/Pouches_kz' },
+  wholesaleTelegram: { label: '@Pouches_kz', href: 'https://t.me/Pouches_kz' },
+  phone: { label: '+7 708 775 22 31', href: 'tel:+77087752231' },
   email: { label: 'info@loopenergy.kz', href: 'mailto:info@loopenergy.kz' },
 } as const;
 

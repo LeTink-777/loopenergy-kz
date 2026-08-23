@@ -361,12 +361,12 @@ export const content = {
       close: 'Закрыть контакты',
       consumers_title: 'Потребителям',
       consumers_sub: 'Заказ, вкусы, статус доставки',
-      consumers_link: '@loop_energy_kz',
+      consumers_link: '@Pouches_kz',
       wholesale_title: 'Оптовикам',
       wholesale_sub: 'Прайс, договор, отгрузка',
-      wholesale_phone: '+7 (777) 000-00-00',
+      wholesale_phone: '+7 708 775 22 31',
       wholesale_email: 'info@loopenergy.kz',
-      wholesale_telegram: '@loopenergy_kz_wholesale',
+      wholesale_telegram: '@Pouches_kz',
     },
 
     footer: {
@@ -1030,12 +1030,12 @@ export const content = {
       close: 'Байланысты жабу',
       consumers_title: 'Тұтынушыларға',
       consumers_sub: 'Тапсырыс, дәмдер, жеткізу мәртебесі',
-      consumers_link: '@loop_energy_kz',
+      consumers_link: '@Pouches_kz',
       wholesale_title: 'Көтерме сатып алушыларға',
       wholesale_sub: 'Прайс, шарт, тиеу',
-      wholesale_phone: '+7 (777) 000-00-00',
+      wholesale_phone: '+7 708 775 22 31',
       wholesale_email: 'info@loopenergy.kz',
-      wholesale_telegram: '@loopenergy_kz_wholesale',
+      wholesale_telegram: '@Pouches_kz',
     },
 
     footer: {
