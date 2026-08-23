@@ -27,8 +27,11 @@ export function WholesalePitch() {
   const buyer = reasons.filter((r) => r.side === 'buyer');
   const seller = reasons.filter((r) => r.side === 'seller');
 
+  /* Both columns stretch to the taller one (the outer grid's default), so the
+     list fills what is left under the heading and splits it into three equal
+     rows. That aligns all six cards, not just the three inside each column. */
   const column = (title: string, Icon: typeof ShoppingBag, list: readonly Reason[]) => (
-    <div>
+    <div className="flex h-full flex-col">
       <h2 className="flex items-center gap-2.5 text-fluid-md font-bold uppercase tracking-tight">
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-accent/25 bg-accent/10 text-accent-light">
           <Icon className="h-5 w-5" aria-hidden="true" />
@@ -36,9 +39,9 @@ export function WholesalePitch() {
         {title}
       </h2>
 
-      <ul className="mt-4 flex flex-col gap-4">
+      <ul className="mt-4 grid flex-1 auto-rows-fr gap-4">
         {list.map((reason) => (
-          <m.li key={reason.num} variants={fadeUp} className="purple-ring p-fluid-md">
+          <m.li key={reason.num} variants={fadeUp} className="purple-ring flex h-full flex-col p-fluid-md">
             <span className="text-fluid-2xl font-black leading-none text-white/15">{reason.num}</span>
             <h3 className="mt-2 text-fluid-base font-bold uppercase tracking-tight">{reason.title}</h3>
             <p className="mt-2 text-fluid-sm leading-relaxed text-w-70">{reason.description}</p>
