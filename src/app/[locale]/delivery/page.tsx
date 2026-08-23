@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { CreditCard, MapPin, Store, Timer, Wallet } from 'lucide-react';
+import { CreditCard, MapPin, Store, Timer } from 'lucide-react';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
@@ -32,8 +32,7 @@ export default async function DeliveryPage({ params }: { params: Promise<{ local
 
   const blocks = [
     { Icon: MapPin, title: t('cities_title'), lines: [t('cities_text')] },
-    { Icon: Timer, title: t('terms_title'), lines: [t('terms_city'), t('terms_region'), t('terms_express')] },
-    { Icon: Wallet, title: t('price_title'), lines: [t('price_free'), t('price_base'), t('price_pickup')] },
+    { Icon: Timer, title: t('terms_title'), lines: [t('terms_text')] },
     { Icon: Store, title: t('pickup_title'), lines: [t('pickup_text')] },
     { Icon: CreditCard, title: t('payment_title'), lines: [t('payment_text')] },
   ];
