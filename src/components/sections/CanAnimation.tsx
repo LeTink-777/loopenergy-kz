@@ -31,30 +31,22 @@ const LIGHT = { r: 183, g: 141, b: 255 };
 const WHITE = { r: 255, g: 255, b: 255 };
 
 const CAN_SRC = '/assets/brand/can-hero.webp';
-const LID_SRC = '/assets/tin/lid.webp';
-const BODY_SRC = '/assets/tin/body.webp';
+/**
+ * The brand's own render sequence. Only 0-109 ship: stage 1 turns the sealed
+ * tin (0-29) and stage 2 opens it (30-109); everything after that is drawn,
+ * not filmed, so frames 110-180 would be 1.1MB nobody downloads for nothing.
+ *
+ * The site these came from composited them into a 2480x1670 canvas and drew a
+ * 835px source crop out of it. These files are already the cropped artwork at
+ * 820x820, so that source rect would run 217px past their right edge and cut
+ * the tin — the whole frame is drawn instead.
+ */
+const FRAME_FIRST_OPEN = 30;
+const FRAME_LAST = 109;
+const FRAME_SRC = (n: number) => `/animation/frames/energy_web__${String(n).padStart(5, '0')}.webp`;
 const POUCH_SRC = '/assets/pouches/pouch-main.webp';
 const LOGO_SRC = '/assets/brand/logo.svg';
 
-/**
- * Geometry measured off the source render the lid and body were cut from, in
- * the body sprite's own pixels. `seat` is the affine that lands the lid disc
- * on the rim: the lid was photographed leaning against the tin, so putting it
- * back means mapping its ellipse onto the rim's, and both being projections of
- * the same circle makes that mapping exact rather than an approximation.
- */
-const TIN = {
-  lid: [600, 348],
-  body: [619, 514],
-  /** Lid origin in body coordinates, in the pose it was photographed in. */
-  rest: [315, -116],
-  /** m00, m01, m10, m11, tx, ty. */
-  seat: [0.86294, 0.33775, -0.62839, 1.50277, -9.11, 130.32],
-  /** Centre and semi-axes of the tin's mouth. */
-  rim: [307.57, 202.5, 296.4, 204.2],
-  /** Centre of the assembled tin, so stage 1 sits in the middle of the frame. */
-  closedCentre: [309.5, 254.5],
-} as const;
 
 // Stage boundaries live together so the timeline reads in one place.
 const SPLIT_IN = 0.2;
@@ -171,8 +163,8 @@ export function CanAnimation() {
   /** CSS-pixel size. Every drawing maths uses this, never `canvas.width`. */
   const sizeRef = useRef({ w: 0, h: 0 });
   const stateRef = useRef({
-    lidImage: null as HTMLImageElement | null,
-    bodyImage: null as HTMLImageElement | null,
+    frames: [] as HTMLImageElement[],
+    framesReady: 0,
     pouchImage: null as HTMLImageElement | null,
     logoImage: null as HTMLImageElement | null,
     frame: 0,
@@ -385,113 +377,43 @@ export function CanAnimation() {
     // Scrolling back up rewinds the sequence instead of leaving it spent.
     if (p < SPLIT_IN && s.spinLocked) s.spinLocked = false;
 
-    // ── Stages 1–2: the tin hovers, then the lid comes off ────────────────
-    // The lid and the body are two cut-outs of one product render, so they
-    // share a camera and a light. `TIN.seat` is the affine that puts the lid
-    // disc back on the rim — both are projections of the same circle, so an
-    // affine between them is exact, and interpolating away from it lifts the
-    // lid off the tin instead of sliding a cropped picture around.
+    // ── Stages 1–2: the brand's own render sequence ───────────────────────
+    // Frames 0-29 turn the sealed tin, 30-109 open it. Stages 3-5 stay drawn.
     const splitT = easeInOut(clamp01((p - SPLIT_IN) / (POUCH_IN - SPLIT_IN)));
-    // Once the pouch is out, both halves keep clearing the frame.
-    const driftT = easeOut(clamp01((p - POUCH_IN) / (BURST_IN - POUCH_IN)));
-    const tinAlpha = clamp01(p / 0.05) * (1 - clamp01((p - 0.56) / 0.1));
+    const tinAlpha = clamp01(p / 0.03) * (1 - clamp01((p - 0.58) / 0.1));
 
-    const scale = (unit * 0.66) / TIN.body[0];
-    const originX = cx - TIN.closedCentre[0] * scale;
-    const originY = cy - TIN.closedCentre[1] * scale;
-    // Where the tin's mouth is on screen — the pouch rises out of this, not
-    // out of the middle of the canvas.
-    const rimX = originX + TIN.rim[0] * scale;
-    let rimY = originY + TIN.rim[1] * scale;
+    const wanted =
+      p < SPLIT_IN
+        ? Math.round(clamp01(p / SPLIT_IN) * (FRAME_FIRST_OPEN - 1))
+        : FRAME_FIRST_OPEN + Math.round(splitT * (FRAME_LAST - FRAME_FIRST_OPEN));
 
-    if (s.bodyImage && s.lidImage && tinAlpha > 0.01) {
-      // A 3/4 tin spun about the screen axis reads as a wheel, so it breathes
-      // and rocks instead.
-      const rock = Math.sin(s.frame * 0.013) * 0.03 * (1 - splitT);
-      const bob = Math.sin(s.frame * 0.02) * unit * 0.012 * (1 - splitT);
-      const drop = unit * (0.16 * splitT + 0.4 * driftT);
-      const lift = unit * (0.44 * splitT + 0.6 * driftT);
-      // The lid un-warps back to the pose it was photographed in as it rises.
-      const opened = easeOut(clamp01((p - SPLIT_IN) / 0.22));
+    // The pouch comes out of the middle of the tin, which is the middle of the
+    // frame — the sprite geometry that used to place it is gone.
+    const rimX = cx;
+    const rimY = cy;
 
-      rimY += drop + bob;
-
-      ctx.save();
-      ctx.globalAlpha = tinAlpha;
-      ctx.translate(cx, cy + bob);
-      ctx.rotate(rock);
-      ctx.translate(-cx, -cy);
-
-      const halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, unit * 0.62);
-      const pulse = Math.sin(s.frame * 0.045) * 0.5 + 0.5;
-      halo.addColorStop(0, `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},${0.18 + pulse * 0.12})`);
-      halo.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = halo;
-      ctx.fillRect(cx - unit, cy - unit, unit * 2, unit * 2);
-
-      ctx.save();
-      ctx.translate(originX, originY + drop);
-      ctx.scale(scale, scale);
-      ctx.drawImage(s.bodyImage, 0, 0, TIN.body[0], TIN.body[1]);
-      ctx.restore();
-
-      // Light out of the open mouth, drawn between the two parts so the lid
-      // still caps it while the tin is shut.
-      if (splitT > 0.01) {
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.translate(rimX, rimY);
-        ctx.scale(1, TIN.rim[3] / TIN.rim[2]);
-        const mouth = ctx.createRadialGradient(0, 0, 0, 0, 0, TIN.rim[2] * scale);
-        mouth.addColorStop(0, `rgba(${WHITE.r},${WHITE.g},${WHITE.b},${0.5 * splitT})`);
-        mouth.addColorStop(0.45, `rgba(${LIGHT.r},${LIGHT.g},${LIGHT.b},${0.35 * splitT})`);
-        mouth.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = mouth;
-        const r = TIN.rim[2] * scale;
-        ctx.fillRect(-r, -r, r * 2, r * 2);
-        ctx.restore();
-
-        // Sparks lifting out of the tin. Positions are a function of frame and
-        // index, so they cost no state and rewind for free on the way back up.
-        const sparks = s.burstPalette.length ? budgetRef.current.sparks : 0;
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter';
-        for (let i = 0; i < sparks; i += 1) {
-          const seed = Math.sin(i * 12.9898) * 43758.5453;
-          const jitter = seed - Math.floor(seed);
-          const phase = (((s.frame * 0.012 + i / sparks) % 1) + 1) % 1;
-          const climb = phase * (lift + unit * 0.12);
-          const sx = rimX + (jitter - 0.5) * TIN.rim[2] * scale * 1.5;
-          const sy = rimY - climb;
-          const a = (1 - phase) * splitT * 0.9;
-          const rad = unit * 0.006 * (0.5 + jitter);
-
-          ctx.globalAlpha = tinAlpha * a;
-          ctx.drawImage(s.burstPalette[i % s.burstPalette.length], sx - rad * 4, sy - rad * 4, rad * 8, rad * 8);
+    if (tinAlpha > 0.01 && s.frames.length) {
+      // Hold the nearest frame that has arrived rather than blanking: at 110
+      // frames some are still in flight when a fast scroll reaches them, and a
+      // neighbouring frame is a far smaller artefact than an empty canvas.
+      let img: HTMLImageElement | undefined = s.frames[wanted];
+      if (!img?.complete || !img.naturalWidth) {
+        img = undefined;
+        for (let k = 1; k <= 16 && !img; k += 1) {
+          const back = s.frames[wanted - k];
+          const fwd = s.frames[wanted + k];
+          if (back?.complete && back.naturalWidth) img = back;
+          else if (fwd?.complete && fwd.naturalWidth) img = fwd;
         }
-        ctx.restore();
       }
 
-      ctx.save();
-      ctx.translate(originX, originY - lift);
-      ctx.scale(scale, scale);
-      ctx.transform(
-        mix(TIN.seat[0], 1, opened),
-        mix(TIN.seat[2], 0, opened),
-        mix(TIN.seat[1], 0, opened),
-        mix(TIN.seat[3], 1, opened),
-        // The disc rises straight up over the tin. Its shape still un-warps
-        // from the seated affine back to the pose it was photographed in —
-        // that is what reads as a flat lid lifting — but it keeps the rim's
-        // horizontal position instead of drifting off to one side.
-        TIN.seat[4],
-        mix(TIN.seat[5], TIN.rest[1], opened),
-      );
-      ctx.drawImage(s.lidImage, 0, 0, TIN.lid[0], TIN.lid[1]);
-      ctx.restore();
-
-      ctx.restore();
-      ctx.globalAlpha = 1;
+      if (img) {
+        const size = Math.min(w, h) * 0.85;
+        ctx.save();
+        ctx.globalAlpha = tinAlpha;
+        ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size);
+        ctx.restore();
+      }
     }
 
     // ── Stage 3: the pouch rises out of the gap ───────────────────────────
@@ -658,11 +580,8 @@ export function CanAnimation() {
 
         // Fetch the artwork only once the section is close — loading it on
         // mount would compete with the hero image for the LCP.
-        if (entry.isIntersecting && !stateRef.current.bodyImage) {
-          const load = (
-            src: string,
-            onto: 'lidImage' | 'bodyImage' | 'pouchImage' | 'logoImage',
-          ) => {
+        if (entry.isIntersecting && !stateRef.current.frames.length) {
+          const load = (src: string, onto: 'pouchImage' | 'logoImage') => {
             const img = new Image();
             img.src = src;
             img.decoding = 'async';
@@ -676,10 +595,29 @@ export function CanAnimation() {
               }
             };
           };
-          load(LID_SRC, 'lidImage');
-          load(BODY_SRC, 'bodyImage');
           load(POUCH_SRC, 'pouchImage');
           load(LOGO_SRC, 'logoImage');
+
+          // Phones decode every second frame: half the bytes and half the
+          // decoded bitmaps in memory, and at 60fps the doubled step is not
+          // visible on a scroll-driven sequence.
+          const st = window.innerWidth < 768 ? 2 : 1;
+          const s2 = stateRef.current;
+          s2.frames = new Array(FRAME_LAST + 1);
+          const grab = (n: number) => {
+            if (s2.frames[n]) return;
+            const img = new Image();
+            img.decoding = 'async';
+            s2.frames[n] = img;
+            img.onload = () => {
+              s2.framesReady += 1;
+            };
+            img.src = FRAME_SRC(n);
+          };
+          // Stage 1 first so the sealed tin is there the moment it is needed.
+          for (let n = 0; n < FRAME_FIRST_OPEN; n += st) grab(n);
+          for (let n = FRAME_FIRST_OPEN; n <= FRAME_LAST; n += st) grab(n);
+          if (st > 1) grab(FRAME_LAST);
         }
       },
       { rootMargin: '600px' },
