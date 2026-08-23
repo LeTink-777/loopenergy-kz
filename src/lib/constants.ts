@@ -53,7 +53,6 @@ export const FOOTER_LINKS = [
 export const SOCIALS = [
   { key: 'telegram', label: 'Telegram', href: 'https://t.me/loop_energy' },
   { key: 'instagram', label: 'Instagram', href: 'https://instagram.com/loopenergy.official' },
-  { key: 'youtube', label: 'YouTube', href: 'https://youtube.com/@loop_energy' },
   { key: 'tiktok', label: 'TikTok', href: 'https://tiktok.com/@loopenergy.official' },
 ] as const;
 

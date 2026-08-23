@@ -17,7 +17,7 @@ const TELEGRAM_PATH =
 function SocialGlyph({ name }: { name: string }) {
   if (name === 'telegram') {
     return (
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="h-[18px] w-[18px]">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="h-5 w-5">
         <path d={TELEGRAM_PATH} />
       </svg>
     );
@@ -25,7 +25,7 @@ function SocialGlyph({ name }: { name: string }) {
 
   if (name === 'instagram') {
     return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-[18px] w-[18px]">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-5 w-5">
         <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.7" />
         <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.7" />
         <circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" />
@@ -33,17 +33,8 @@ function SocialGlyph({ name }: { name: string }) {
     );
   }
 
-  if (name === 'youtube') {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-[18px] w-[18px]">
-        <rect x="2.5" y="5" width="19" height="14" rx="4.5" stroke="currentColor" strokeWidth="1.7" />
-        <path d="M10.5 9.3v5.4l4.6-2.7-4.6-2.7Z" fill="currentColor" />
-      </svg>
-    );
-  }
-
   return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-[18px] w-[18px]">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-5 w-5">
       <path
         d="M14.2 3h2.6c.3 2 1.5 3.4 3.7 3.7v2.6c-1.4.1-2.7-.3-3.9-1v5.9a5.9 5.9 0 1 1-5.9-5.9c.3 0 .6 0 .9.1v2.7a3.2 3.2 0 1 0 2.3 3.1V3Z"
         stroke="currentColor"
@@ -171,7 +162,7 @@ export function Footer() {
                   whileHover={{ y: -3, scale: 1.05 }}
                   whileTap={{ scale: 0.94 }}
                   transition={springPop}
-                  className="grid h-11 w-11 place-items-center rounded-pill border border-w-10 bg-white/[0.04] text-w-70 transition-colors hover:border-accent/45 hover:text-accent-light"
+                  className="grid h-12 w-12 place-items-center rounded-pill border border-[#9561e9]/30 bg-[#2a2330] text-white transition-[border-color,box-shadow] duration-300 hover:border-[#9561e9] hover:shadow-[0_0_12px_rgba(149,97,233,0.4)]"
                 >
                   <SocialGlyph name={social.key} />
                 </m.a>
