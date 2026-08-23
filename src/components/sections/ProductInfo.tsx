@@ -35,13 +35,18 @@ export function ProductInfo() {
               {t('ingredients_title')}
             </m.h3>
 
-            <m.ul variants={fadeUp} className="mt-4 flex flex-wrap gap-2.5">
+            {/* A grid, not flex-wrap: as content-sized pills these ran one per
+                row at every width above mobile, each a different length
+                (608/583/569/485/554px) and the first taller than the rest.
+                `auto-rows-fr` keeps every row the same height, and `h-full`
+                makes each card fill the row it is in. */}
+            <m.ul variants={fadeUp} className="mt-4 grid auto-rows-fr gap-2.5 sm:grid-cols-2">
               {ingredients.map((item) => (
                 <m.li
                   key={item.name}
                   whileHover={{ y: -3, borderColor: 'rgba(183, 141, 255, 0.6)' }}
                   transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-                  className="rounded-3xl border border-accent/30 bg-accent/[0.08] px-4 py-3"
+                  className="flex h-full flex-col rounded-3xl border border-accent/30 bg-accent/[0.08] px-4 py-3"
                 >
                   <span className="block text-fluid-sm font-semibold text-white">{item.name}</span>
                   <span className="mt-1 block text-fluid-xs leading-relaxed text-w-70">
