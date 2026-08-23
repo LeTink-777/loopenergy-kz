@@ -5,7 +5,7 @@ import { SITE } from '@/lib/constants';
 import { products } from '@/lib/products';
 
 /** Cart, checkout and order pages are personal and stay out of the index. */
-const PATHS = ['', '/about', '/shop', '/delivery', '/wholesale', '/certificates'];
+const PATHS = ['', '/about', '/faq', '/shop', '/delivery', '/wholesale', '/certificates'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();

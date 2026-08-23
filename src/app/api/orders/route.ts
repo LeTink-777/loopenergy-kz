@@ -21,7 +21,8 @@ type OrderPayload = {
   city?: unknown;
   address?: unknown;
   comment?: unknown;
-  deliveryMethod?: unknown;
+  carrier?: unknown;
+  deliveryOption?: unknown;
   paymentMethod?: unknown;
   locale?: unknown;
   items?: unknown;
@@ -37,7 +38,13 @@ const normalisePhone = (raw: string) => {
   return digits;
 };
 
-const DELIVERY_METHODS = ['courier', 'pickup', 'express'] as const;
+const CARRIERS = ['kazpost', 'cdek', 'pickup'] as const;
+/** Which options each carrier offers — mirrors the checkout form. */
+const CARRIER_OPTIONS: Record<(typeof CARRIERS)[number], readonly string[]> = {
+  kazpost: ['pvz', 'postomat', 'courier'],
+  cdek: ['pvz', 'postomat', 'courier', 'express'],
+  pickup: [],
+};
 const PAYMENT_METHODS = ['card', 'kaspi'] as const;
 
 export async function POST(request: Request) {
@@ -56,7 +63,8 @@ export async function POST(request: Request) {
   const address = str(body.address, 300);
   const comment = str(body.comment, 2000);
   const locale = str(body.locale, 8) || 'ru';
-  const deliveryMethod = str(body.deliveryMethod, 20);
+  const carrier = str(body.carrier, 20);
+  const deliveryOption = str(body.deliveryOption, 20);
   const paymentMethod = str(body.paymentMethod, 20);
 
   const rawItems = Array.isArray(body.items) ? (body.items as OrderLine[]) : [];
@@ -68,7 +76,7 @@ export async function POST(request: Request) {
     flavor: str(line.flavorLabel, 60),
   }));
 
-  if (!name || !phone || !city || items.length === 0) {
+  if (!name || !phone || items.length === 0) {
     return NextResponse.json({ success: false, error: 'missing_fields' }, { status: 422 });
   }
 
@@ -76,12 +84,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: 'invalid_phone' }, { status: 422 });
   }
 
-  if (deliveryMethod !== 'pickup' && !address) {
-    return NextResponse.json({ success: false, error: 'missing_address' }, { status: 422 });
+  if (!CARRIERS.includes(carrier as (typeof CARRIERS)[number])) {
+    return NextResponse.json({ success: false, error: 'invalid_carrier' }, { status: 422 });
   }
 
-  if (!DELIVERY_METHODS.includes(deliveryMethod as (typeof DELIVERY_METHODS)[number])) {
+  const allowed = CARRIER_OPTIONS[carrier as (typeof CARRIERS)[number]];
+  if (allowed.length > 0 && !allowed.includes(deliveryOption)) {
     return NextResponse.json({ success: false, error: 'invalid_delivery' }, { status: 422 });
+  }
+
+  if (carrier !== 'pickup' && !city) {
+    return NextResponse.json({ success: false, error: 'missing_city' }, { status: 422 });
+  }
+
+  // Only a door delivery has an address; a pick-up point is chosen on the
+  // carrier's own map after the order is placed.
+  if ((deliveryOption === 'courier' || deliveryOption === 'express') && !address) {
+    return NextResponse.json({ success: false, error: 'missing_address' }, { status: 422 });
   }
 
   if (!PAYMENT_METHODS.includes(paymentMethod as (typeof PAYMENT_METHODS)[number])) {
@@ -123,7 +142,8 @@ export async function POST(request: Request) {
     city,
     address,
     comment,
-    deliveryMethod,
+    carrier,
+    deliveryOption,
     paymentMethod,
     locale,
     total,

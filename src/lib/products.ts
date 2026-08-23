@@ -114,7 +114,7 @@ export const products: Product[] = [
   },
   {
     id: 'violet-splash',
-    slug: 'violetsplash',
+    slug: 'violet-splash',
     name: { ru: 'ВАЙЛЕТ СПЛЭШ', kz: 'ВАЙЛЕТ СПЛЭШ' },
     tagline: { ru: 'Лесные ягоды', kz: 'Орман жидектері' },
     description: {
@@ -135,7 +135,7 @@ export const products: Product[] = [
   },
   {
     id: 'bikini-bottom',
-    slug: 'bikinibottom',
+    slug: 'bikini-bottom',
     name: { ru: 'БИКИНИ БОТТОМ', kz: 'БИКИНИ БОТТОМ' },
     tagline: { ru: 'Ананас', kz: 'Ананас' },
     description: {
@@ -156,7 +156,7 @@ export const products: Product[] = [
   },
   {
     id: 'frosty-berries',
-    slug: 'frostyberries',
+    slug: 'frosty-berries',
     name: { ru: 'ФРОСТИ БЭЙРИС', kz: 'ФРОСТИ БЭЙРИС' },
     tagline: { ru: 'Мята и малина', kz: 'Жалбыз және таңқурай' },
     description: {
@@ -179,7 +179,7 @@ export const products: Product[] = [
   },
   {
     id: 'blue-gem',
-    slug: 'bluegem',
+    slug: 'blue-gem',
     name: { ru: 'БЛЮ ГЕМ', kz: 'БЛЮ ГЕМ' },
     tagline: { ru: 'Тропические фрукты', kz: 'Тропикалық жемістер' },
     description: {
@@ -200,7 +200,7 @@ export const products: Product[] = [
   },
   {
     id: 'sicilian-drip',
-    slug: 'siciliandrip',
+    slug: 'sicilian-drip',
     name: { ru: 'СИЦИЛИАН ДРИП', kz: 'СИЦИЛИАН ДРИП' },
     tagline: { ru: 'Апельсин', kz: 'Апельсин' },
     description: {
@@ -221,7 +221,7 @@ export const products: Product[] = [
   },
   {
     id: 'sour-blast',
-    slug: 'sourblast',
+    slug: 'sour-blast',
     name: { ru: 'СОУР БЛАСТ', kz: 'СОУР БЛАСТ' },
     tagline: { ru: 'Лимон, ананас и клубника', kz: 'Лимон, ананас және құлпынай' },
     description: {
@@ -286,7 +286,7 @@ export const products: Product[] = [
   },
   {
     id: 'creamy-blush',
-    slug: 'creamyblash',
+    slug: 'creamy-blash',
     name: { ru: 'КРИМИ БЛАШ', kz: 'КРИМИ БЛАШ' },
     tagline: { ru: 'Клубника со сливками', kz: 'Кілегеймен құлпынай' },
     description: {
@@ -309,7 +309,7 @@ export const products: Product[] = [
   },
   {
     id: 'ice-baby',
-    slug: 'icebaby',
+    slug: 'ice-baby',
     name: { ru: 'АЙС БЭЙБИ', kz: 'АЙС БЭЙБИ' },
     tagline: { ru: 'Сладкая мята', kz: 'Тәтті жалбыз' },
     description: {
@@ -330,7 +330,7 @@ export const products: Product[] = [
   },
   {
     id: 'peach-beach',
-    slug: 'peachbeach',
+    slug: 'peach-beach',
     name: { ru: 'ПИЧ БИЧ', kz: 'ПИЧ БИЧ' },
     tagline: { ru: 'Персик', kz: 'Шабдалы' },
     description: {
@@ -351,7 +351,7 @@ export const products: Product[] = [
   },
   {
     id: 'kiwi-fresh',
-    slug: 'kiwifresh',
+    slug: 'kivi-fresh',
     name: { ru: 'КИВИ ФРЭШ', kz: 'КИВИ ФРЭШ' },
     tagline: { ru: 'Яблоко и киви', kz: 'Алма және киви' },
     description: {

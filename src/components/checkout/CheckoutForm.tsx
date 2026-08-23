@@ -17,6 +17,13 @@ import { formatTenge } from '@/lib/constants';
 import type { Content, Locale } from '@/lib/content';
 import { useCartStore } from '@/store/cartStore';
 
+/** Which ways of receiving an order each carrier actually offers. */
+const CARRIER_OPTIONS = {
+  kazpost: ['pvz', 'postomat', 'courier'],
+  cdek: ['pvz', 'postomat', 'courier', 'express'],
+  pickup: [],
+} as const;
+
 const FREE_DELIVERY_FROM = 3000;
 const DELIVERY_FEE = 800;
 
@@ -55,10 +62,11 @@ export function CheckoutForm() {
     phone: z.string().refine((v) => v.replace(/\D/g, '').length >= 11, t('error_phone')),
     name: z.string().min(2, t('error_name')),
     email: z.union([z.literal(''), z.string().email(t('error_email'))]),
-    city: z.string().min(1, t('error_city')),
+    city: z.string(),
     address: z.string(),
     comment: z.string(),
-    deliveryMethod: z.enum(['courier', 'pickup', 'express']),
+    carrier: z.enum(['kazpost', 'cdek', 'pickup']),
+    deliveryOption: z.string(),
     paymentMethod: z.enum(['card', 'kaspi']),
   });
 
@@ -68,6 +76,7 @@ export function CheckoutForm() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -78,20 +87,46 @@ export function CheckoutForm() {
       city: '',
       address: '',
       comment: '',
-      deliveryMethod: 'courier',
+      carrier: 'kazpost',
+      deliveryOption: 'pvz',
       paymentMethod: 'kaspi',
     },
   });
 
-  const deliveryMethod = watch('deliveryMethod');
+  const carrier = watch('carrier');
+  const deliveryOption = watch('deliveryOption');
   const paymentMethod = watch('paymentMethod');
+
+  const options = CARRIER_OPTIONS[carrier];
+  // Only a door delivery has an address to put on it; a pick-up point is
+  // chosen on the carrier's own map after the order is placed.
+  const needsAddress = deliveryOption === 'courier' || deliveryOption === 'express';
+  const needsCity = carrier !== 'pickup';
+
+  const pickCarrier = (next: FormValues['carrier']) => {
+    setValue('carrier', next);
+    // The previous option may not exist for the new carrier.
+    setValue('deliveryOption', CARRIER_OPTIONS[next][0] ?? '');
+  };
+
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const deliveryCost = deliveryMethod === 'pickup' || subtotal >= FREE_DELIVERY_FROM ? 0 : DELIVERY_FEE;
+  const deliveryCost = carrier === 'pickup' || subtotal >= FREE_DELIVERY_FROM ? 0 : DELIVERY_FEE;
   const total = subtotal + deliveryCost;
 
   const onSubmit = async (values: FormValues) => {
+    if (values.carrier !== 'pickup' && !values.city) {
+      toast.error(t('error_city'));
+      return;
+    }
+
+    if (values.carrier !== 'pickup' && !values.deliveryOption) {
+      toast.error(t('error_option'));
+      return;
+    }
+
     // Address is only required when someone is actually delivering to it.
-    if (values.deliveryMethod !== 'pickup' && values.address.trim().length < 5) {
+    const door = values.deliveryOption === 'courier' || values.deliveryOption === 'express';
+    if (door && values.address.trim().length < 5) {
       toast.error(t('error_address'));
       return;
     }
@@ -150,11 +185,18 @@ export function CheckoutForm() {
     );
   }
 
-  const deliveryOptions = [
-    { id: 'courier', label: t('method_courier'), sub: t('method_courier_sub') },
-    { id: 'pickup', label: t('method_pickup'), sub: t('method_pickup_sub') },
-    { id: 'express', label: t('method_express'), sub: t('method_express_sub') },
+  const carriers = [
+    { id: 'kazpost', label: t('carrier_kazpost'), sub: t('carrier_kazpost_sub') },
+    { id: 'cdek', label: t('carrier_cdek'), sub: t('carrier_cdek_sub') },
+    { id: 'pickup', label: t('carrier_pickup'), sub: t('carrier_pickup_sub') },
   ] as const;
+
+  const optionLabels: Record<string, { label: string; sub?: string }> = {
+    pvz: { label: t('option_pvz') },
+    postomat: { label: t('option_postomat') },
+    courier: { label: t('option_courier') },
+    express: { label: t('option_express'), sub: t('option_express_sub') },
+  };
 
   const paymentOptions = [
     { id: 'kaspi', label: t('pay_kaspi'), sub: t('pay_kaspi_sub'), Icon: Wallet },
@@ -207,38 +249,80 @@ export function CheckoutForm() {
         <section className="purple-ring p-fluid-md">
           <h2 className="text-fluid-md font-bold uppercase tracking-tight">{t('delivery_title')}</h2>
 
-          <fieldset className="mt-fluid-sm grid gap-fluid-xs sm:grid-cols-3">
-            {deliveryOptions.map((option) => (
+          <p className="mt-fluid-sm text-fluid-xs font-semibold uppercase tracking-[0.14em] text-w-50">
+            {t('carrier_title')}
+          </p>
+          <fieldset className="mt-2 grid gap-fluid-xs sm:grid-cols-3">
+            {carriers.map((option) => (
               <label
                 key={option.id}
-                className={`flex min-h-[76px] cursor-pointer flex-col justify-center rounded-2xl border px-4 py-3 transition-colors ${
-                  deliveryMethod === option.id
-                    ? 'border-accent/60 bg-accent/10'
-                    : 'border-w-10 hover:border-accent/35'
+                className={`flex min-h-[76px] cursor-pointer flex-col justify-center rounded-2xl border px-4 py-3 transition-[border-color,background-color,box-shadow] ${
+                  carrier === option.id
+                    ? 'border-[#9561e9] bg-[#9561e9]/10'
+                    : 'border-[#9561e9]/30 hover:border-[#9561e9] hover:shadow-[0_0_12px_rgba(149,97,233,0.25)]'
                 }`}
               >
-                <input type="radio" value={option.id} className="sr-only" {...register('deliveryMethod')} />
+                <input
+                  type="radio"
+                  name="carrier"
+                  value={option.id}
+                  checked={carrier === option.id}
+                  onChange={() => pickCarrier(option.id)}
+                  className="sr-only"
+                />
                 <span className="text-fluid-sm font-semibold text-white">{option.label}</span>
                 <span className="mt-0.5 text-fluid-xs text-w-50">{option.sub}</span>
               </label>
             ))}
           </fieldset>
 
-          <div className="mt-fluid-sm grid gap-fluid-sm sm:grid-cols-2">
-            <Field label={`${t('field_city')} *`} error={errors.city?.message}>
-              <select defaultValue="" className={fieldClass} {...register('city')}>
-                <option value="" disabled>
-                  {t('field_city_placeholder')}
-                </option>
-                {cityList.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
+          {options.length > 0 ? (
+            <>
+              <p className="mt-fluid-sm text-fluid-xs font-semibold uppercase tracking-[0.14em] text-w-50">
+                {t('option_title')}
+              </p>
+              <fieldset className="mt-2 grid gap-fluid-xs sm:grid-cols-2">
+                {options.map((id) => (
+                  <label
+                    key={id}
+                    className={`flex min-h-[60px] cursor-pointer flex-col justify-center rounded-2xl border px-4 py-3 transition-colors ${
+                      deliveryOption === id
+                        ? 'border-[#9561e9] bg-[#9561e9]/10'
+                        : 'border-w-10 hover:border-[#9561e9]/60'
+                    }`}
+                  >
+                    <input type="radio" value={id} className="sr-only" {...register('deliveryOption')} />
+                    <span className="text-fluid-sm font-semibold text-white">{optionLabels[id]?.label}</span>
+                    {optionLabels[id]?.sub ? (
+                      <span className="mt-0.5 text-fluid-xs text-w-50">{optionLabels[id].sub}</span>
+                    ) : null}
+                  </label>
                 ))}
-              </select>
-            </Field>
+              </fieldset>
+            </>
+          ) : (
+            <p className="mt-fluid-sm rounded-2xl border border-w-10 bg-white/[0.03] px-4 py-3 text-fluid-sm leading-relaxed text-w-70">
+              {t('pickup_note')}
+            </p>
+          )}
 
-            {deliveryMethod !== 'pickup' ? (
+          <div className="mt-fluid-sm grid gap-fluid-sm sm:grid-cols-2">
+            {needsCity ? (
+              <Field label={`${t('field_city')} *`} error={errors.city?.message}>
+                <select defaultValue="" className={fieldClass} {...register('city')}>
+                  <option value="" disabled>
+                    {t('field_city_placeholder')}
+                  </option>
+                  {cityList.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            ) : null}
+
+            {needsAddress ? (
               <Field label={`${t('field_address')} *`} error={errors.address?.message}>
                 <input
                   type="text"

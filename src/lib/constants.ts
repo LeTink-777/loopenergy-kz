@@ -41,7 +41,7 @@ export const NAV_LINKS = [
   { key: 'about', href: '/about' },
   { key: 'delivery', href: '/delivery' },
   { key: 'wholesale', href: '/wholesale' },
-  { key: 'faq', href: '/#faq' },
+  { key: 'faq', href: '/faq' },
 ] as const;
 
 /** The footer has room for the secondary pages the header bar cannot fit. */
