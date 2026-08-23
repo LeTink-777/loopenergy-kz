@@ -52,6 +52,11 @@ function FilterPanel({
 }) {
   const t = useTranslations('shop');
 
+  const dirty =
+    state.category !== DEFAULTS.category ||
+    state.sort !== DEFAULTS.sort ||
+    state.inStockOnly !== DEFAULTS.inStockOnly;
+
   return (
     <div>
       <p className="filter-label">{t('category_label')}</p>
@@ -83,9 +88,17 @@ function FilterPanel({
         {t('in_stock_only')}
       </label>
 
-      <button type="button" onClick={reset} className="btn btn-sm btn-ghost mt-2 w-full uppercase tracking-wide">
-        {t('filters_reset')}
-      </button>
+      {/* Only offered once there is something to undo — a permanent reset on an
+          untouched panel reads as a control that does nothing. */}
+      {dirty ? (
+        <button
+          type="button"
+          onClick={reset}
+          className="mt-3 inline-flex min-h-[44px] items-center text-fluid-sm font-semibold text-accent underline-offset-4 transition-colors hover:text-accent-light hover:underline"
+        >
+          {t('filters_reset')}
+        </button>
+      ) : null}
     </div>
   );
 }
