@@ -79,16 +79,10 @@ export function Header() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
       >
-        <m.nav
+        <nav
           aria-label={t('nav.home')}
-          className="flex items-center justify-between gap-fluid-xs rounded-[22px] border px-fluid-sm py-fluid-xs"
-          animate={{
-            backgroundColor: scrolled ? 'rgba(32, 27, 36, 0.85)' : 'rgba(32, 27, 36, 0.28)',
-            borderColor: scrolled ? 'rgba(149, 97, 233, 0.2)' : 'rgba(255, 255, 255, 0.06)',
-            backdropFilter: scrolled ? 'blur(20px)' : 'blur(6px)',
-            boxShadow: scrolled ? '0 18px 48px -28px rgba(0,0,0,0.9)' : '0 0 0 rgba(0,0,0,0)',
-          }}
-          transition={{ duration: 0.35, ease: EASE }}
+          data-scrolled={scrolled ? 'true' : 'false'}
+          className="header-glass flex items-center justify-between gap-fluid-xs px-fluid-sm py-fluid-xs"
         >
           <Link
             href="/"
@@ -134,7 +128,7 @@ export function Header() {
               </AnimatePresence>
             </m.button>
           </div>
-        </m.nav>
+        </nav>
       </m.header>
 
       <AnimatePresence>

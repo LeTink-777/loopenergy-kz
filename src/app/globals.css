@@ -322,6 +322,115 @@
 
   /* Product card: fixed image box + auto footer keeps every card in a row the
      same height regardless of how long the name or tagline runs. */
+  /* Black-hole glass on the header bar. The radial gradient is a background,
+     not a background-color, so it cannot be driven by Framer's animate() —
+     the scrolled state is a data attribute CSS keys off instead. */
+  .header-glass {
+    position: relative;
+    isolation: isolate;
+    border-radius: 22px;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(20, 15, 28, 0.88) 0%,
+      rgba(32, 27, 36, 0.65) 60%,
+      rgba(20, 15, 28, 0.35) 100%
+    );
+    backdrop-filter: blur(24px) saturate(180%) brightness(0.75);
+    -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(0.75);
+    border: 1px solid rgba(149, 97, 233, 0.12);
+    box-shadow:
+      0 8px 60px rgba(0, 0, 0, 0.5),
+      inset 0 0 100px rgba(149, 97, 233, 0.04);
+    transition:
+      background 0.35s ease,
+      backdrop-filter 0.35s ease,
+      box-shadow 0.35s ease,
+      border-color 0.35s ease;
+  }
+
+  /* Over the hero it sits lighter, so the artwork is not crushed before the
+     visitor has scrolled at all. */
+  .header-glass[data-scrolled='false'] {
+    background: radial-gradient(
+      ellipse at center,
+      rgba(20, 15, 28, 0.55) 0%,
+      rgba(32, 27, 36, 0.34) 60%,
+      rgba(20, 15, 28, 0.16) 100%
+    );
+    backdrop-filter: blur(12px) saturate(150%) brightness(0.88);
+    -webkit-backdrop-filter: blur(12px) saturate(150%) brightness(0.88);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: none;
+  }
+
+  /* Event horizon: a slow accent breath under the contents. */
+  .header-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(149, 97, 233, 0.08) 0%, transparent 70%);
+    animation: eventHorizon 3s ease-in-out infinite;
+  }
+
+  /* ::before paints over the parent background, so the contents need their own
+     stacking position to stay above it. */
+  .header-glass > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes eventHorizon {
+    0%,
+    100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header-glass::before {
+      animation: none;
+      opacity: 0.5;
+    }
+  }
+
+  /* Glass purple: the single action on a catalogue card. */
+  .btn-glass {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(149, 97, 233, 0.5);
+    background: rgba(149, 97, 233, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #fff;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .btn-glass:hover:not(:disabled) {
+    background: rgba(149, 97, 233, 0.35);
+    border-color: rgba(149, 97, 233, 0.8);
+    box-shadow: 0 0 20px rgba(149, 97, 233, 0.3);
+  }
+
+  .btn-glass:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
   .product-card {
     display: flex;
     flex-direction: column;
@@ -331,7 +440,10 @@
 
   .product-card-media {
     width: 100%;
-    height: var(--card-image-height);
+    /* Square rather than a fixed height: the card is now as narrow as a
+       quarter column, and a fixed 240px image went letterboxy there. */
+    aspect-ratio: 1 / 1;
+    height: auto;
     flex-shrink: 0;
     position: relative;
     display: flex;
@@ -350,12 +462,11 @@
 
   .product-card-footer {
     margin-top: auto;
-    padding-top: 16px;
+    padding-top: 14px;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
   /* Clamp to two lines so names of different length still align. */
@@ -372,16 +483,18 @@
     min-height: calc(var(--text-md) * 1.3 * 2);
   }
 
+  /* One line on the catalogue card, and a reserved line box either way so the
+     names above and prices below stay on a shared baseline across the row. */
   .product-card-tagline {
     font-size: var(--text-sm);
     line-height: 1.5;
     color: var(--white-70);
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: calc(var(--text-sm) * 1.5 * 2);
-    margin-top: 8px;
+    min-height: calc(var(--text-sm) * 1.5);
+    margin-top: 6px;
   }
 
   /* Compact one-line pill that hugs its text. */
@@ -499,9 +612,22 @@
 
   .grid-products {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
     align-items: stretch;
+  }
+
+  @media (min-width: 700px) {
+    .grid-products {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .grid-products {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
   /* Product rail: a snap-scrolling carousel while space is tight, promoted to an

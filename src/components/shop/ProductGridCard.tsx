@@ -1,22 +1,26 @@
 'use client';
 
 import { m } from 'framer-motion';
-import { ShoppingBag } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { ProductImage } from '@/components/ui/ProductImage';
-import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-import { Link } from '@/i18n/navigation';
-import { useUniversalMotion } from '@/hooks/useUniversalMotion';
+import { ProductImage } from '@/components/ui/ProductImage';
 import { PurpleBorderCard } from '@/components/ui/PurpleBorderCard';
 import { fadeUp, springPop } from '@/components/ui/motion';
-import { VariantPicker } from './VariantPicker';
+import { useUniversalMotion } from '@/hooks/useUniversalMotion';
+import { Link } from '@/i18n/navigation';
 import { formatTenge } from '@/lib/constants';
 import type { Locale } from '@/lib/content';
 import { t as pick, type Product } from '@/lib/products';
 import { useCartStore } from '@/store/cartStore';
 
+/**
+ * Deliberately spare: image, NEW flag, name, one line of flavour, price, one
+ * button. The strength picker, the caffeine and pouch-count chips and the
+ * secondary badges all moved to the product page — in a four-across grid they
+ * competed with the thing the card is for, which is getting a tin into the
+ * cart or getting you to the detail page.
+ */
 export function ProductGridCard({
   product,
   priority = false,
@@ -30,14 +34,13 @@ export function ProductGridCard({
   const Heading = headingLevel;
   const locale = useLocale() as Locale;
   const t = useTranslations('shop');
-  const tProduct = useTranslations('product_page');
   const addItem = useCartStore((s) => s.addItem);
   const { hoverScale, tapPress, isTouch } = useUniversalMotion();
 
-  const [strength, setStrength] = useState(product.strength[1]?.id ?? product.strength[0]?.id ?? '');
-
   const name = pick(product.name, locale);
-  const selected = product.strength.find((s) => s.id === strength);
+  // No picker on the card any more, so the cart gets the default strength and
+  // the product page stays the place to choose another.
+  const preset = product.strength[1] ?? product.strength[0];
 
   const add = () => {
     addItem({
@@ -46,28 +49,21 @@ export function ProductGridCard({
       name,
       image: product.image,
       price: product.price,
-      strength: selected?.id,
-      strengthLabel: selected ? pick(selected.label, locale) : undefined,
+      strength: preset?.id,
+      strengthLabel: preset ? pick(preset.label, locale) : undefined,
     });
     toast.success(t('toast_added', { name }));
   };
 
   return (
     <m.div variants={fadeUp} className="h-full">
-      <PurpleBorderCard className="product-card p-4">
+      <PurpleBorderCard className="product-card p-3">
         <Link href={`/shop/${product.slug}`} className="product-card-media group overflow-hidden">
-          <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-1.5">
-            {product.badge ? (
-              <span className="rounded-pill bg-accent-grad px-3 py-1 text-fluid-xs font-bold uppercase tracking-wider text-white">
-                {pick(product.badge, locale)}
-              </span>
-            ) : null}
-            {!product.inStock ? (
-              <span className="rounded-pill border border-w-15 bg-black/50 px-3 py-1 text-fluid-xs font-bold uppercase tracking-wider text-w-70">
-                {t('out_of_stock')}
-              </span>
-            ) : null}
-          </div>
+          {product.isNew ? (
+            <span className="absolute left-3 top-3 z-10 rounded-pill bg-accent-grad px-2.5 py-1 text-fluid-xs font-bold uppercase tracking-wider text-white">
+              NEW
+            </span>
+          ) : null}
 
           <m.div
             className="relative h-full w-full"
@@ -79,8 +75,8 @@ export function ProductGridCard({
               alt={name}
               fill
               priority={priority}
-              sizes="(max-width: 400px) 82vw, (max-width: 640px) 300px, (max-width: 1024px) 45vw, 260px"
-              className="object-contain p-5 drop-shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
+              sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
+              className="object-contain p-4 drop-shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
             />
           </m.div>
         </Link>
@@ -93,38 +89,10 @@ export function ProductGridCard({
           </Heading>
           <p className="product-card-tagline">{pick(product.tagline, locale)}</p>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-pill border border-accent/25 bg-accent/10 px-3 py-1 text-fluid-xs font-semibold text-accent-light">
-              {product.caffeine} {tProduct('caffeine_unit')}
-            </span>
-            <span className="rounded-pill border border-w-10 px-3 py-1 text-fluid-xs font-semibold text-w-70">
-              {product.pouches} {tProduct('pouches_unit')}
-            </span>
-          </div>
-
-          {product.strength.length > 0 ? (
-            <div className="mt-4">
-              <VariantPicker
-                name={`strength-${product.id}`}
-                label={t('strength_label')}
-                value={strength}
-                onChange={setStrength}
-                options={product.strength.map((s) => ({ id: s.id, label: pick(s.label, locale) }))}
-              />
-            </div>
-          ) : null}
-
           <div className="product-card-footer">
-            <div className="shrink-0">
-              {product.oldPrice ? (
-                <p className="whitespace-nowrap text-fluid-sm text-w-50 line-through">
-                  {formatTenge(product.oldPrice)}
-                </p>
-              ) : null}
-              <p className="whitespace-nowrap text-fluid-lg font-extrabold tracking-tight">
-                {formatTenge(product.price)}
-              </p>
-            </div>
+            <p className="whitespace-nowrap text-fluid-md font-extrabold tracking-tight text-accent-light">
+              {formatTenge(product.price)}
+            </p>
 
             <m.button
               type="button"
@@ -133,9 +101,8 @@ export function ProductGridCard({
               whileHover={product.inStock ? hoverScale : undefined}
               whileTap={product.inStock ? tapPress : undefined}
               transition={springPop}
-              className="btn btn-sm btn-primary flex-1 uppercase tracking-wide"
+              className="btn-glass w-full"
             >
-              <ShoppingBag className="h-4 w-4 shrink-0" aria-hidden="true" />
               {product.inStock ? t('add_to_cart') : t('out_of_stock')}
             </m.button>
           </div>
