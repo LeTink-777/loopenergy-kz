@@ -703,18 +703,32 @@
     }
   }
 
+  /* Four items, so the column count is stated: auto-fit landed on three
+     around 600px and left the fourth alone on its own row. Two or four only —
+     never three. */
   .grid-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1px;
     overflow: hidden;
     background: var(--white-10);
+  }
+
+  @media (min-width: 760px) {
+    .grid-stats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
   .grid-stats > * {
     background: var(--bg);
     padding-block: var(--space-md);
     padding-inline: var(--space-sm);
+    /* Equal cells are not enough on their own — the contents have to sit in
+       the middle of them too. */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .grid-steps {
