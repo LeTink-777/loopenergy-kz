@@ -171,7 +171,14 @@ export function Footer() {
 
             <p className="mt-5 text-fluid-xs text-w-50">
               {t('footer.mirror')}{' '}
-              <span className="font-semibold text-w-70">{SITE.mirror}</span>
+              <a
+                href={`https://${SITE.mirror}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-accent transition-colors hover:text-accent-light hover:underline"
+              >
+                {SITE.mirror}
+              </a>
             </p>
           </Reveal>
         </RevealGroup>
