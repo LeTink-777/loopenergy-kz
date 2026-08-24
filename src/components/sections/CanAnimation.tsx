@@ -46,43 +46,17 @@ const FRAME_FIRST_OPEN = 30;
 const FRAME_LAST = 180;
 /** Where the sachet detonates. */
 const BURST_FRAME = 130;
-/** The frames give way to particles over this span. */
-const FADE_FROM = 162;
 
 /**
- * The sachet's centre through the tail of the sequence, in frame pixels of the
- * 820x820 artwork, measured off the frames rather than assumed. It sits at
- * (380, 462) around frame 130 — not the middle of the canvas — and only drifts
- * up and right once it starts turning to face the viewer. The explosion is
- * anchored to this so it leaves from the sachet and not from empty space.
+ * Where the sachet sits at the moment it goes, in 0..1 of the drawn artwork.
+ * Measured off frame 130 rather than assumed: (380, 462) of the 820px frame at
+ * 76x66 — up and left of the middle, and about 9% of it, not a third.
  */
-const SACHET_TRACK: [number, number, number][] = [
-  [126, 378, 463], [136, 382, 461], [146, 380, 461], [154, 380, 460],
-  [160, 380, 446], [164, 393, 433], [168, 409, 424], [172, 423, 421],
-  [176, 439, 421], [180, 439, 420],
-];
+const SACHET_AT_BURST = { x: 380 / 820, y: 462 / 820, w: 76 / 820, h: 66 / 820 };
 
-/** Linear read of the track, in 0..1 of the drawn artwork. */
-function sachetAt(frame: number): { x: number; y: number } {
-  const t = SACHET_TRACK;
-  if (frame <= t[0][0]) return { x: t[0][1] / 820, y: t[0][2] / 820 };
-  for (let i = 1; i < t.length; i += 1) {
-    if (frame <= t[i][0]) {
-      const k = (frame - t[i - 1][0]) / (t[i][0] - t[i - 1][0]);
-      return {
-        x: mix(t[i - 1][1], t[i][1], k) / 820,
-        y: mix(t[i - 1][2], t[i][2], k) / 820,
-      };
-    }
-  }
-  const last = t[t.length - 1];
-  return { x: last[1] / 820, y: last[2] / 820 };
-}
 const FRAME_SRC = (n: number) => `/animation/frames/energy_web__${String(n).padStart(5, '0')}.webp`;
 const LOGO_SRC = '/assets/brand/logo.svg';
 
-
-// Stage boundaries live together so the timeline reads in one place.
 /** The sequence occupies the first 85% of the scroll; the wordmark the rest. */
 const FRAMES_END = 0.85;
 /** Progress at which the sachet detonates, read off BURST_FRAME. */
@@ -130,7 +104,7 @@ const mix = (a: number, b: number, t: number) => a + (b - a) * t;
  */
 const SPRITE_HALF = 32;
 /** A burst wants bloom; the wordmark wants legible strokes. */
-const BURST_SCALE = 8;
+const BURST_SCALE = 5;
 const WORD_SCALE = 4;
 
 function glowSprite({ r, g, b }: Rgb) {
@@ -194,7 +168,7 @@ export function CanAnimation() {
   const [hintVisible, setHintVisible] = useState(true);
 
   /** Budgets scale with the device — a phone GPU should not draw 320 sprites. */
-  const budgetRef = useRef({ burst: 340, text: 900, sparks: 22 });
+  const budgetRef = useRef({ burst: 800, text: 900, sparks: 22 });
   /** CSS-pixel size. Every drawing maths uses this, never `canvas.width`. */
   const sizeRef = useRef({ w: 0, h: 0 });
   const stateRef = useRef({
@@ -246,7 +220,7 @@ export function CanAnimation() {
       s.burst = [];
 
       budgetRef.current =
-        w < 768 ? { burst: 160, text: 420, sparks: 12 } : { burst: 340, text: 900, sparks: 22 };
+        w < 768 ? { burst: 400, text: 420, sparks: 12 } : { burst: 800, text: 900, sparks: 22 };
     };
 
     resize();
@@ -287,13 +261,15 @@ export function CanAnimation() {
     if (!palette.length) return [];
 
     return Array.from({ length: budgetRef.current.burst }, () => ({
-      ox: cx + (Math.random() - 0.5) * pw,
-      oy: cy + (Math.random() - 0.5) * ph,
+      // 1.15 so a few land just outside the outline — a clean rectangle of
+      // particles reads as a rectangle, not as something coming apart.
+      ox: cx + (Math.random() - 0.5) * pw * 1.15,
+      oy: cy + (Math.random() - 0.5) * ph * 1.15,
       angle: Math.random() * Math.PI * 2,
       // Skewed so most of the swarm stays in frame and a few outrun it.
-      speed: 0.14 + Math.random() ** 1.6 * 0.72,
+      speed: 0.2 + Math.random() ** 1.5 * 0.95,
       drift: (Math.random() - 0.25) * 0.12,
-      size: 1.6 + Math.random() * 3.4,
+      size: 2 + Math.random() * 3,
       twinkle: Math.random() * Math.PI * 2,
       sprite: pick(palette),
     }));
@@ -396,7 +372,7 @@ export function CanAnimation() {
       if (fps < 30) {
         s.lowFpsStreak += 1;
         if (s.lowFpsStreak === 3) {
-          budgetRef.current = { burst: 110, text: 320, sparks: 8 };
+          budgetRef.current = { burst: 260, text: 320, sparks: 8 };
           s.burstSpawned = false;
           s.burst = [];
           s.wordSpawned = false;
@@ -415,21 +391,19 @@ export function CanAnimation() {
     // ── The sequence: the tin opens and releases its own sachet ───────────
     const frame = Math.round(clamp01(p / FRAMES_END) * FRAME_LAST);
 
-    // Frames give way to particles once the sachet is coming apart.
-    const tinAlpha =
-      clamp01(p / 0.03) *
-      (1 - easeInOut(clamp01((frame - FADE_FROM) / (FRAME_LAST - FADE_FROM))));
+    // Frames run up to the detonation and then stop for good — after the flash
+    // there is nothing of the tin left to show.
+    const tinAlpha = clamp01(p / 0.03);
 
-    // Where the sachet is on screen right now — the explosion starts here, not
-    // in the middle of the canvas.
+    // Where the sachet is at the moment it goes, so the blast starts there
+    // rather than in the middle of the canvas.
     const drawn = Math.min(w, h) * 0.85;
     const originX = cx - drawn / 2;
     const originY = cy - drawn / 2;
-    const sachet = sachetAt(frame);
-    const burstX = originX + sachet.x * drawn;
-    const burstY = originY + sachet.y * drawn;
+    const burstX = originX + SACHET_AT_BURST.x * drawn;
+    const burstY = originY + SACHET_AT_BURST.y * drawn;
 
-    if (tinAlpha > 0.01 && s.frames.length) {
+    if (frame < BURST_FRAME && s.frames.length) {
       // Hold the nearest frame that has arrived rather than blanking: at 181
       // frames some are still in flight when a fast scroll reaches them, and a
       // neighbour is a far smaller artefact than an empty canvas.
@@ -460,18 +434,16 @@ export function CanAnimation() {
 
       if (!s.burstSpawned) {
         // Sized to the sachet as it looks at the moment it goes.
-        s.burst = spawnBurst(burstX, burstY, drawn * 0.22, drawn * 0.08);
+        s.burst = spawnBurst(burstX, burstY, drawn * SACHET_AT_BURST.w, drawn * SACHET_AT_BURST.h);
         s.burstSpawned = true;
       }
 
-      // A bell, not a step. Jumping straight to full white on the frame the
-      // stage opens is the one hard cut a scroll-driven flash can still have,
-      // so it ramps up over the first third of the window and falls over the
-      // rest — brightest where the sachet actually comes apart.
-      if (stage < 0.12) {
-        const t = stage / 0.12;
-        const bell = t < 0.34 ? easeInOut(t / 0.34) : 1 - easeInOut((t - 0.34) / 0.66);
-        ctx.fillStyle = `rgba(255,255,255,${clamp01(bell) * 0.4})`;
+      // Full white while the sachet is destroyed, then out. The frames stop and
+      // the particles start on the same frame; this is what hides that join, and
+      // by the time it clears there is nothing where the sachet was.
+      if (stage < 0.13) {
+        const alpha = stage < 0.08 ? 1 : 1 - easeInOut((stage - 0.08) / 0.05);
+        ctx.fillStyle = `rgba(255,255,255,${clamp01(alpha)})`;
         ctx.fillRect(0, 0, w, h);
       }
 
@@ -481,7 +453,7 @@ export function CanAnimation() {
       if (stage < 0.6) {
         const ring = easeOut(stage / 0.6);
         ctx.beginPath();
-        ctx.arc(cx, cy, unit * 0.95 * ring, 0, Math.PI * 2);
+        ctx.arc(burstX, burstY, unit * 0.95 * ring, 0, Math.PI * 2);
         ctx.strokeStyle = `rgba(${LIGHT.r},${LIGHT.g},${LIGHT.b},${(1 - ring) * 0.75})`;
         ctx.lineWidth = unit * 0.016 * (1 - ring) + 1;
         ctx.stroke();
@@ -613,7 +585,9 @@ export function CanAnimation() {
           // visible on a scroll-driven sequence.
           const st = window.innerWidth < 768 ? 2 : 1;
           const s2 = stateRef.current;
-          s2.frames = new Array(FRAME_LAST + 1);
+          // Only what is drawn: playback stops at the detonation, so fetching
+            // 131-180 would be ~1.2MB no visitor ever sees.
+            s2.frames = new Array(BURST_FRAME + 1);
           const grab = (n: number) => {
             if (s2.frames[n]) return;
             const img = new Image();
@@ -626,8 +600,8 @@ export function CanAnimation() {
           };
           // Stage 1 first so the sealed tin is there the moment it is needed.
           for (let n = 0; n < FRAME_FIRST_OPEN; n += st) grab(n);
-          for (let n = FRAME_FIRST_OPEN; n <= FRAME_LAST; n += st) grab(n);
-          if (st > 1) grab(FRAME_LAST);
+          for (let n = FRAME_FIRST_OPEN; n <= BURST_FRAME; n += st) grab(n);
+          if (st > 1) grab(BURST_FRAME);
         }
       },
       { rootMargin: '600px' },
