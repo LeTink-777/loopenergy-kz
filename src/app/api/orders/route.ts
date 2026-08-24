@@ -39,10 +39,9 @@ const normalisePhone = (raw: string) => {
   return digits;
 };
 
-const CARRIERS = ['kazpost', 'cdek'] as const;
+const CARRIERS = ['cdek'] as const;
 /** Which options each carrier offers — mirrors the checkout form. */
 const CARRIER_OPTIONS: Record<(typeof CARRIERS)[number], readonly string[]> = {
-  kazpost: ['pvz', 'postomat', 'courier'],
   cdek: ['pvz', 'postomat', 'courier', 'express'],
 };
 const PAYMENT_METHODS = ['card', 'kaspi'] as const;

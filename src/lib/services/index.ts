@@ -1,13 +1,11 @@
 export * from './types';
 export * from './cdek';
 export * from './kaspi';
-export * from './kazpost';
 export * from './freedomPay';
 export * from './kaspiPay';
 
 import { cdekCalculate } from './cdek';
 import { kaspiGetTariffs } from './kaspi';
-import { kazpostGetTariffs } from './kazpost';
 import { cdekGetPoints } from './cdek';
 import { kaspiGetPoints } from './kaspi';
 import type { DeliveryOperator, DeliveryPoint, DeliveryTariff } from './types';
@@ -25,8 +23,6 @@ export async function getDeliveryTariffs(
       return cdekCalculate({ fromCity: 'Алматы', toCity: city, declaredValue, ...DEFAULT_PARCEL });
     case 'kaspi':
       return kaspiGetTariffs(city);
-    case 'kazpost':
-      return kazpostGetTariffs(city);
   }
 }
 
@@ -40,8 +36,6 @@ export async function getDeliveryPoints(
     case 'kaspi':
       return kaspiGetPoints(city);
     // Kazpost hands over at post offices; no point API until the contract is signed.
-    case 'kazpost':
-      return [];
   }
 }
 
@@ -49,7 +43,6 @@ export async function getDeliveryPoints(
 export const serviceStatus = () => ({
   cdek: Boolean(process.env.CDEK_CLIENT_ID && process.env.CDEK_CLIENT_SECRET),
   kaspi: Boolean(process.env.KASPI_API_KEY && process.env.KASPI_MERCHANT_ID),
-  kazpost: Boolean(process.env.KAZPOST_API_KEY),
   freedomPay: Boolean(process.env.FREEDOM_PAY_MERCHANT_ID && process.env.FREEDOM_PAY_SECRET_KEY),
   kaspiPay: Boolean(process.env.KASPI_PAY_PRIVATE_KEY),
 });

@@ -2,7 +2,7 @@
 
 // ─── DELIVERY ─────────────────────────────────────────────────────────────
 
-export type DeliveryOperator = 'kaspi' | 'cdek' | 'kazpost';
+export type DeliveryOperator = 'kaspi' | 'cdek';
 export type DeliveryKind = 'pvz' | 'postamat' | 'courier' | 'express';
 
 export interface DeliveryCity {

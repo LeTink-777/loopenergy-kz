@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { m } from 'framer-motion';
-import { CreditCard, Loader2, Mail, Truck, Wallet } from 'lucide-react';
+import { CreditCard, Loader2, Truck, Wallet } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -21,7 +21,6 @@ import { useCartStore } from '@/store/cartStore';
 
 /** Which ways of receiving an order each carrier actually offers. */
 const CARRIER_OPTIONS = {
-  kazpost: ['pvz', 'postomat', 'courier'],
   cdek: ['pvz', 'postomat', 'courier', 'express'],
 } as const;
 
@@ -94,7 +93,7 @@ export function CheckoutForm() {
     city: z.string(),
     address: z.string(),
     comment: z.string(),
-    carrier: z.enum(['kazpost', 'cdek']),
+    carrier: z.enum(['cdek']),
     deliveryOption: z.string(),
     paymentMethod: z.enum(['card', 'kaspi']),
   });
@@ -116,7 +115,7 @@ export function CheckoutForm() {
       city: '',
       address: '',
       comment: '',
-      carrier: 'kazpost',
+      carrier: 'cdek',
       deliveryOption: 'pvz',
       paymentMethod: 'kaspi',
     },
@@ -226,7 +225,6 @@ export function CheckoutForm() {
   // the marks would imply a partnership we have not signed, and it keeps the
   // row consistent with the payment options below, which already use icons.
   const carriers = [
-    { id: 'kazpost', label: t('carrier_kazpost'), sub: t('carrier_kazpost_sub'), Icon: Mail },
     { id: 'cdek', label: t('carrier_cdek'), sub: t('carrier_cdek_sub'), Icon: Truck },
   ] as const;
 
