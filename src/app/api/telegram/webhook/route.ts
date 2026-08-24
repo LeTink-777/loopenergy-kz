@@ -31,8 +31,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
-  if (!supabaseReady()) return NextResponse.json({ ok: true });
-
   let update: Callback;
   try {
     update = (await request.json()) as Callback;
@@ -49,14 +47,20 @@ export async function POST(request: Request) {
     run: () => Promise<Order | null>,
     adminNote: string,
   ) => {
-    const order = await run();
-    if (!order) {
-      await answerCallback(q.id, 'Заказ уже обработан или не найден');
-      return;
+    // With a database the move is recorded and guarded; without one the press
+    // still has to do something visible, or the buttons are decorative.
+    let label = esc(id);
+    if (supabaseReady()) {
+      const order = await run();
+      if (!order) {
+        await answerCallback(q.id, 'Заказ уже обработан или не найден');
+        return;
+      }
+      label = `#${order.order_number}`;
     }
     if (q.message) await stripKeyboard(q.message.message_id);
     await answerCallback(q.id, adminNote);
-    await sendTelegramMessage(`${adminNote} — заказ #${order.order_number}`);
+    await sendTelegramMessage(`${adminNote} — заказ ${label}`);
   };
 
   if (data.startsWith('confirm_')) {
@@ -69,13 +73,12 @@ export async function POST(request: Request) {
 
   if (data.startsWith('notfound_')) {
     const id = data.slice('notfound_'.length);
-    const order = await getOrder(id);
-    await answerCallback(q.id, 'Клиенту сообщено, что платёж ещё проверяется');
-    if (order) {
-      await sendTelegramMessage(
-        `⏳ Заказ #${order.order_number}: платёж пока не найден. Кнопки остаются — проверьте ещё раз через несколько минут.`,
-      );
-    }
+    const order = supabaseReady() ? await getOrder(id) : null;
+    const label = order ? `#${order.order_number}` : esc(id);
+    await answerCallback(q.id, 'Отмечено: платёж пока не найден');
+    await sendTelegramMessage(
+      `⏳ Заказ ${label}: платёж пока не найден. Кнопки остаются — проверьте ещё раз через несколько минут.`,
+    );
     return NextResponse.json({ ok: true });
   }
 

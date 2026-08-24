@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { freedomPayCreate } from '@/lib/services/freedomPay';
 import { SITE } from '@/lib/constants';
 import { createOrder, supabaseReady, type Order } from '@/lib/orders';
-import { esc, sendTelegramMessage } from '@/lib/telegram';
+import { esc, orderKeyboard, sendTelegramMessage } from '@/lib/telegram';
 
 export const runtime = 'nodejs';
 
@@ -145,6 +145,10 @@ export async function POST(request: Request) {
       (address ? `🏠 Адрес: ${esc(address)}\n` : '') +
       `\n🛍 Товары:\n${lines}\n\n💰 Итого: ${total} ₸\n💳 Оплата: ${paymentMethod === 'kaspi' ? 'Kaspi QR' : 'Картой онлайн'}\n\n` +
       (paymentMethod === 'kaspi' ? '⏳ Ожидает оплаты…' : ''),
+    // The buttons ride along with the order itself. Waiting for the customer to
+    // press "Я оплатил" first left the shop looking at an order it could not
+    // act on — and if that press never arrives, at nothing it can act on ever.
+    orderKeyboard(orderId),
   );
 
   // Never fail the customer over our own plumbing. A refused checkout loses

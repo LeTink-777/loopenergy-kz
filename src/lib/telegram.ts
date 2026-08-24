@@ -3,7 +3,7 @@ const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 export const telegramReady = () => Boolean(TOKEN && CHAT_ID);
 
-type Keyboard = { inline_keyboard: { text: string; callback_data: string }[][] };
+export type Keyboard = { inline_keyboard: { text: string; callback_data: string }[][] };
 
 async function call(method: string, body: Record<string, unknown>) {
   if (!TOKEN) return { ok: false as const, error: 'no_token' };
@@ -54,3 +54,20 @@ export function stripKeyboard(messageId: number) {
 
 export const esc = (v: unknown) =>
   String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/** The decision buttons the shop acts on. Same set wherever an order needs one. */
+export function orderKeyboard(orderId: string): Keyboard {
+  return {
+    inline_keyboard: [
+      [
+        { text: '✅ Оплата получена', callback_data: `confirm_${orderId}` },
+        { text: '❌ Не найдена', callback_data: `notfound_${orderId}` },
+      ],
+      [
+        { text: '🔄 Не тот номер', callback_data: `cancel_phone_${orderId}` },
+        { text: '🔄 Не та сумма', callback_data: `cancel_amount_${orderId}` },
+      ],
+      [{ text: '🚫 Подозрительный', callback_data: `cancel_suspicious_${orderId}` }],
+    ],
+  };
+}
