@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 
 import { freedomPayCreate } from '@/lib/services/freedomPay';
-import { kaspiPayCreate } from '@/lib/services/kaspiPay';
 import { SITE } from '@/lib/constants';
+import { createOrder, supabaseReady, type Order } from '@/lib/orders';
+import { esc, sendTelegramMessage } from '@/lib/telegram';
 
 export const runtime = 'nodejs';
 
@@ -107,13 +108,66 @@ export async function POST(request: Request) {
   }
 
   const total = items.reduce((sum, line) => sum + line.price * line.quantity, 0);
-  const orderId = `LE-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
 
-  // Gateways answer with a stub until their credentials exist, so the checkout
-  // flow is identical before and after the merchant accounts are approved.
+  const record = {
+    customer_name: name,
+    customer_phone: `+${phone}`,
+    city,
+    address,
+    comment,
+    carrier,
+    delivery_option: deliveryOption,
+    items,
+    total_amount: total,
+    payment_method: paymentMethod,
+    status: 'pending' as const,
+    locale,
+  };
+
+  let order: Order | null = null;
+  if (supabaseReady()) {
+    try {
+      order = await createOrder(record);
+    } catch (error) {
+      console.error('[order] persist failed', error);
+    }
+  }
+
+  const orderId = order?.id ?? `LE-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+  const label = order ? `#${order.order_number}` : orderId;
+
+  const lines = items
+    .map((l) => `• ${esc(l.name)} × ${l.quantity} — ${l.price * l.quantity} ₸`)
+    .join('\n');
+  const notified = await sendTelegramMessage(
+    `🛒 <b>НОВЫЙ ЗАКАЗ ${esc(label)}</b>\n\n` +
+      `👤 Клиент: ${esc(name)}\n📱 Телефон: +${esc(phone)}\n📍 Город: ${esc(city || '—')}\n` +
+      `🚚 Доставка: ${esc(carrier)} / ${esc(deliveryOption || '—')}\n` +
+      (address ? `🏠 Адрес: ${esc(address)}\n` : '') +
+      `\n🛍 Товары:\n${lines}\n\n💰 Итого: ${total} ₸\n💳 Оплата: ${paymentMethod === 'kaspi' ? 'Kaspi QR' : 'Картой онлайн'}\n\n` +
+      (paymentMethod === 'kaspi' ? '⏳ Ожидает оплаты…' : ''),
+  );
+
+  // An order counts as captured once it has reached somewhere durable. If it
+  // reached neither the database nor Telegram it is only in a log line that
+  // nobody reads, so say so rather than return a cheerful 201.
+  if (!order && !notified.ok) {
+    console.error('[order] nowhere to store', { orderId, record });
+    return NextResponse.json({ success: false, error: 'storage_unavailable' }, { status: 503 });
+  }
+
+  // Kaspi is settled by QR and confirmed by hand, so the customer goes to our
+  // own page rather than to a gateway.
+  if (paymentMethod === 'kaspi') {
+    return NextResponse.json(
+      { success: true, orderId, total, paymentPath: `/payment/kaspi/${orderId}` },
+      { status: 201 },
+    );
+  }
+
   const returnUrl = `${SITE.url}/${locale}/order/${orderId}?status=success`;
   const failUrl = `${SITE.url}/${locale}/order/${orderId}?status=fail`;
-  const paymentParams = {
+  const payment = await freedomPayCreate({
     orderId,
     amount: total,
     currency: 'KZT' as const,
@@ -122,32 +176,6 @@ export async function POST(request: Request) {
     customerEmail: email || undefined,
     returnUrl,
     failUrl,
-  };
-
-  const payment =
-    paymentMethod === 'card'
-      ? await freedomPayCreate(paymentParams)
-      : await kaspiPayCreate(paymentParams);
-
-  // TODO: persist the order (Supabase / Postgres) instead of only logging it.
-  // TODO: notify the manager in Telegram when TELEGRAM_BOT_TOKEN is set.
-  // TODO: send an email confirmation when RESEND_API_KEY is set.
-  console.info('[order]', {
-    orderId,
-    receivedAt: new Date().toISOString(),
-    phone: `+${phone}`,
-    name,
-    email,
-    city,
-    address,
-    comment,
-    carrier,
-    deliveryOption,
-    paymentMethod,
-    locale,
-    total,
-    items,
-    payment: { method: paymentMethod, id: payment.paymentId, stubbed: payment.stubbed ?? false },
   });
 
   return NextResponse.json(
@@ -155,7 +183,6 @@ export async function POST(request: Request) {
       success: true,
       orderId,
       total,
-      // Only a live gateway returns somewhere worth redirecting to.
       paymentRedirectUrl: payment.stubbed ? undefined : payment.redirectUrl,
     },
     { status: 201 },

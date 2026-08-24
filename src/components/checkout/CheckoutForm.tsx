@@ -172,6 +172,7 @@ export function CheckoutForm() {
         success?: boolean;
         orderId?: string;
         paymentRedirectUrl?: string;
+        paymentPath?: string;
       };
 
       if (!response.ok || !result.orderId) {
@@ -182,7 +183,13 @@ export function CheckoutForm() {
       // A direct buy never touched the cart, so there is nothing to clear.
       if (!directItem) clearCart();
 
-      // A live gateway hands back its own payment page; stubs do not.
+      // Kaspi is settled by QR on a page of ours; a live card gateway hands
+      // back its own. Stubs give neither and fall through to the order page.
+      if (result.paymentPath) {
+        router.push(result.paymentPath);
+        return;
+      }
+
       if (result.paymentRedirectUrl) {
         window.location.href = result.paymentRedirectUrl;
         return;

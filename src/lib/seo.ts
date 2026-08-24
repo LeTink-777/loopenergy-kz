@@ -107,7 +107,7 @@ export function buildMetadata(locale: Locale): Metadata {
   };
 }
 
-type PageKey = 'about' | 'faq_page' | 'shop' | 'delivery' | 'wholesale' | 'cart' | 'checkout' | 'order' | 'certificates';
+type PageKey = 'about' | 'faq_page' | 'kaspi_payment' | 'payment_status' | 'shop' | 'delivery' | 'wholesale' | 'cart' | 'checkout' | 'order' | 'certificates';
 
 /**
  * Metadata for a sub-page: inherits the site defaults, overrides title,
