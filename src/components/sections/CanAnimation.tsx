@@ -42,24 +42,52 @@ const CAN_SRC = '/assets/brand/can-hero.webp';
  * the tin — the whole frame is drawn instead.
  */
 const FRAME_FIRST_OPEN = 30;
+/** The whole sequence now: the tin opens and releases its own sachet. */
+const FRAME_LAST = 180;
+/** Where the sachet detonates. */
+const BURST_FRAME = 130;
+/** The frames give way to particles over this span. */
+const FADE_FROM = 162;
+
 /**
- * 88, not 109. The sequence grows its own sachet between the separated halves
- * from frame 90 onward — measured, it covers 0% of the middle band at 88 and
- * 11% by 100. Playing past it put that sachet on screen next to ours, which is
- * the double pouch. The run stops on the last frame that is an open tin and
- * nothing else, and that frame is held while our pouch rises out of it.
+ * The sachet's centre through the tail of the sequence, in frame pixels of the
+ * 820x820 artwork, measured off the frames rather than assumed. It sits at
+ * (380, 462) around frame 130 — not the middle of the canvas — and only drifts
+ * up and right once it starts turning to face the viewer. The explosion is
+ * anchored to this so it leaves from the sachet and not from empty space.
  */
-const FRAME_LAST = 88;
+const SACHET_TRACK: [number, number, number][] = [
+  [126, 378, 463], [136, 382, 461], [146, 380, 461], [154, 380, 460],
+  [160, 380, 446], [164, 393, 433], [168, 409, 424], [172, 423, 421],
+  [176, 439, 421], [180, 439, 420],
+];
+
+/** Linear read of the track, in 0..1 of the drawn artwork. */
+function sachetAt(frame: number): { x: number; y: number } {
+  const t = SACHET_TRACK;
+  if (frame <= t[0][0]) return { x: t[0][1] / 820, y: t[0][2] / 820 };
+  for (let i = 1; i < t.length; i += 1) {
+    if (frame <= t[i][0]) {
+      const k = (frame - t[i - 1][0]) / (t[i][0] - t[i - 1][0]);
+      return {
+        x: mix(t[i - 1][1], t[i][1], k) / 820,
+        y: mix(t[i - 1][2], t[i][2], k) / 820,
+      };
+    }
+  }
+  const last = t[t.length - 1];
+  return { x: last[1] / 820, y: last[2] / 820 };
+}
 const FRAME_SRC = (n: number) => `/animation/frames/energy_web__${String(n).padStart(5, '0')}.webp`;
-const POUCH_SRC = '/assets/pouches/pouch-main.webp';
 const LOGO_SRC = '/assets/brand/logo.svg';
 
 
 // Stage boundaries live together so the timeline reads in one place.
-const SPLIT_IN = 0.2;
-const POUCH_IN = 0.5;
-const BURST_IN = 0.65;
-const WORD_IN = 0.85;
+/** The sequence occupies the first 85% of the scroll; the wordmark the rest. */
+const FRAMES_END = 0.85;
+/** Progress at which the sachet detonates, read off BURST_FRAME. */
+const BURST_IN = (BURST_FRAME / FRAME_LAST) * FRAMES_END;
+const WORD_IN = FRAMES_END;
 
 type Particle = {
   ox: number;
@@ -172,12 +200,8 @@ export function CanAnimation() {
   const stateRef = useRef({
     frames: [] as HTMLImageElement[],
     framesReady: 0,
-    pouchImage: null as HTMLImageElement | null,
     logoImage: null as HTMLImageElement | null,
     frame: 0,
-    spin: 0,
-    spinLock: 0,
-    spinLocked: false,
     burst: [] as Particle[],
     burstSpawned: false,
     word: [] as TextParticle[],
@@ -388,95 +412,44 @@ export function CanAnimation() {
     ctx.fillStyle = BG;
     ctx.fillRect(0, 0, w, h);
 
-    // Scrolling back up rewinds the sequence instead of leaving it spent.
-    if (p < SPLIT_IN && s.spinLocked) s.spinLocked = false;
+    // ── The sequence: the tin opens and releases its own sachet ───────────
+    const frame = Math.round(clamp01(p / FRAMES_END) * FRAME_LAST);
 
-    // ── Stages 1–2: the brand's own render sequence ───────────────────────
-    // Frames 0-29 turn the sealed tin, 30-109 open it. Stages 3-5 stay drawn.
-    const splitT = easeInOut(clamp01((p - SPLIT_IN) / (POUCH_IN - SPLIT_IN)));
-    // The open tin stays put through the whole of stage 3 — the pouch has to
-    // come out of something — and only leaves as the burst starts.
-    const tinAlpha = clamp01(p / 0.03) * (1 - easeInOut(clamp01((p - 0.63) / 0.05)));
+    // Frames give way to particles once the sachet is coming apart.
+    const tinAlpha =
+      clamp01(p / 0.03) *
+      (1 - easeInOut(clamp01((frame - FADE_FROM) / (FRAME_LAST - FADE_FROM))));
 
-    const wanted =
-      p < SPLIT_IN
-        ? Math.round(clamp01(p / SPLIT_IN) * (FRAME_FIRST_OPEN - 1))
-        : FRAME_FIRST_OPEN + Math.round(splitT * (FRAME_LAST - FRAME_FIRST_OPEN));
-
-    // The pouch comes out of the middle of the tin, which is the middle of the
-    // frame — the sprite geometry that used to place it is gone.
-    const rimX = cx;
-    const rimY = cy;
+    // Where the sachet is on screen right now — the explosion starts here, not
+    // in the middle of the canvas.
+    const drawn = Math.min(w, h) * 0.85;
+    const originX = cx - drawn / 2;
+    const originY = cy - drawn / 2;
+    const sachet = sachetAt(frame);
+    const burstX = originX + sachet.x * drawn;
+    const burstY = originY + sachet.y * drawn;
 
     if (tinAlpha > 0.01 && s.frames.length) {
-      // Hold the nearest frame that has arrived rather than blanking: at 110
+      // Hold the nearest frame that has arrived rather than blanking: at 181
       // frames some are still in flight when a fast scroll reaches them, and a
-      // neighbouring frame is a far smaller artefact than an empty canvas.
-      let img: HTMLImageElement | undefined = s.frames[wanted];
+      // neighbour is a far smaller artefact than an empty canvas.
+      let img: HTMLImageElement | undefined = s.frames[frame];
       if (!img?.complete || !img.naturalWidth) {
         img = undefined;
-        for (let k = 1; k <= 16 && !img; k += 1) {
-          const back = s.frames[wanted - k];
-          const fwd = s.frames[wanted + k];
+        for (let k = 1; k <= 20 && !img; k += 1) {
+          const back = s.frames[frame - k];
+          const fwd = s.frames[frame + k];
           if (back?.complete && back.naturalWidth) img = back;
           else if (fwd?.complete && fwd.naturalWidth) img = fwd;
         }
       }
 
       if (img) {
-        const size = Math.min(w, h) * 0.85;
         ctx.save();
         ctx.globalAlpha = tinAlpha;
-        ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size);
+        ctx.drawImage(img, originX, originY, drawn, drawn);
         ctx.restore();
       }
-    }
-
-    // ── Stage 3: the pouch rises out of the gap ───────────────────────────
-    // A real sachet photographed against the water splash, cut out of why.png
-    // and stood upright — the tin holds twenty of these, so this is the object
-    // that should come out of it.
-    const pouchH = unit * 0.38;
-    const pouchW =
-      pouchH * (s.pouchImage ? s.pouchImage.naturalWidth / s.pouchImage.naturalHeight : 0.354);
-
-    // Starts rising before stage 2 nominally ends, so the two overlap instead
-    // of cutting; on the way out it swells and dissolves into the burst rather
-    // than vanishing between frames.
-    const POUCH_IN_START = 0.48;
-    const SHATTER_END = BURST_IN + 0.04;
-    const riseT = easeOut(clamp01((p - POUCH_IN_START) / (BURST_IN - POUCH_IN_START)));
-    const shatterT = easeInOut(clamp01((p - BURST_IN) / (SHATTER_END - BURST_IN)));
-    const pouchAlpha =
-      easeInOut(clamp01((p - POUCH_IN_START) / 0.07)) * (1 - shatterT);
-    // Where the sachet actually is, so the burst can start from it.
-    const pouchX = rimX;
-    const pouchY = mix(rimY, cy, riseT) + unit * 0.06 * (1 - riseT);
-
-    if (pouchAlpha > 0.01 && s.pouchImage) {
-      const tilt = Math.sin(s.frame * 0.03) * 0.05 * (1 - riseT * 0.6);
-      const scale = mix(0.35, 1, riseT) * mix(1, 1.14, shatterT);
-
-      ctx.save();
-      ctx.translate(pouchX, pouchY);
-      ctx.rotate(tilt);
-      ctx.scale(scale, scale);
-      ctx.globalAlpha = pouchAlpha;
-
-      // A pool of accent behind it: the sachet is white, and without something
-      // lit behind it, it reads as a hole punched in the background.
-      const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, pouchH * 0.95);
-      halo.addColorStop(0, `rgba(${ACCENT.r},${ACCENT.g},${ACCENT.b},0.55)`);
-      halo.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = halo;
-      ctx.fillRect(-pouchH, -pouchH, pouchH * 2, pouchH * 2);
-
-      ctx.shadowColor = `rgba(${LIGHT.r},${LIGHT.g},${LIGHT.b},0.8)`;
-      ctx.shadowBlur = unit * 0.05;
-      ctx.drawImage(s.pouchImage, -pouchW / 2, -pouchH / 2, pouchW, pouchH);
-
-      ctx.restore();
-      ctx.globalAlpha = 1;
     }
 
     // ── Stage 4: the pouch detonates ──────────────────────────────────────
@@ -486,7 +459,8 @@ export function CanAnimation() {
       const stage = clamp01((p - BURST_IN) / (WORD_IN - BURST_IN));
 
       if (!s.burstSpawned) {
-        s.burst = spawnBurst(pouchX, pouchY, pouchW, pouchH);
+        // Sized to the sachet as it looks at the moment it goes.
+        s.burst = spawnBurst(burstX, burstY, drawn * 0.22, drawn * 0.08);
         s.burstSpawned = true;
       }
 
@@ -618,7 +592,7 @@ export function CanAnimation() {
         // Fetch the artwork only once the section is close — loading it on
         // mount would compete with the hero image for the LCP.
         if (entry.isIntersecting && !stateRef.current.frames.length) {
-          const load = (src: string, onto: 'pouchImage' | 'logoImage') => {
+          const load = (src: string, onto: 'logoImage') => {
             const img = new Image();
             img.src = src;
             img.decoding = 'async';
@@ -632,7 +606,6 @@ export function CanAnimation() {
               }
             };
           };
-          load(POUCH_SRC, 'pouchImage');
           load(LOGO_SRC, 'logoImage');
 
           // Phones decode every second frame: half the bytes and half the
