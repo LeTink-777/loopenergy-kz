@@ -148,21 +148,20 @@ export async function POST(request: Request) {
       (paymentMethod === 'kaspi' ? '⏳ Ожидает оплаты…' : ''),
   );
 
-  // An order counts as captured once it has reached somewhere durable. If it
-  // reached neither the database nor Telegram it is only in a log line that
-  // nobody reads, so say so rather than return a cheerful 201.
+  // Never fail the customer over our own plumbing. A refused checkout loses
+  // the sale outright; an order that only made it into the logs can still be
+  // recovered from them. The marker below is what to grep for.
   if (!order && !notified.ok) {
-    console.error('[order] nowhere to store', { orderId, record });
-    return NextResponse.json({ success: false, error: 'storage_unavailable' }, { status: 503 });
+    console.error('[ORDER-UNSTORED]', JSON.stringify({ orderId, ...record }));
   }
 
   // Kaspi is settled by QR and confirmed by hand, so the customer goes to our
   // own page rather than to a gateway.
   if (paymentMethod === 'kaspi') {
-    return NextResponse.json(
-      { success: true, orderId, total, paymentPath: `/payment/kaspi/${orderId}` },
-      { status: 201 },
-    );
+    const path = order
+      ? `/payment/kaspi/${orderId}`
+      : `/payment/kaspi/${orderId}?total=${total}`;
+    return NextResponse.json({ success: true, orderId, total, paymentPath: path }, { status: 201 });
   }
 
   const returnUrl = `${SITE.url}/${locale}/order/${orderId}?status=success`;

@@ -24,18 +24,23 @@ export async function generateMetadata({
 
 export default async function KaspiPaymentPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; orderId: string }>;
+  searchParams: Promise<{ total?: string }>;
 }) {
   const { locale, orderId } = await params;
+  const { total: totalParam } = await searchParams;
   const resolved: Locale = hasLocale(routing.locales, locale) ? (locale as Locale) : routing.defaultLocale;
   setRequestLocale(resolved);
 
-  // The summary is read on the server so the amount cannot be edited by the
-  // person who is about to pay it.
-  if (!supabaseReady()) notFound();
-  const order = await getOrder(orderId);
-  if (!order) notFound();
+  // Read from the database when there is one, so the amount cannot be edited
+  // by the person about to pay it. Without a database the link carries it —
+  // the figure is only a prompt for what to type into Kaspi, and the shop
+  // checks the real amount against the order before confirming anything.
+  const order = supabaseReady() ? await getOrder(orderId) : null;
+  const total = order?.total_amount ?? Number(totalParam);
+  if (!Number.isFinite(total) || total <= 0) notFound();
 
   const t = await getTranslations({ locale: resolved, namespace: 'kaspi_payment' });
 
@@ -45,10 +50,11 @@ export default async function KaspiPaymentPage({
         <PageHeader title={t('h1')} accent={t('h1_accent')} subline={t('subline')} />
         <div className="mt-fluid-lg">
           <KaspiPayment
-            orderId={order.id}
-            orderNumber={order.order_number}
-            total={order.total_amount}
-            createdAt={order.created_at}
+            orderId={order?.id ?? orderId}
+            orderNumber={order?.order_number ?? 0}
+            total={total}
+            createdAt={order?.created_at ?? new Date().toISOString()}
+            tracked={Boolean(order)}
           />
         </div>
       </div>

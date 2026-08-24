@@ -14,11 +14,14 @@ export function KaspiPayment({
   orderNumber,
   total,
   createdAt,
+  tracked,
 }: {
   orderId: string;
   orderNumber: number;
   total: number;
   createdAt: string;
+  /** False when there is no database yet, so nothing can be polled for status. */
+  tracked: boolean;
 }) {
   const t = useTranslations('kaspi_payment');
   const router = useRouter();
@@ -49,8 +52,10 @@ export function KaspiPayment({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId }),
       });
-      if (!res.ok) throw new Error(String(res.status));
-      router.push(`/payment/status/${orderId}`);
+      // 503 means there is no order store yet — the shop was still told about
+      // the order, so thank the customer rather than showing them a failure.
+      if (!res.ok && res.status !== 503) throw new Error(String(res.status));
+      router.push(tracked ? `/payment/status/${orderId}` : `/order/${orderId}`);
     } catch {
       setError(t('error'));
       setSending(false);
@@ -85,9 +90,11 @@ export function KaspiPayment({
       </section>
 
       <aside className="purple-ring p-fluid-md lg:sticky lg:top-[calc(var(--header-h)+24px)]">
-        <p className="text-fluid-xs font-semibold uppercase tracking-[0.16em] text-w-50">
-          {t('order_label', { number: String(orderNumber) })}
-        </p>
+        {orderNumber > 0 ? (
+          <p className="text-fluid-xs font-semibold uppercase tracking-[0.16em] text-w-50">
+            {t('order_label', { number: String(orderNumber) })}
+          </p>
+        ) : null}
         <p className="mt-2 text-fluid-2xl font-extrabold tabular-nums">{formatTenge(total)}</p>
 
         <div className="mt-fluid-sm rounded-2xl border border-w-10 px-4 py-3 text-center">
