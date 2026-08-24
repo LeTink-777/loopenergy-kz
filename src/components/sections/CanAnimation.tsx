@@ -42,7 +42,14 @@ const CAN_SRC = '/assets/brand/can-hero.webp';
  * the tin — the whole frame is drawn instead.
  */
 const FRAME_FIRST_OPEN = 30;
-const FRAME_LAST = 109;
+/**
+ * 88, not 109. The sequence grows its own sachet between the separated halves
+ * from frame 90 onward — measured, it covers 0% of the middle band at 88 and
+ * 11% by 100. Playing past it put that sachet on screen next to ours, which is
+ * the double pouch. The run stops on the last frame that is an open tin and
+ * nothing else, and that frame is held while our pouch rises out of it.
+ */
+const FRAME_LAST = 88;
 const FRAME_SRC = (n: number) => `/animation/frames/energy_web__${String(n).padStart(5, '0')}.webp`;
 const POUCH_SRC = '/assets/pouches/pouch-main.webp';
 const LOGO_SRC = '/assets/brand/logo.svg';
@@ -269,7 +276,8 @@ export function CanAnimation() {
   }, []);
 
   /** Rasterises the lockup offscreen and samples its opaque pixels as targets. */
-  const spawnWordParticles = useCallback((w: number, h: number, cy: number) => {
+  const spawnWordParticles = useCallback(
+    (w: number, h: number, cy: number, seeds: { x: number; y: number }[]) => {
     const { wordPalette: palette, logoImage } = stateRef.current;
     if (!palette.length || !logoImage) return [];
 
@@ -302,14 +310,18 @@ export function CanAnimation() {
     const picked: { tx: number; ty: number }[] = [];
     for (let i = 0; i < targets.length; i += stride) picked.push(targets[Math.floor(i)]);
 
-    return picked.map(({ tx, ty }) => {
-      // They fly in from beyond the rim, the way the burst left the frame.
+    return picked.map(({ tx, ty }, i) => {
+      // Start where the burst actually left off, so the swarm carries on rather
+      // than being replaced by a second one flying in from off-screen. Falls
+      // back to the rim only if the burst never ran (a deep link straight to
+      // the end of the section).
+      const from = seeds.length ? seeds[i % seeds.length] : null;
       const angle = Math.random() * Math.PI * 2;
       const reach = 0.62 + Math.random() * 0.5;
 
       return {
-        sx: w / 2 + Math.cos(angle) * w * reach,
-        sy: cy + Math.sin(angle) * h * reach,
+        sx: from ? from.x : w / 2 + Math.cos(angle) * w * reach,
+        sy: from ? from.y : cy + Math.sin(angle) * h * reach,
         tx,
         ty,
         delay: Math.random() * 0.42,
@@ -318,7 +330,9 @@ export function CanAnimation() {
         sprite: pick(palette),
       };
     });
-  }, []);
+    },
+    [],
+  );
 
   // ── Frame ──────────────────────────────────────────────────────────────
   const draw = useCallback(() => {
@@ -380,7 +394,9 @@ export function CanAnimation() {
     // ── Stages 1–2: the brand's own render sequence ───────────────────────
     // Frames 0-29 turn the sealed tin, 30-109 open it. Stages 3-5 stay drawn.
     const splitT = easeInOut(clamp01((p - SPLIT_IN) / (POUCH_IN - SPLIT_IN)));
-    const tinAlpha = clamp01(p / 0.03) * (1 - clamp01((p - 0.58) / 0.1));
+    // The open tin stays put through the whole of stage 3 — the pouch has to
+    // come out of something — and only leaves as the burst starts.
+    const tinAlpha = clamp01(p / 0.03) * (1 - easeInOut(clamp01((p - 0.63) / 0.05)));
 
     const wanted =
       p < SPLIT_IN
@@ -424,17 +440,28 @@ export function CanAnimation() {
     const pouchW =
       pouchH * (s.pouchImage ? s.pouchImage.naturalWidth / s.pouchImage.naturalHeight : 0.354);
 
-    if (p >= POUCH_IN && p < BURST_IN && s.pouchImage) {
-      const stage = clamp01((p - POUCH_IN) / (BURST_IN - POUCH_IN));
-      const rise = easeOut(stage);
-      const tilt = Math.sin(s.frame * 0.03) * 0.05 * (1 - rise * 0.6);
-      const scale = mix(0.35, 1, rise);
+    // Starts rising before stage 2 nominally ends, so the two overlap instead
+    // of cutting; on the way out it swells and dissolves into the burst rather
+    // than vanishing between frames.
+    const POUCH_IN_START = 0.48;
+    const SHATTER_END = BURST_IN + 0.04;
+    const riseT = easeOut(clamp01((p - POUCH_IN_START) / (BURST_IN - POUCH_IN_START)));
+    const shatterT = easeInOut(clamp01((p - BURST_IN) / (SHATTER_END - BURST_IN)));
+    const pouchAlpha =
+      easeInOut(clamp01((p - POUCH_IN_START) / 0.07)) * (1 - shatterT);
+    // Where the sachet actually is, so the burst can start from it.
+    const pouchX = rimX;
+    const pouchY = mix(rimY, cy, riseT) + unit * 0.06 * (1 - riseT);
+
+    if (pouchAlpha > 0.01 && s.pouchImage) {
+      const tilt = Math.sin(s.frame * 0.03) * 0.05 * (1 - riseT * 0.6);
+      const scale = mix(0.35, 1, riseT) * mix(1, 1.14, shatterT);
 
       ctx.save();
-      ctx.translate(rimX, mix(rimY, cy, rise) + unit * 0.06 * (1 - rise));
+      ctx.translate(pouchX, pouchY);
       ctx.rotate(tilt);
       ctx.scale(scale, scale);
-      ctx.globalAlpha = clamp01(stage * 3);
+      ctx.globalAlpha = pouchAlpha;
 
       // A pool of accent behind it: the sachet is white, and without something
       // lit behind it, it reads as a hole punched in the background.
@@ -459,15 +486,18 @@ export function CanAnimation() {
       const stage = clamp01((p - BURST_IN) / (WORD_IN - BURST_IN));
 
       if (!s.burstSpawned) {
-        s.burst = spawnBurst(cx, cy, pouchW, pouchH);   // the pouch has reached centre by now
+        s.burst = spawnBurst(pouchX, pouchY, pouchW, pouchH);
         s.burstSpawned = true;
       }
 
-      // Scroll drives this, so a slow reader can park mid-flash — hence a
-      // shorter, gentler one than a timed animation would want.
-      if (stage < 0.1) {
-        const flash = 1 - stage / 0.1;
-        ctx.fillStyle = `rgba(255,255,255,${flash * flash * 0.45})`;
+      // A bell, not a step. Jumping straight to full white on the frame the
+      // stage opens is the one hard cut a scroll-driven flash can still have,
+      // so it ramps up over the first third of the window and falls over the
+      // rest — brightest where the sachet actually comes apart.
+      if (stage < 0.12) {
+        const t = stage / 0.12;
+        const bell = t < 0.34 ? easeInOut(t / 0.34) : 1 - easeInOut((t - 0.34) / 0.66);
+        ctx.fillStyle = `rgba(255,255,255,${clamp01(bell) * 0.4})`;
         ctx.fillRect(0, 0, w, h);
       }
 
@@ -486,7 +516,7 @@ export function CanAnimation() {
       const spread = easeOut(stage);
       // Hands the frame over to the wordmark rather than cutting to it.
       const handoff = 1 - clamp01((p - WORD_IN) / 0.07);
-      const fade = (1 - stage ** 1.7) * clamp01(stage * 12) * handoff;
+      const fade = (1 - stage ** 3.2) * clamp01(stage * 12) * handoff;
 
       for (const pt of s.burst) {
         const travel = pt.speed * unit * spread;
@@ -513,7 +543,14 @@ export function CanAnimation() {
       const stage = clamp01((p - WORD_IN) / (1 - WORD_IN));
 
       if (!s.wordSpawned) {
-        s.word = spawnWordParticles(w, h, cy);
+        // Freeze the burst where it is at the handover and let the wordmark
+        // pull those exact points into place.
+        const spread = easeOut(1);
+        const seeds = s.burst.map((pt) => ({
+          x: pt.ox + Math.cos(pt.angle) * pt.speed * unit * spread,
+          y: pt.oy + Math.sin(pt.angle) * pt.speed * unit * spread + pt.drift * unit,
+        }));
+        s.word = spawnWordParticles(w, h, cy, seeds);
         // Only latch once it actually produced targets, so a frame drawn
         // before the lockup has loaded retries instead of staying empty.
         s.wordSpawned = s.word.length > 0;
