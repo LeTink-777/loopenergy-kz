@@ -54,11 +54,22 @@ export async function sendOrderEmails(order: Order, customerEmail?: string) {
   let sent = 0;
   let error: string | undefined;
 
+  // Until the sending domain is verified every send is refused for the same
+  // reason. Noticing it once stops a second doomed request per order, and keeps
+  // a setup step out of the error log where it reads like a fault.
+  let domainUnverified = false;
+
   const send = async (to: string, subject: string, html: string) => {
+    if (domainUnverified) return;
     try {
       const res = await resend.emails.send({ from: `LOOP Energy <${FROM}>`, to: [to], subject, html });
       if (res.error) {
         error = res.error.message;
+        if (/not verified/i.test(res.error.message)) {
+          domainUnverified = true;
+          console.warn('[email] skipped — sending domain is not verified in Resend yet');
+          return;
+        }
         console.error('[email]', to, res.error.message);
         return;
       }

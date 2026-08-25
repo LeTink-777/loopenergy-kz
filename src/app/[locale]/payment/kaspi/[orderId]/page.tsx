@@ -38,7 +38,16 @@ export default async function KaspiPaymentPage({
   // by the person about to pay it. Without a database the link carries it —
   // the figure is only a prompt for what to type into Kaspi, and the shop
   // checks the real amount against the order before confirming anything.
-  const order = supabaseReady() ? await getOrder(orderId) : null;
+  // A database that answers with an error must not take the payment screen
+  // down: the link already carries the amount, which is enough to pay with.
+  let order: Awaited<ReturnType<typeof getOrder>> = null;
+  if (supabaseReady()) {
+    try {
+      order = await getOrder(orderId);
+    } catch (error) {
+      console.error('[kaspi] order lookup failed', error);
+    }
+  }
   const total = order?.total_amount ?? Number(totalParam);
   if (!Number.isFinite(total) || total <= 0) notFound();
 

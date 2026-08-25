@@ -12,6 +12,7 @@ export function PaymentStatus({ orderId }: { orderId: string }) {
   const t = useTranslations('payment_status');
   const [state, setState] = useState<State>(null);
   const [missing, setMissing] = useState(false);
+  const [degraded, setDegraded] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -20,12 +21,15 @@ export function PaymentStatus({ orderId }: { orderId: string }) {
       try {
         const res = await fetch(`/api/orders/${orderId}/status`, { cache: 'no-store' });
         if (res.status === 404) { if (alive) setMissing(true); return true; }
-        if (!res.ok) return false;
+        // Anything else that is not an answer keeps the screen honest: it says
+        // it is still checking rather than implying the order is unpaid.
+        if (!res.ok) { if (alive) setDegraded(true); return false; }
         const data = (await res.json()) as NonNullable<State>;
-        if (alive) setState(data);
+        if (alive) { setDegraded(false); setState(data); }
         // Stop polling once the answer cannot change any more.
         return data.status === 'paid' || data.status === 'cancelled';
       } catch {
+        if (alive) setDegraded(true);
         return false;
       }
     };
@@ -63,7 +67,9 @@ export function PaymentStatus({ orderId }: { orderId: string }) {
     );
   }
 
-  const waiting = status === 'awaiting_review';
+  // Never seen a successful reply yet — show the neutral "checking" wording
+  // instead of a status the page cannot actually vouch for.
+  const waiting = status === 'awaiting_review' || (degraded && !state);
   return (
     <Card
       tone="wait"

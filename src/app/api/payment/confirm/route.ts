@@ -22,11 +22,18 @@ export async function POST(request: Request) {
   // has already been decided.
   let order = null;
   if (supabaseReady()) {
-    order = await setStatus(orderId, 'awaiting_review', { from: ['pending'] });
-    if (!order) {
-      const current = await getOrder(orderId);
-      if (!current) return NextResponse.json({ success: false, error: 'not_found' }, { status: 404 });
-      return NextResponse.json({ success: true, status: current.status });
+    try {
+      order = await setStatus(orderId, 'awaiting_review', { from: ['pending'] });
+      if (!order) {
+        const current = await getOrder(orderId);
+        if (!current) return NextResponse.json({ success: false, error: 'not_found' }, { status: 404 });
+        return NextResponse.json({ success: true, status: current.status });
+      }
+    } catch (error) {
+      // The customer pressed the button; the shop still has to hear about it.
+      // Falling through with no order sends the alert without the details.
+      console.error('[confirm] storage failed', error);
+      order = null;
     }
   }
 

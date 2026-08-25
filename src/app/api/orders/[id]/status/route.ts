@@ -13,7 +13,18 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     return NextResponse.json({ error: 'storage_unavailable' }, { status: 503 });
   }
 
-  const order = await getOrder(id);
+  let order;
+  try {
+    order = await getOrder(id);
+  } catch (error) {
+    // Polled every five seconds — a database blip must read as "still checking"
+    // on the customer's screen, not as a crash.
+    console.error('[status] lookup failed', error);
+    return NextResponse.json(
+      { error: 'temporarily_unavailable' },
+      { status: 503, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
   if (!order) return NextResponse.json({ error: 'not_found' }, { status: 404 });
 
   return NextResponse.json(
