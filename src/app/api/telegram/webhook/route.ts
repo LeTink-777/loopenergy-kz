@@ -72,7 +72,20 @@ async function showList(chatId: string, status: OrderStatus, empty: string, with
     await sendTelegramMessage('⚠️ База заказов не подключена.', backToMenu(), chatId);
     return;
   }
-  const orders = await listOrders(status);
+
+  let orders: Order[];
+  try {
+    orders = await listOrders(status);
+  } catch (error) {
+    console.error('[bot] list failed', error);
+    await sendTelegramMessage(
+      '⚠️ Не удалось прочитать заказы. Похоже, таблица ещё не создана.',
+      backToMenu(),
+      chatId,
+    );
+    return;
+  }
+
   if (!orders.length) {
     await sendTelegramMessage(empty, backToMenu(), chatId);
     return;
@@ -141,7 +154,18 @@ export async function POST(request: Request) {
           await sendTelegramMessage('⚠️ База заказов не подключена.', backToMenu(), chatId);
           break;
         }
-        const s = await todayStats();
+        let s;
+        try {
+          s = await todayStats();
+        } catch (error) {
+          console.error('[bot] stats failed', error);
+          await sendTelegramMessage(
+            '⚠️ Не удалось посчитать статистику. Похоже, таблица ещё не создана.',
+            backToMenu(),
+            chatId,
+          );
+          break;
+        }
         await sendTelegramMessage(
           `📊 <b>Статистика за сегодня</b>\n\n` +
             `🛒 Новых заказов: ${s.total}\n✅ Оплачено: ${s.paid}\n` +
@@ -165,12 +189,17 @@ export async function POST(request: Request) {
   const decide = async (id: string, run: () => Promise<Order | null>, note: string) => {
     let label = esc(id);
     if (supabaseReady()) {
-      const order = await run();
-      if (!order) {
-        await answerCallback(q.id, 'Заказ уже обработан или не найден');
-        return;
+      try {
+        const order = await run();
+        if (!order) {
+          await answerCallback(q.id, 'Заказ уже обработан или не найден');
+          return;
+        }
+        label = `№${order.order_number}`;
+      } catch (error) {
+        console.error('[bot] status update failed', error);
+        await answerCallback(q.id, 'Решение записано только в чат — база недоступна');
       }
-      label = `№${order.order_number}`;
     }
     if (q.message) await stripKeyboard(q.message.message_id, chatId);
     await answerCallback(q.id, note);
@@ -187,7 +216,14 @@ export async function POST(request: Request) {
 
   if (data.startsWith('notfound_')) {
     const id = data.slice('notfound_'.length);
-    const order = supabaseReady() ? await getOrder(id) : null;
+    let order: Order | null = null;
+    if (supabaseReady()) {
+      try {
+        order = await getOrder(id);
+      } catch (error) {
+        console.error('[bot] lookup failed', error);
+      }
+    }
     const label = order ? `№${order.order_number}` : esc(id);
     await answerCallback(q.id, 'Отмечено: платёж пока не найден');
     // Offers the manual cancel too, so the sixth decision has somewhere to be
