@@ -56,7 +56,12 @@ export async function createOrder(
   return data as Order;
 }
 
+/** Order ids are uuids. Anything else cannot match a row, and handing it to
+ *  Postgres raises a parse error that would otherwise read as an outage. */
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function getOrder(id: string): Promise<Order | null> {
+  if (!UUID.test(id)) return null;
   const { data, error } = await db().from('orders').select('*').eq('id', id).maybeSingle();
   if (error) throw new Error(`supabase_select: ${error.message}`);
   return (data as Order) ?? null;
@@ -72,6 +77,8 @@ export async function setStatus(
   status: OrderStatus,
   opts: { from?: OrderStatus[]; reason?: string } = {},
 ): Promise<Order | null> {
+  if (!UUID.test(id)) return null;
+
   const patch: Record<string, unknown> = { status };
   if (opts.reason) patch.cancel_reason = opts.reason;
   if (status === 'awaiting_review') patch.paid_at = new Date().toISOString();
