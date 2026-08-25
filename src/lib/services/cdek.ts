@@ -1,5 +1,6 @@
 import type {
   DeliveryCalculateParams,
+  DeliveryKind,
   DeliveryPoint,
   DeliveryTariff,
 } from './types';
@@ -176,4 +177,58 @@ export async function cdekGetPoints(city: string): Promise<DeliveryPoint[]> {
     workHours: point.work_time,
     phone: point.phones?.[0]?.number,
   }));
+}
+
+export type DeliveryQuote = {
+  pvz: { price: number; days: string };
+  courier: { price: number; days: string };
+  /** False while the figures are the fallback rather than CDEK's own. */
+  live: boolean;
+};
+
+/**
+ * What the checkout needs: one price per delivery shape, in tenge.
+ *
+ * Falls back to flat figures until both credentials exist, so the shape of the
+ * answer never changes and the caller needs no branch of its own. The moment
+ * the keys land, real tariffs flow through the same call.
+ */
+export async function getCdekDeliveryCost(toCity: string, weightKg = 0.5): Promise<DeliveryQuote> {
+  const fallback: DeliveryQuote = {
+    pvz: { price: 800, days: '3–7' },
+    courier: { price: 1200, days: '2–5' },
+    live: false,
+  };
+
+  if (!isLive()) return fallback;
+
+  try {
+    const tariffs = await cdekCalculate({
+      fromCity: 'Алматы',
+      toCity,
+      weight: weightKg,
+      length: 20,
+      width: 15,
+      height: 10,
+      declaredValue: 0,
+    });
+    if (!tariffs.length) return fallback;
+
+    const cheapest = (kinds: DeliveryKind[]) => {
+      const pool = tariffs.filter((t) => kinds.includes(t.type));
+      const use = pool.length ? pool : tariffs;
+      return use.reduce((a, b) => (a.price <= b.price ? a : b));
+    };
+
+    const p = cheapest(['pvz', 'postamat']);
+    const c = cheapest(['courier', 'express']);
+    return {
+      pvz: { price: Math.round(p.price), days: p.daysLabel },
+      courier: { price: Math.round(c.price), days: c.daysLabel },
+      live: true,
+    };
+  } catch (error) {
+    console.error('[cdek] quote failed, using fallback', error);
+    return fallback;
+  }
 }

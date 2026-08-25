@@ -1,18 +1,34 @@
 import { NextResponse } from 'next/server';
 
-import { getOrder, setStatus, supabaseReady, type Order } from '@/lib/orders';
-import { answerCallback, esc, sendTelegramMessage, stripKeyboard } from '@/lib/telegram';
+import {
+  getOrder,
+  listOrders,
+  setStatus,
+  supabaseReady,
+  todayStats,
+  type Order,
+  type OrderStatus,
+} from '@/lib/orders';
+import {
+  answerCallback,
+  backToMenu,
+  esc,
+  mainMenu,
+  orderKeyboard,
+  sendTelegramMessage,
+  stripKeyboard,
+} from '@/lib/telegram';
 
 export const runtime = 'nodejs';
 
 const SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
 
-type Callback = {
+type Update = {
+  message?: { text?: string; chat?: { id: number } };
   callback_query?: {
     id: string;
     data?: string;
-    message?: { message_id: number };
-    from?: { id: number; username?: string };
+    message?: { message_id: number; chat?: { id: number } };
   };
 };
 
@@ -21,34 +37,132 @@ const CANCEL_TEXT: Record<string, string> = {
   phone: 'неверный номер телефона',
   amount: 'неверная сумма',
   suspicious: 'заказ отменён службой безопасности',
+  manual: 'отменён администратором',
 };
 
+const STATUS_LABEL: Record<OrderStatus, string> = {
+  pending: '⏳ Ожидает оплаты',
+  awaiting_review: '🔍 Клиент подтвердил, проверяем',
+  paid: '✅ Оплачен',
+  cancelled: '❌ Отменён',
+};
+
+function formatOrder(o: Order): string {
+  const items = o.items
+    .map((i) => `• ${esc(i.name)} × ${i.quantity} — ${i.price * i.quantity} ₸`)
+    .join('\n');
+  return (
+    `🛒 <b>ЗАКАЗ №${o.order_number}</b>\n` +
+    `${'━'.repeat(18)}\n\n` +
+    `👤 ${esc(o.customer_name)}\n📱 ${esc(o.customer_phone)}\n📍 ${esc(o.city || '—')}\n` +
+    `🚚 ${esc(o.carrier)} · ${esc(o.delivery_option || '—')}\n` +
+    (o.address ? `🏠 ${esc(o.address)}\n` : '') +
+    `\n🛍 Товары:\n${items}\n\n` +
+    `💰 Итого: ${o.total_amount} ₸\n` +
+    `💳 ${o.payment_method === 'kaspi' ? 'Kaspi QR' : 'Картой онлайн'}\n` +
+    `📅 ${new Date(o.created_at).toLocaleString('ru-RU', { timeZone: 'Asia/Almaty' })}\n\n` +
+    `Статус: ${STATUS_LABEL[o.status]}` +
+    (o.cancel_reason ? `\nПричина: ${esc(o.cancel_reason)}` : '')
+  );
+}
+
+/** Lists never dead-end: an empty one still offers the way back. */
+async function showList(chatId: string, status: OrderStatus, empty: string, withButtons: boolean) {
+  if (!supabaseReady()) {
+    await sendTelegramMessage('⚠️ База заказов не подключена.', backToMenu(), chatId);
+    return;
+  }
+  const orders = await listOrders(status);
+  if (!orders.length) {
+    await sendTelegramMessage(empty, backToMenu(), chatId);
+    return;
+  }
+  for (const o of orders) {
+    await sendTelegramMessage(formatOrder(o), withButtons ? orderKeyboard(o.id) : undefined, chatId);
+  }
+  await sendTelegramMessage(`Показано: ${orders.length}`, backToMenu(), chatId);
+}
+
 export async function POST(request: Request) {
-  // Without this check the endpoint is an open door: anyone who guesses an
-  // order id could POST `confirm_<id>` and mark it paid. Telegram echoes the
-  // secret set with setWebhook on every delivery.
+  // Without this the endpoint is an open door: anyone who guessed an order id
+  // could POST confirm_<id> and mark it paid. Telegram echoes the secret set
+  // alongside setWebhook on every delivery.
   if (!SECRET || request.headers.get('x-telegram-bot-api-secret-token') !== SECRET) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
-  let update: Callback;
+  let update: Update;
   try {
-    update = (await request.json()) as Callback;
+    update = (await request.json()) as Update;
   } catch {
+    return NextResponse.json({ ok: true });
+  }
+
+  // ── Typed commands ──────────────────────────────────────────────────────
+  if (update.message?.chat?.id) {
+    const chatId = String(update.message.chat.id);
+    const text = (update.message.text ?? '').trim();
+    if (text === '/start' || text === '/menu') {
+      await sendTelegramMessage(
+        '👋 <b>Панель LOOP Energy</b>\n\nВыберите действие:',
+        mainMenu(),
+        chatId,
+      );
+    }
     return NextResponse.json({ ok: true });
   }
 
   const q = update.callback_query;
   if (!q?.data) return NextResponse.json({ ok: true });
 
+  const chatId = q.message?.chat?.id ? String(q.message.chat.id) : undefined;
   const data = q.data;
-  const decide = async (
-    id: string,
-    run: () => Promise<Order | null>,
-    adminNote: string,
-  ) => {
-    // With a database the move is recorded and guarded; without one the press
-    // still has to do something visible, or the buttons are decorative.
+
+  // ── Menu ────────────────────────────────────────────────────────────────
+  if (data.startsWith('menu_')) {
+    await answerCallback(q.id, '');
+    if (!chatId) return NextResponse.json({ ok: true });
+
+    switch (data) {
+      case 'menu_main':
+        await sendTelegramMessage('👋 <b>Панель LOOP Energy</b>\n\nВыберите действие:', mainMenu(), chatId);
+        break;
+      case 'menu_active':
+        await showList(chatId, 'pending', '📭 Активных заказов нет', true);
+        break;
+      case 'menu_completed':
+        await showList(chatId, 'paid', '📭 Выполненных заказов нет', false);
+        break;
+      case 'menu_cancelled':
+        await showList(chatId, 'cancelled', '📭 Отменённых заказов нет', false);
+        break;
+      case 'menu_stats': {
+        if (!supabaseReady()) {
+          await sendTelegramMessage('⚠️ База заказов не подключена.', backToMenu(), chatId);
+          break;
+        }
+        const s = await todayStats();
+        await sendTelegramMessage(
+          `📊 <b>Статистика за сегодня</b>\n\n` +
+            `🛒 Новых заказов: ${s.total}\n✅ Оплачено: ${s.paid}\n` +
+            `❌ Отменено: ${s.cancelled}\n⏳ Ожидают: ${s.pending}\n` +
+            `💰 Выручка: ${s.revenue} ₸`,
+          {
+            inline_keyboard: [
+              [{ text: '🔄 Обновить', callback_data: 'menu_stats' }],
+              [{ text: '◀️ Главное меню', callback_data: 'menu_main' }],
+            ],
+          },
+          chatId,
+        );
+        break;
+      }
+    }
+    return NextResponse.json({ ok: true });
+  }
+
+  // ── Decisions on one order ──────────────────────────────────────────────
+  const decide = async (id: string, run: () => Promise<Order | null>, note: string) => {
     let label = esc(id);
     if (supabaseReady()) {
       const order = await run();
@@ -56,33 +170,44 @@ export async function POST(request: Request) {
         await answerCallback(q.id, 'Заказ уже обработан или не найден');
         return;
       }
-      label = `#${order.order_number}`;
+      label = `№${order.order_number}`;
     }
-    if (q.message) await stripKeyboard(q.message.message_id);
-    await answerCallback(q.id, adminNote);
-    await sendTelegramMessage(`${adminNote} — заказ ${label}`);
+    if (q.message) await stripKeyboard(q.message.message_id, chatId);
+    await answerCallback(q.id, note);
+    await sendTelegramMessage(`${note} — заказ ${label}`, backToMenu(), chatId);
   };
 
   if (data.startsWith('confirm_')) {
     const id = data.slice('confirm_'.length);
-    // Only from awaiting_review: an already cancelled order cannot be revived
-    // by a stale button in the chat history.
-    await decide(id, () => setStatus(id, 'paid', { from: ['awaiting_review'] }), '✅ Оплата подтверждена');
+    // Only from awaiting_review: a stale button in the chat history must not
+    // revive a cancelled order or confirm one twice.
+    await decide(id, () => setStatus(id, 'paid', { from: ['awaiting_review', 'pending'] }), '✅ Оплата подтверждена');
     return NextResponse.json({ ok: true });
   }
 
   if (data.startsWith('notfound_')) {
     const id = data.slice('notfound_'.length);
     const order = supabaseReady() ? await getOrder(id) : null;
-    const label = order ? `#${order.order_number}` : esc(id);
+    const label = order ? `№${order.order_number}` : esc(id);
     await answerCallback(q.id, 'Отмечено: платёж пока не найден');
+    // Offers the manual cancel too, so the sixth decision has somewhere to be
+    // reached from rather than existing only in the parser.
     await sendTelegramMessage(
-      `⏳ Заказ ${label}: платёж пока не найден. Кнопки остаются — проверьте ещё раз через несколько минут.`,
+      `⏳ Заказ ${label}: платёж пока не найден. Проверьте ещё раз через несколько минут.`,
+      {
+        inline_keyboard: [
+          [{ text: '🔄 Проверить снова', callback_data: `notfound_${id}` }],
+          [{ text: '✅ Оплата получена', callback_data: `confirm_${id}` }],
+          [{ text: '🚫 Отменить заказ', callback_data: `cancel_manual_${id}` }],
+          [{ text: '◀️ Главное меню', callback_data: 'menu_main' }],
+        ],
+      },
+      chatId,
     );
     return NextResponse.json({ ok: true });
   }
 
-  const cancel = /^cancel_(phone|amount|suspicious)_(.+)$/.exec(data);
+  const cancel = /^cancel_(phone|amount|suspicious|manual)_(.+)$/.exec(data);
   if (cancel) {
     const [, kind, id] = cancel;
     await decide(
@@ -97,5 +222,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  await answerCallback(q.id, '');
   return NextResponse.json({ ok: true });
 }

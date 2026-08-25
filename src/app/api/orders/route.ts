@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { freedomPayCreate } from '@/lib/services/freedomPay';
 import { SITE } from '@/lib/constants';
+import { sendOrderEmails } from '@/lib/email';
 import { createOrder, supabaseReady, type Order } from '@/lib/orders';
 import { esc, orderKeyboard, sendTelegramMessage } from '@/lib/telegram';
 
@@ -150,6 +151,12 @@ export async function POST(request: Request) {
     // act on — and if that press never arrives, at nothing it can act on ever.
     orderKeyboard(orderId),
   );
+
+  if (order) {
+    // Fire and forget — a mail provider having a bad day must not hold up or
+    // fail a checkout that has already been recorded.
+    void sendOrderEmails(order, email || undefined);
+  }
 
   // Never fail the customer over our own plumbing. A refused checkout loses
   // the sale outright; an order that only made it into the logs can still be

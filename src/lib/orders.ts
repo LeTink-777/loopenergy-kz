@@ -84,3 +84,49 @@ export async function setStatus(
   if (error) throw new Error(`supabase_update: ${error.message}`);
   return (data as Order) ?? null;
 }
+
+/** Newest orders in one status — what the bot's list screens show. */
+export async function listOrders(status: OrderStatus, limit = 10): Promise<Order[]> {
+  const { data, error } = await db()
+    .from('orders')
+    .select('*')
+    .eq('status', status)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`supabase_list: ${error.message}`);
+  return (data ?? []) as Order[];
+}
+
+export type DayStats = {
+  total: number;
+  paid: number;
+  cancelled: number;
+  pending: number;
+  revenue: number;
+};
+
+/**
+ * Counted from midnight in Almaty, not UTC — a shop in Kazakhstan reading
+ * "today" wants its own day, and UTC would roll over at 6am local.
+ */
+export async function todayStats(): Promise<DayStats> {
+  const now = new Date();
+  const almaty = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Almaty' }));
+  almaty.setHours(0, 0, 0, 0);
+  const since = new Date(now.getTime() - (Date.now() - almaty.getTime())).toISOString();
+
+  const { data, error } = await db()
+    .from('orders')
+    .select('status,total_amount')
+    .gte('created_at', since);
+  if (error) throw new Error(`supabase_stats: ${error.message}`);
+
+  const rows = (data ?? []) as { status: OrderStatus; total_amount: number }[];
+  return {
+    total: rows.length,
+    paid: rows.filter((r) => r.status === 'paid').length,
+    cancelled: rows.filter((r) => r.status === 'cancelled').length,
+    pending: rows.filter((r) => r.status === 'pending' || r.status === 'awaiting_review').length,
+    revenue: rows.filter((r) => r.status === 'paid').reduce((s, r) => s + r.total_amount, 0),
+  };
+}

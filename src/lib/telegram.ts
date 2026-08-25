@@ -26,10 +26,11 @@ async function call(method: string, body: Record<string, unknown>) {
 }
 
 /** Message to the shop's own chat — order alerts and confirmations. */
-export function sendTelegramMessage(text: string, keyboard?: Keyboard) {
-  if (!CHAT_ID) return Promise.resolve({ ok: false as const, error: 'no_chat_id' });
+export function sendTelegramMessage(text: string, keyboard?: Keyboard, chatId?: string) {
+  const target = chatId ?? CHAT_ID;
+  if (!target) return Promise.resolve({ ok: false as const, error: 'no_chat_id' });
   return call('sendMessage', {
-    chat_id: CHAT_ID,
+    chat_id: target,
     text,
     parse_mode: 'HTML',
     ...(keyboard ? { reply_markup: keyboard } : {}),
@@ -43,10 +44,11 @@ export function answerCallback(id: string, text: string) {
 
 /** Leaves the decision visible but takes the buttons away, so one order
  *  cannot be confirmed twice by a second tap. */
-export function stripKeyboard(messageId: number) {
-  if (!CHAT_ID) return Promise.resolve({ ok: false as const, error: 'no_chat_id' });
+export function stripKeyboard(messageId: number, chatId?: string) {
+  const target = chatId ?? CHAT_ID;
+  if (!target) return Promise.resolve({ ok: false as const, error: 'no_chat_id' });
   return call('editMessageReplyMarkup', {
-    chat_id: CHAT_ID,
+    chat_id: target,
     message_id: messageId,
     reply_markup: { inline_keyboard: [] },
   });
@@ -70,4 +72,20 @@ export function orderKeyboard(orderId: string): Keyboard {
       [{ text: '🚫 Подозрительный', callback_data: `cancel_suspicious_${orderId}` }],
     ],
   };
+}
+
+/** The bot's home screen. Every list ends with a way back to it. */
+export function mainMenu(): Keyboard {
+  return {
+    inline_keyboard: [
+      [{ text: '📦 Активные заказы', callback_data: 'menu_active' }],
+      [{ text: '✅ Выполненные заказы', callback_data: 'menu_completed' }],
+      [{ text: '❌ Отменённые заказы', callback_data: 'menu_cancelled' }],
+      [{ text: '📊 Статистика за сегодня', callback_data: 'menu_stats' }],
+    ],
+  };
+}
+
+export function backToMenu(): Keyboard {
+  return { inline_keyboard: [[{ text: '◀️ Главное меню', callback_data: 'menu_main' }]] };
 }
