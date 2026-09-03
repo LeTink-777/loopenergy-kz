@@ -2,14 +2,14 @@ import type { MetadataRoute } from 'next';
 
 import { routing } from '@/i18n/routing';
 import { SITE } from '@/lib/constants';
-import { products } from '@/lib/products';
+import { visibleProducts } from '@/lib/products';
 
 /** Cart, checkout and order pages are personal and stay out of the index. */
 const PATHS = ['', '/about', '/faq', '/shop', '/delivery', '/wholesale', '/certificates'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
-  const paths = [...PATHS, ...products.map((product) => `/shop/${product.slug}`)];
+  const paths = [...PATHS, ...visibleProducts.map((product) => `/shop/${product.slug}`)];
 
   return routing.locales.flatMap((locale) =>
     paths.map((path) => ({

@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 import { EASE } from '@/components/ui/motion';
 import { formatTenge } from '@/lib/constants';
-import { products } from '@/lib/products';
+import { visibleProducts as products } from '@/lib/products';
 import { Link } from '@/i18n/navigation';
 
 /**

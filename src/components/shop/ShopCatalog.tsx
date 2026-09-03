@@ -11,7 +11,7 @@ import { EASE, springPop } from '@/components/ui/motion';
 import {
   CATEGORY_IDS,
   SORT_IDS,
-  products,
+  visibleProducts as products,
   type CategoryId,
   type SortId,
 } from '@/lib/products';

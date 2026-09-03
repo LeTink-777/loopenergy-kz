@@ -35,6 +35,9 @@ export interface Product {
   /** Milligrams per pouch. The official leaflet states 100 mg. */
   caffeine: number;
   pouches: number;
+  /** Kept in the catalogue so existing carts and past orders still resolve,
+   *  but not offered anywhere a customer can reach. */
+  hidden?: boolean;
 }
 
 const ORIGIN = 'https://loopenergy.ru';
@@ -67,6 +70,7 @@ export const products: Product[] = [
     caffeine: 100,
     pouches: 150,
     flavors: [],
+    hidden: true,
   },
   {
     id: 'showbox',
@@ -352,6 +356,11 @@ export const products: Product[] = [
   },
 ];
 
+/** Everything a customer may see: the catalogue minus anything withdrawn. */
+export const visibleProducts = products.filter((p) => !p.hidden);
+
+/** Resolves hidden products too — an order placed before it was withdrawn
+ *  must still render. Pages that serve customers check `hidden` themselves. */
 export const getProduct = (slug: string) => products.find((p) => p.slug === slug);
 
 /** Picks the active locale out of a `{ ru, kz }` field. */

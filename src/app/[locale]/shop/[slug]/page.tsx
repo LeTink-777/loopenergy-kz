@@ -7,10 +7,10 @@ import { ProductDetail } from '@/components/shop/ProductDetail';
 import { routing } from '@/i18n/routing';
 import { SITE } from '@/lib/constants';
 import type { Locale } from '@/lib/content';
-import { getProduct, products, t as pick } from '@/lib/products';
+import { getProduct, visibleProducts, t as pick } from '@/lib/products';
 
 export function generateStaticParams() {
-  return routing.locales.flatMap((locale) => products.map((product) => ({ locale, slug: product.slug })));
+  return routing.locales.flatMap((locale) => visibleProducts.map((product) => ({ locale, slug: product.slug })));
 }
 
 export async function generateMetadata({
@@ -21,7 +21,7 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   const resolved: Locale = hasLocale(routing.locales, locale) ? (locale as Locale) : routing.defaultLocale;
   const product = getProduct(slug);
-  if (!product) return {};
+  if (!product || product.hidden) return {};
 
   const name = pick(product.name, resolved);
   const description = pick(product.description, resolved);
@@ -54,7 +54,8 @@ export default async function ProductPage({
   setRequestLocale(resolved);
 
   const product = getProduct(slug);
-  if (!product) notFound();
+  // Withdrawn products answer 404 rather than quietly still selling.
+  if (!product || product.hidden) notFound();
 
   const jsonLd = {
     '@context': 'https://schema.org',

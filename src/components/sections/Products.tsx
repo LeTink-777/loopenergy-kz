@@ -11,7 +11,7 @@ import { ProductGridCard } from '@/components/shop/ProductGridCard';
 import { RevealGroup } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { fadeUp, springPop } from '@/components/ui/motion';
-import { products } from '@/lib/products';
+import { visibleProducts as products } from '@/lib/products';
 
 export function Products() {
   const t = useTranslations('products');
