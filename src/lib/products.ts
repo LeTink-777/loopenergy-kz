@@ -369,9 +369,11 @@ export const t = (field: Localized, locale: Locale) => field[locale];
 /** Same category first, then anything else, capped at three. */
 export const relatedProducts = (slug: string, limit = 3) => {
   const current = getProduct(slug);
-  if (!current) return products.slice(0, limit);
+  // Suggestions are somewhere a customer can reach, so a withdrawn product
+  // must not surface here either.
+  if (!current) return visibleProducts.slice(0, limit);
 
-  const others = products.filter((p) => p.slug !== slug);
+  const others = visibleProducts.filter((p) => p.slug !== slug);
   const sameCategory = others.filter((p) => p.category === current.category);
   const rest = others.filter((p) => p.category !== current.category);
 

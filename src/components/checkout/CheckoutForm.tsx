@@ -16,7 +16,7 @@ import { useUniversalMotion } from '@/hooks/useUniversalMotion';
 import { springPop } from '@/components/ui/motion';
 import { formatTenge } from '@/lib/constants';
 import type { Content, Locale } from '@/lib/content';
-import { t as pickText, products } from '@/lib/products';
+import { t as pickText, visibleProducts as products } from '@/lib/products';
 import { useCartStore } from '@/store/cartStore';
 
 /** Which ways of receiving an order each carrier actually offers. */
