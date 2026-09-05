@@ -68,6 +68,12 @@ export function buildMetadata(locale: Locale): Metadata {
     category: 'shopping',
     icons,
     manifest: '/manifest.json',
+    // Search-console ownership. Yandex also serves the same token as a file at
+    // `public/yandex_<token>.html`, since it accepts either proof.
+    verification: {
+      google: 'c1vOTLexRz0FcOQhLH34yRqd6xH7MOdId6vaLfcJtbo',
+      yandex: '8bb9c87d622b040f',
+    },
     alternates: {
       canonical: `/${locale}`,
       languages: { ru: '/ru', kk: '/kz', 'x-default': '/ru' },
